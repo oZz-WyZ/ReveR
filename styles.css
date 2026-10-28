@@ -30,8 +30,7 @@ button {
 button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow); }
 button:active:not(:disabled) { transform: translateY(0); }
 button:disabled { opacity: .45; cursor: not-allowed; }
-button.primary, #ob-form button:not([type=button]), #chat-send, #ask-pop button:not([type=button]),
-#quiz-start, #quiz-validate, #quiz-next { color: #fff; background: var(--black); }
+button.primary, #ob-form button:not([type=button]), #chat-send, #ask-pop button:not([type=button]) { color: #fff; background: var(--black); }
 button.ghost { background: transparent; color: var(--muted); padding: .45rem .9rem; }
 button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .6); box-shadow: none; }
 :focus-visible { outline: 3px solid var(--orange-2); outline-offset: 2px; }
@@ -105,9 +104,6 @@ body.fiche-open #status { display: none; }
   flex: 1; min-height: 0; display: grid; gap: 1.5rem; align-items: stretch;
   grid-template-columns: minmax(0, 1fr) clamp(22rem, 34vw, 32rem); grid-template-rows: minmax(0, 1fr);
 }
-#workspace:has(#pane-texte.folded) { grid-template-columns: auto minmax(0, 1fr); }
-#workspace:has(#pane-assistant.folded) { grid-template-columns: minmax(0, 1fr) auto; }
-#workspace:has(#pane-texte.folded):has(#pane-assistant.folded) { grid-template-columns: auto auto; }
 .pane { display: flex; flex-direction: column; min-height: 0; }
 .pane-body { flex: 1; min-height: 0; }
 /* panneau de droite : une grande carte avec le toggle Reviz | Me tester en haut, puis le contenu */
@@ -116,15 +112,16 @@ body.fiche-open #status { display: none; }
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-xl); box-shadow: var(--shadow);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
-.tabs button { font-size: .9rem; padding: .35rem 1rem; }
-.tabs button[aria-selected="true"] { background: var(--black); color: #fff; }
+/* toggle Reviz | Me tester : un seul bouton en deux moitiés, le curseur noir glisse d'un côté à l'autre */
+.assistant-head { display: block; }
+.tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding: .25rem; background: #eadfd7; border-radius: 999px; box-shadow: inset 0 1px 4px rgba(90, 45, 10, .2); }
+.tabs::before { content: ""; position: absolute; top: .25rem; bottom: .25rem; left: .25rem; width: calc(50% - .25rem); background: var(--black); border-radius: 999px; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .25s ease; }
+.tabs[data-active="quiz"]::before { transform: translateX(100%); }
+.tabs button { position: relative; background: transparent; border: 0; box-shadow: none; color: var(--muted); font-size: .92rem; padding: .5rem 1rem; transition: color .2s; }
+.tabs button[aria-selected="true"] { color: #fff; }
+.tabs button:hover:not(:disabled) { transform: none; box-shadow: none; }
 .quiz-box { flex: 1; min-height: 0; overflow-y: auto; }
 #pane-assistant .note { font-size: .8rem; }
-/* panneau replié : seul le bouton pour le rouvrir reste */
-.pane.folded .pane-body { flex: none; background: none; box-shadow: none; padding: 0; overflow: visible; }
-.pane.folded .viewer-scroll, .pane.folded .tabs, .pane.folded #chat, .pane.folded #quiz, .pane.folded #assistant-off,
-.pane.folded #view-seg, .pane.folded #save, .pane.folded #edit-text { display: none !important; }
-.pane.folded .viewer-tools { position: static; }
 
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
@@ -132,7 +129,7 @@ body.fiche-open #status { display: none; }
 .viewer-shell { position: relative; background: #e6dcd5; border-radius: var(--r-lg); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(160, 80, 30, .08); }
 .viewer-scroll { position: absolute; inset: 0; overflow: auto; padding: 4rem 1.25rem 2rem; }
 .viewer-tools { position: absolute; top: .8rem; right: 1.6rem; z-index: 5; display: flex; align-items: center; gap: .5rem; }
-.viewer-tools .seg, .viewer-tools .fold { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+.viewer-tools .seg { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
 .viewer-tools .seg button { background: transparent; } .viewer-tools .seg button[aria-pressed="true"] { background: var(--black); }
 .viewer-tools button.primary { box-shadow: var(--shadow); }
 #doc { position: relative; }
@@ -210,15 +207,13 @@ blockquote.passage, #quiz blockquote {
 #quiz h2 { font-size: 1.35rem; }
 #quiz-q { font-size: 1.15rem; font-weight: 400; margin: .25rem 0 .75rem; }
 #pane-assistant .badge { font-size: .7rem; padding: .12rem .6rem; }
-#quiz .opt { display: block; padding: .6rem 1.1rem; margin: .45rem 0; background: #fff; border: 2px solid transparent; border-radius: 999px; cursor: pointer; box-shadow: var(--shadow); transition: background .15s, color .15s; }
-#quiz .opt:hover { border-color: var(--orange-2); }
-#quiz .opt:has(input:checked) { background: var(--black); color: #fff; }
-#quiz .opt input { accent-color: var(--orange-2); }
-#quiz .opt.ok, #quiz .opt.ok:has(input:checked) { background: #e3f4e8; color: #14532d; border-color: #2e9d57; }
-#quiz .opt.ko, #quiz .opt.ko:has(input:checked) { background: #fdeaea; color: #7a1c1c; border-color: #d64545; }
-#quiz .verdict { font-weight: 500; margin: .8rem 0 .25rem; }
-#quiz .score { font-size: 2.3rem; font-weight: 300; color: var(--orange-1); line-height: 1.1; }
-#quiz-validate:disabled { background: #ead9ce; color: var(--muted); }
+#quiz .opt { display: block; width: 100%; text-align: left; padding: .65rem 1.1rem; margin: .45rem 0; background: #fff; border: 2px solid var(--line); border-radius: 999px; box-shadow: none; font-weight: 400; }
+#quiz .opt:hover:not(:disabled) { border-color: var(--orange-2); transform: none; box-shadow: none; }
+#quiz .score { font-size: 2.3rem; font-weight: 300; color: var(--orange-1); line-height: 1.1; margin: .25rem 0 .5rem; }
+.result-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .25rem 0 1rem; }
+.qres { padding: .7rem 1rem; margin: .6rem 0; border-radius: var(--r-md); background: #fff; border: 2px solid var(--line); }
+.qres.ok { border-color: #2e9d57; background: #f1faf3; } .qres.ko { border-color: #d64545; background: #fdf3f3; }
+.qres p { margin: .3rem 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

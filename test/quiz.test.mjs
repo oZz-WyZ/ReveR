@@ -58,6 +58,19 @@ run.pick(2); run.validate();
 assert.equal(run.next(), true);                     // fin
 assert.equal(run.score, 2);
 
+// clic direct : réponse définitive puis question suivante ; corrections gardées pour la fin
+const run2 = createRun(qs);
+assert.equal(run2.answer(0), false);                 // bonne réponse, il en reste
+assert.equal(run2.n, 2);
+assert.equal(run2.answer(9), false);                 // option invalide ignorée
+assert.equal(run2.n, 2);
+assert.equal(run2.answer(3), false);                 // mauvaise réponse
+assert.equal(run2.answer(2), true);                  // dernière : terminé
+assert.equal(run2.score, 2);
+assert.deepEqual(run2.answers.map((a) => a.ok), [true, false, true]);
+assert.equal(run2.answers[1].options[run2.answers[1].picked], "d");
+assert.equal(run2.answers[0].passage, "p0");
+
 // mock : n demandé lu dans le prompt
 
 // rien d'exploitable -> bad_quiz

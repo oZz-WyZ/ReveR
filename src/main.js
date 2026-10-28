@@ -10,7 +10,6 @@ import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
 import { createQuiz } from "./ui/quiz.js";
 import { maitriseSelect, renderLibrary } from "./ui/library.js";
-import { setupLayout } from "./ui/layout.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
@@ -173,6 +172,7 @@ function setTab(t) {
   const ready = !!current?.onboarding?.consigne, saved = !!current && !!loadDoc(current.id);
   $("tab-quiz").disabled = !ready || !saved;
   if (t === "quiz" && $("tab-quiz").disabled) t = "chat";
+  document.querySelector(".tabs").dataset.active = t; // fait glisser le curseur du toggle
   $("tab-chat").setAttribute("aria-selected", String(t === "chat"));
   $("tab-quiz").setAttribute("aria-selected", String(t === "quiz"));
   $("chat").hidden = t !== "chat" || !ready;
@@ -231,6 +231,5 @@ $("save").onclick = async () => {
   go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
 };
 
-setupLayout();
 rebuildIndex();
 route();

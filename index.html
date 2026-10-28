@@ -48,7 +48,6 @@
             <button type="button" id="view-original">Origine</button>
             <button type="button" id="view-texte">Texte</button>
           </span>
-          <button type="button" class="fold ghost" data-pane="texte">Replier</button>
         </div>
         <div class="viewer-scroll">
           <section id="doc">
@@ -70,26 +69,20 @@
     <section class="pane" id="pane-assistant">
       <div class="pane-body assistant-card">
         <header class="assistant-head">
-          <span class="seg tabs" role="tablist" aria-label="Assistant">
+          <span class="tabs" role="tablist" aria-label="Assistant" data-active="chat">
             <button id="tab-chat" type="button" role="tab" aria-selected="true">Reviz</button>
             <button id="tab-quiz" type="button" role="tab" aria-selected="false" disabled>Me tester</button>
           </span>
-          <button type="button" class="fold ghost" data-pane="assistant">Replier</button>
         </header>
         <p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
         <section id="quiz" class="quiz-box" hidden>
-    <h2>Quiz de maîtrise</h2>
-  <p id="quiz-last" class="note"></p>
-  <p id="quiz-status" role="status"></p>
-  <div id="quiz-run" hidden>
-    <p id="quiz-progress" class="note"></p>
-    <h3 id="quiz-q"></h3>
-    <div id="quiz-options" role="radiogroup" aria-labelledby="quiz-q"></div>
-    <div id="quiz-feedback" hidden></div>
-    <button id="quiz-validate" type="button" disabled>Valider</button>
-    <button id="quiz-next" type="button" hidden>Suivante</button>
-  </div>
-  <div id="quiz-result" hidden></div>
+          <h2>Quiz de maîtrise</h2>
+          <p id="quiz-status" role="status"></p>
+          <div id="quiz-run" hidden>
+            <h3 id="quiz-q"></h3>
+            <div id="quiz-options"></div>
+          </div>
+          <div id="quiz-result" hidden></div>
         </section>
         <section id="chat" class="chat-box" hidden>
           <div id="chat-empty" class="chat-empty">
