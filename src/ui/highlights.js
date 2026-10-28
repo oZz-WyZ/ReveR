@@ -34,11 +34,16 @@ export function createHighlights({ reader, getDoc, saveComments }) {
   const hideBtn = () => { btn.hidden = true; pending = null; };
   const closePop = () => { pop.hidden = true; popOpen = false; status.textContent = ""; input.value = ""; };
 
+  // Place `node` sous `rect`, sans dépasser du panneau (on le rend visible un instant pour le mesurer).
   function place(node, rect) {
     const box = $("doc").getBoundingClientRect();
-    node.style.left = Math.max(0, rect.left - box.left) + "px";
+    const wasHidden = node.hidden;
+    node.hidden = false;
+    node.style.left = Math.min(Math.max(0, rect.left - box.left), Math.max(0, box.width - node.offsetWidth)) + "px";
     node.style.top = rect.bottom - box.top + 6 + "px";
+    node.hidden = wasHidden;
   }
+  const closeCards = () => { $("cards").hidden = true; $("cards").replaceChildren(); };
 
   function onSelection() {
     if (popOpen || busy) return;
@@ -69,6 +74,7 @@ export function createHighlights({ reader, getDoc, saveComments }) {
     e.preventDefault();
     const question = input.value.trim();
     if (!question || busy || !pending) return;
+    const selRect = getSelection().rangeCount ? getSelection().getRangeAt(0).getBoundingClientRect() : null;
     busy = true;
     status.textContent = "Réflexion…"; status.className = "";
     const doc = getDoc();
@@ -79,38 +85,48 @@ export function createHighlights({ reader, getDoc, saveComments }) {
       closePop(); hideBtn();
       getSelection().removeAllRanges();
       saveComments([...(getDoc().comments ?? []), c]);
-      openCards([c.id]);
+      const mark = reader.el.querySelector(`mark[data-ids~="${c.id}"]`);
+      openCards([c.id], mark?.getBoundingClientRect() ?? selRect ?? reader.el.getBoundingClientRect());
     } catch (err) {
       status.textContent = ERRORS[err.code] ?? "La réponse n'a pas pu être obtenue. Réessaie.";
       status.className = "err";
     } finally { busy = false; }
   };
 
-  function openCards(ids) {
+  // Pop-over ancré sous `rect` (le surlignage cliqué).
+  function openCards(ids, rect) {
     const all = getDoc().comments ?? [];
     const box = $("cards");
     box.replaceChildren(...ids.map((id) => all.find((c) => c.id === id)).filter(Boolean)
       .sort((a, b) => b.createdAt - a.createdAt)
       .map((c) => {
         const d = card(c);
-        const close = el("button", null, "Fermer");
-        close.type = "button"; close.onclick = () => box.replaceChildren();
+        const close = el("button", "ghost", "Fermer");
+        close.type = "button"; close.onclick = closeCards;
         d.append(close);
         return d;
       }));
+    box.hidden = false;
+    place(box, rect);
   }
+
+  // Fermeture : Échap, ou clic en dehors du pop-over et des surlignages
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeCards(); if (!busy) { closePop(); hideBtn(); } } });
+  document.addEventListener("mousedown", (e) => {
+    if (!$("cards").hidden && !e.target.closest("#cards, mark")) closeCards();
+  });
 
   // Clic sur un surlignage (et pas fin d'une sélection à la souris)
   reader.el.addEventListener("click", (e) => {
     const m = e.target.closest?.("mark");
-    if (m && getSelection().isCollapsed) openCards(m.dataset.ids.split(" "));
+    if (m && getSelection().isCollapsed) openCards(m.dataset.ids.split(" "), m.getBoundingClientRect());
   });
 
   return {
     /** Réaffiche le texte (surligné en lecture, brut en correction) et la liste des orphelins. */
     render(doc, editing) {
       const comments = doc.comments ?? [];
-      hideBtn(); closePop(); $("cards").replaceChildren();
+      hideBtn(); closePop(); closeCards();
       editing ? reader.show(doc.text) : reader.showMarked(doc.text, segments(comments));
       const orphans = comments.filter((c) => c.orphan);
       $("orphans").hidden = !orphans.length;

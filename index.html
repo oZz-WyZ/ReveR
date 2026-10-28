@@ -15,6 +15,8 @@
   #ask-input { font: inherit; width: 18rem; max-width: 70vw; }
   #ask-status.err { color: #b00; }
   mark { background: #ffe066; cursor: pointer; border-radius: 2px; } mark.multi { background: #ffc233; }
+  #cards { position: absolute; z-index: 6; width: min(26rem, 92%); box-shadow: 0 8px 28px #0003; }
+  #cards .card { margin: 0; background: #fff; }
   .card { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; background: #fafafa; }
   .card blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #e0a800; background: #fff6d6; font-style: italic; }
   .card p { margin: .25rem 0; } .card .ask { color: #555; font-size: .9rem; }
@@ -80,7 +82,7 @@
     <span id="ask-status" role="status"></span>
   </form>
   <button id="save">Valider</button> <button id="edit-text" type="button" hidden>Corriger le texte</button>
-  <div id="cards"></div>
+  <div id="cards" class="popover" hidden></div>
   <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
 </section>
 <section id="onboarding" hidden>
