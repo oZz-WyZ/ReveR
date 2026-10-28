@@ -16,7 +16,7 @@ function el(tag, cls, text) {
 }
 
 /** Chat sourcé sur le cours. show(doc) exige doc.text et doc.onboarding.consigne (le system, jamais affiché). */
-export function createChat() {
+export function createChat({ onPassage } = {}) {
   let doc, chat, busy = false, wait = null; // wait : { docId, question? } pendant un appel IA
 
   const status = (msg, err = false, retry) => {
@@ -45,9 +45,13 @@ export function createChat() {
     const m = el("div", "bot-body");
     if (t.reexplique) m.append(el("div", "tag", "Ré-explication"));
     if (t.passage) {
-      const q = el("blockquote", "passage");
-      q.append(el("strong", null, "Dans ton cours : "), t.passage);
-      m.append(q);
+      // le texte du cours qui répond à la question, surligné comme dans la visionneuse ; un clic le retrouve dans le cours
+      const p = el("p", "ref");
+      const mk = el("mark", null, t.passage.replace(/\s*\n\s*/g, " "));
+      mk.title = "Voir dans le cours";
+      mk.onclick = () => onPassage?.(t.passage);
+      p.append(mk);
+      m.append(p);
     }
     m.append(el("p", null, t.reponse));
     if (t.tronque) m.append(el("p", "note", "Ton cours est long : je m'appuie sur les passages les plus proches de ta question."));
@@ -76,7 +80,7 @@ export function createChat() {
       const base = d.id === doc.id ? chat : loadChat(d.id);
       const next = { ...base, turns: [...base.turns, { id: uid(), role: "user", content: question, ts }, { id: uid(), role: "assistant", ...a, feedback: null, ts }] };
       saveChat(d.id, next);
-      if (d.id === doc.id) chat = next;
+      if (d.id === doc.id) { chat = next; if (a.passage) onPassage?.(a.passage); } // surligné aussi dans la visionneuse
       status("");
     } catch (e) {
       if (d.id === doc.id) $("chat-input").value = question; // on rend sa question à l'élève

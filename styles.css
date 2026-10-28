@@ -142,7 +142,8 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 .pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: var(--r-sm); box-shadow: var(--shadow); overflow: hidden; }
 .pdf-page canvas { display: block; }
 .hl-layer { position: absolute; inset: 0; pointer-events: none; }
-.hl { position: absolute; background: #ffe066; mix-blend-mode: multiply; border-radius: 3px; }
+.hl-group { position: absolute; inset: 0; mix-blend-mode: multiply; } /* groupes de commentaires différents : ils foncent en se recouvrant */
+.hl { position: absolute; background: #ffe066; border-radius: 3px; }
 .textLayer { position: absolute; inset: 0; overflow: hidden; line-height: 1; text-size-adjust: none; }
 .textLayer span, .textLayer br { color: transparent; position: absolute; white-space: pre; cursor: text; transform-origin: 0% 0%; }
 .textLayer ::selection { background: rgba(240, 137, 58, .4); }
@@ -190,6 +191,8 @@ blockquote.passage, #quiz blockquote {
 .msg.bot { align-self: stretch; display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); gap: .65rem; max-width: 100%; }
 .bot-body { min-width: 0; white-space: pre-wrap; }
 .bot-body p { margin: .35rem 0; }
+.bot-body .ref { margin: .2rem 0 .55rem; line-height: 1.75; }
+.bot-body mark { cursor: pointer; padding: .12em .3em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .tag { font-size: .72rem; color: var(--muted); font-weight: 500; }
 .dots { display: flex; align-items: center; gap: .3rem; height: 1.7rem; }
 .dots i { width: .5rem; height: .5rem; border-radius: 50%; background: var(--muted); opacity: .35; animation: blink 1s infinite; }

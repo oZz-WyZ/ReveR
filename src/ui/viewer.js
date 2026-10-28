@@ -52,6 +52,7 @@ export function createViewer(root) {
     const box = pg.el.getBoundingClientRect(), lay = st.layout.pages[i];
     for (const c of st.comments) {
       if (c.orphan || !c.range) continue;
+      const group = el("div", "hl-group"); // un aplat par commentaire : ses rectangles voisins ne se superposent pas en plus foncé
       for (const { i: k, a, b } of overlap(lay, c.range.start, c.range.end)) {
         const tn = pg.divs[k]?.firstChild;
         if (tn?.nodeType !== 3) continue;
@@ -61,9 +62,15 @@ export function createViewer(root) {
           const h = el("div", "hl");
           h.dataset.id = c.id;
           Object.assign(h.style, { left: q.left - box.left + "px", top: q.top - box.top + "px", width: q.width + "px", height: q.height + "px" });
-          pg.hl.append(h);
+          group.append(h);
         }
       }
+      if (group.childElementCount) pg.hl.append(group);
+    }
+    // la page vient d'être rendue pendant un « reveal » : on termine le défilement vers le surlignage
+    if (st.reveal) {
+      const h = root.querySelector(`.hl[data-id="${st.reveal}"]`);
+      if (h) { h.scrollIntoView({ block: "center", behavior: "smooth" }); st.reveal = null; }
     }
   }
 
@@ -172,6 +179,17 @@ export function createViewer(root) {
         if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom && !out.some((o) => o.id === h.dataset.id)) out.push({ id: h.dataset.id, rect: r });
       }
       return out;
+    },
+    /** Fait défiler jusqu'au surlignage `id` ; si sa page n'est pas encore rendue, on y va d'abord (rendu paresseux). */
+    reveal(id) {
+      const c = st?.layout && st.comments.find((x) => x.id === id);
+      if (!c?.range) return;
+      const pages = st.layout.pages;
+      const i = pages.findIndex((p, k) => c.range.start >= p.base && (k === pages.length - 1 || c.range.start < pages[k + 1].base));
+      st.reveal = id;
+      const h = root.querySelector(`.hl[data-id="${id}"]`);
+      if (h) { h.scrollIntoView({ block: "center", behavior: "smooth" }); st.reveal = null; }
+      else st.pages[i]?.el.scrollIntoView({ block: "start", behavior: "smooth" });
     },
     rectOf(id) { return root.querySelector(`.hl[data-id="${id}"]`)?.getBoundingClientRect() ?? null; },
   };

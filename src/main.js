@@ -19,7 +19,7 @@ import { toast } from "./ui/toast.js";
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const viewer = createViewer($("pdf-view"));
-const chat = createChat();
+const chat = createChat({ onPassage: (p) => showRef(p) });
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), () => setTab("chat"));
 const highlights = createHighlights({
   reader,
@@ -170,8 +170,16 @@ async function loadOriginal(doc, edit) {
   setMode(orig && !edit ? "original" : "texte");
 }
 
+// Passage cité par l'assistant : surligné dans la visionneuse (même jaune que les commentaires) et mis en vue.
+function showRef(passage) {
+  const start = current?.text.indexOf(passage) ?? -1;
+  highlights.setRef(start < 0 ? null : { start, end: start + passage.length });
+  if (start >= 0) highlights.reveal();
+}
+
 function showFiche(doc, edit = false) {
   shown = "cours:" + doc.id;
+  highlights.setRef(null, false); // pas de surlignage d'un autre cours
   // texte modifié depuis : on relocalise les commentaires (les introuvables deviennent orphelins)
   const comments = relocateAll(doc.text, doc.comments ?? []);
   if (JSON.stringify(comments) !== JSON.stringify(doc.comments ?? [])) doc = persist({ ...doc, comments });

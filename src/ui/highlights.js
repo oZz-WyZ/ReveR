@@ -97,7 +97,9 @@ export function createHighlights({ reader, viewer, getMode, getDoc, saveComments
   function openCards(ids, rect) {
     const all = getDoc().comments ?? [];
     const box = $("cards");
-    box.replaceChildren(...ids.map((id) => all.find((c) => c.id === id)).filter(Boolean)
+    const list = ids.map((id) => all.find((c) => c.id === id)).filter(Boolean); // « __ref » (réponse de l'assistant) n'est pas un commentaire
+    if (!list.length) return;
+    box.replaceChildren(...list
       .sort((a, b) => b.createdAt - a.createdAt)
       .map((c) => {
         const d = card(c);
@@ -129,16 +131,32 @@ export function createHighlights({ reader, viewer, getMode, getDoc, saveComments
     if (hits.length) openCards(hits.map((h) => h.id), hits[0].rect);
   });
 
+  // Passage cité par l'assistant : surligné comme un commentaire (même jaune) dans le texte et dans le PDF, sans carte.
+  let ref = null, last = null;
+  const withRef = (comments) => (ref ? [...comments, { id: "__ref", range: ref, orphan: false }] : comments);
+
   return {
     /** Réaffiche le texte (surligné en lecture, brut en correction) et la liste des orphelins. */
     render(doc, editing) {
+      last = { doc, editing };
       const comments = doc.comments ?? [];
+      const all = withRef(comments);
       hideBtn(); closePop(); closeCards();
-      editing ? reader.show(doc.text) : reader.showMarked(doc.text, segments(comments));
-      viewer.setComments(comments);
+      editing ? reader.show(doc.text) : reader.showMarked(doc.text, segments(all));
+      viewer.setComments(all);
       const orphans = comments.filter((c) => c.orphan);
       $("orphans").hidden = !orphans.length;
       $("orphans-list").replaceChildren(...orphans.map((c) => card(c, true)));
+    },
+    /** Surligne un passage (offsets dans doc.text) ou l'efface (null). `redraw:false` : pas de réaffichage. */
+    setRef(range, redraw = true) {
+      ref = range;
+      if (redraw && last) this.render(last.doc, last.editing);
+    },
+    /** Fait défiler la vue affichée jusqu'au passage surligné. */
+    reveal() {
+      if (getMode() === "original") viewer.reveal("__ref");
+      else reader.el.querySelector('mark[data-ids~="__ref"]')?.scrollIntoView({ block: "center", behavior: "smooth" });
     },
   };
 }
