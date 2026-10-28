@@ -11,18 +11,13 @@
 <main class="app">
 <p id="status" role="status"></p>
 <section id="home">
-  <div class="hero">
+  <div class="hero" id="hero">
     <div class="hero-brand"><span class="logo-tile"><img src="mascotte.svg" alt=""></span><span>Reviz</span></div>
     <h2>Mes cours</h2>
-    <p class="hero-sub">Reprends ton cours là où tu l'as laissé, ou importes-en un nouveau.</p>
+    <p class="hero-sub">Dépose ton cours ici (PDF, JPEG ou PNG), ou clique sur « Nouveau cours ».</p>
     <button id="new-course" type="button" class="primary">Nouveau cours</button>
+    <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden>
   </div>
-  <div id="drop" hidden>
-    <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
-    <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
-    <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden></label>
-  </div>
-  <p id="lib-empty" hidden>Aucun cours : importe ton premier cours.</p>
   <div id="lib-list"></div>
   <p class="reset">
     <button id="reset" type="button">Réinitialiser</button>

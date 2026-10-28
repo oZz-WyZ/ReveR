@@ -73,7 +73,6 @@ function showHome() {
     onOpen: (id) => go("cours-" + id),
     onMaitrise: (id, v) => setMaitrise(id, v),
   });
-  $("drop").hidden = entries.length > 0; // « Nouveau cours » l'affiche sinon
   askReset(false);
 }
 
@@ -201,12 +200,12 @@ function persist(doc) {
   return doc;
 }
 
-$("new-course").onclick = () => { $("drop").hidden = false; };
+$("new-course").onclick = () => $("file").click(); // ouvre l'explorateur de fichiers
 $("back").onclick = () => go("repertoire");
 $("to-infos").onclick = () => go("infos-" + current.id);
 $("infos-back").onclick = backToCourse;
 
-setupImporter($("drop"), $("file"), async (file) => {
+setupImporter($("hero"), $("file"), async (file) => {
   status("Import en cours…");
   try {
     const r = await extractText(file, {

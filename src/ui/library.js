@@ -25,7 +25,6 @@ export function maitriseSelect(value, onChange) {
 
 /** Répertoire : onOpen(id), onMaitrise(id, valeur). */
 export function renderLibrary(entries, { onOpen, onMaitrise }) {
-  $("lib-empty").hidden = entries.length > 0;
   $("lib-list").replaceChildren(...entries.map((e) => {
     const row = el("div", "row");
     const open = el("button", "titre", e.titre);

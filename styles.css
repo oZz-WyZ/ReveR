@@ -57,18 +57,14 @@ label { display: block; }
   background: linear-gradient(175deg, var(--orange-1) 0%, var(--orange-2) 100%); color: #fff;
   border-radius: var(--r-xl); padding: 2.4rem 2.6rem 2.2rem; box-shadow: var(--shadow-lg); margin: .25rem 0 1.25rem;
 }
+.hero { transition: box-shadow .15s, transform .15s; }
+.hero.over { outline: 3px dashed #fff; outline-offset: -12px; transform: scale(1.01); }
 .hero h2 { font-size: 3.2rem; font-weight: 300; margin: 0 0 .4rem; }
 .hero-brand { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.1rem; font-size: 1.35rem; font-weight: 400; }
 .logo-tile { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; background: #fff; border-radius: 50%; box-shadow: 0 6px 16px rgba(0, 0, 0, .15); }
 .logo-tile img { width: 2.3rem; height: auto; }
-.hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 36rem; }
+.hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
-#drop {
-  border: 2px dashed rgba(180, 90, 30, .45); border-radius: var(--r-xl); padding: 2.25rem; text-align: center;
-  background: rgba(255, 255, 255, .6); margin: 1rem 0; transition: background .15s, border-color .15s;
-}
-#drop.over { background: #fff; border-color: var(--orange-1); }
-#lib-empty { color: var(--muted); }
 #lib-list .row {
   display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr) auto; align-items: center; gap: 1rem;
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-lg); padding: 1.2rem 1.7rem;
