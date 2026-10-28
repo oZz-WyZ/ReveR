@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { parseQuiz, shuffle, generateQuiz } from "../src/quiz/generate.js";
+import { parseQuiz, shuffle, generateQuiz, quizSize } from "../src/quiz/generate.js";
+import { createRun } from "../src/quiz/run.js";
 import { selectCoverage, buildSystem, MAX_COURS_CHARS } from "../src/chat/context.js";
 
 const TEXT = "La prise de la Bastille a lieu le 14 juillet 1789 à Paris.\n\nLa nuit du 4 août abolit les privilèges féodaux.\n\nLa Déclaration des droits de l'homme est adoptée le 26 août 1789.";
@@ -28,8 +29,36 @@ assert.equal(mixed.length, 1);
 assert.equal(parseQuiz({ questions: [Q({ passage: "phrase absente du cours entierement" })] }, TEXT)[0].passage, null);
 assert.equal(parseQuiz({ questions: [Q({ passage: undefined })] }, TEXT)[0].passage, null);
 
-// plafond à QUIZ_SIZE
-assert.equal(parseQuiz({ questions: Array.from({ length: 9 }, () => Q()) }, TEXT).length, 5);
+// plafond : QUIZ_MAX par défaut, ou le nombre demandé
+const nine = { questions: Array.from({ length: 12 }, () => Q()) };
+assert.equal(parseQuiz(nine, TEXT).length, 10);
+assert.equal(parseQuiz(nine, TEXT, Math.random, 4).length, 4);
+
+// quizSize : 1 question par ~2000 caractères, borné 3..10
+for (const [len, n] of [[0, 3], [1500, 3], [6000, 3], [6001, 4], [12000, 6], [19999, 10], [20000, 10], [500000, 10]]) {
+  assert.equal(quizSize("x".repeat(len)), n, `${len} car. -> ${n}`);
+}
+
+// déroulé : choisir, valider, suivante ; score cumulé ; garde-fous
+const qs = [0, 1, 2].map((c) => ({ question: "q" + c, options: ["a", "b", "c", "d"], correctIndex: c, passage: c === 1 ? null : "p" + c }));
+const run = createRun(qs);
+assert.equal(run.validate(), null);                 // rien choisi
+assert.equal(run.next(), false);                    // pas validée -> pas de saut
+assert.deepEqual([run.n, run.total], [1, 3]);
+run.pick(0);
+assert.deepEqual(run.validate(), { ok: true, picked: 0, correctIndex: 0, passage: "p0" });
+assert.equal(run.validate(), null);                 // pas de double validation
+run.pick(3); assert.equal(run.picked, 0);           // verrouillé après validation
+assert.equal(run.next(), false); assert.equal(run.n, 2);
+run.pick(3);
+assert.deepEqual(run.validate(), { ok: false, picked: 3, correctIndex: 1, passage: null });
+assert.equal(run.next(), false);
+assert.equal(run.last, true);
+run.pick(2); run.validate();
+assert.equal(run.next(), true);                     // fin
+assert.equal(run.score, 2);
+
+// mock : n demandé lu dans le prompt
 
 // rien d'exploitable -> bad_quiz
 for (const bad of [null, {}, { questions: [] }, { questions: "x" }, { questions: [Q({ correctIndex: 9 })] }]) {
@@ -57,9 +86,15 @@ assert.doesNotMatch(sys, /source/);
 // bout en bout avec le mock : 5 questions réparties ; un cours sans phrase exploitable échoue proprement
 const doc = { id: "d", text: TEXT + "\n\nLa monarchie constitutionnelle dure jusqu'en 1792 avant la chute.\n\nLouis XVI est exécuté en janvier 1793 sur la place publique.", onboarding: { consigne: "Tu es un expert." } };
 const r = await generateQuiz({ doc });
-assert.equal(r.questions.length, 5);
+assert.equal(r.questions.length, quizSize(doc.text)); // cours court -> 3
 assert.equal(r.tronque, false);
 for (const q of r.questions) assert.ok(doc.text.includes(q.passage), "passage réel du cours");
 assert.ok(r.questions.some((q) => /Bastille/.test(q.passage)) && r.questions.some((q) => /Louis XVI/.test(q.passage)));
+// cours long : plus de questions (6 pour ~12000 car.), toutes tirées du cours
+const longDoc = { ...doc, text: Array.from({ length: 60 }, (_, i) => `Fait numéro ${i} : ${"le cours explique ceci en détail ".repeat(5)}.`).join("\n\n") };
+const rl = await generateQuiz({ doc: longDoc });
+assert.equal(rl.questions.length, quizSize(longDoc.text));
+assert.ok(rl.questions.length > 3);
+for (const q of rl.questions) assert.ok(longDoc.text.includes(q.passage));
 await assert.rejects(() => generateQuiz({ doc: { ...doc, text: "Trop court." } }), { code: "bad_quiz" });
 console.log("ok");

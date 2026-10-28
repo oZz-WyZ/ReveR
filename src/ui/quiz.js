@@ -1,4 +1,5 @@
 import { generateQuiz } from "../quiz/generate.js";
+import { createRun } from "../quiz/run.js";
 
 const $ = (id) => document.getElementById(id);
 const NOTE_LONG = "Ton cours est long : le quiz porte sur des extraits répartis sur tout le cours.";
@@ -10,9 +11,9 @@ function el(tag, cls, text) {
   return e;
 }
 
-/** Quiz de maîtrise. saveScore({ score, total, at, tronque }) persiste sur le cours. N'agit pas sur l'état de maîtrise. */
+/** Quiz de maîtrise, une question à la fois. saveScore({ score, total, at, tronque }) persiste sur le cours à la fin. N'agit pas sur l'état de maîtrise. */
 export function createQuiz(saveScore) {
-  let doc, quiz = null, busy = false;
+  let doc, run = null, tronque = false, busy = false;
 
   const status = (msg, err = false, retry) => {
     const s = $("quiz-status");
@@ -27,57 +28,62 @@ export function createQuiz(saveScore) {
   }
 
   function reset() {
-    quiz = null;
-    $("quiz-form").hidden = true; $("quiz-result").hidden = true;
-    $("quiz-questions").replaceChildren(); $("quiz-result").replaceChildren();
+    run = null;
+    $("quiz-run").hidden = true; $("quiz-result").hidden = true;
+    $("quiz-result").replaceChildren();
     status("");
   }
 
-  function renderForm() {
-    $("quiz-questions").replaceChildren(...quiz.questions.map((q, i) => {
-      const f = el("fieldset");
-      f.append(el("legend", null, `${i + 1}. ${q.question}`));
-      q.options.forEach((o, j) => {
-        const label = el("label");
-        const r = el("input"); r.type = "radio"; r.name = "q" + i; r.value = j;
-        label.append(r, " " + o);
-        f.append(label);
-      });
-      return f;
+  function renderQuestion() {
+    const q = run.question;
+    $("quiz-progress").textContent = `Question ${run.n}/${run.total}`;
+    $("quiz-q").textContent = q.question;
+    $("quiz-options").replaceChildren(...q.options.map((o, j) => {
+      const label = el("label", "opt");
+      const r = el("input"); r.type = "radio"; r.name = "quiz-opt";
+      r.onchange = () => { run.pick(j); $("quiz-validate").disabled = false; };
+      label.append(r, " " + o);
+      return label;
     }));
-    $("quiz-submit").disabled = true;
-    $("quiz-form").hidden = false; $("quiz-result").hidden = true;
+    $("quiz-feedback").hidden = true; $("quiz-feedback").replaceChildren();
+    $("quiz-validate").hidden = false; $("quiz-validate").disabled = true;
+    $("quiz-next").hidden = true;
+    $("quiz-run").hidden = false;
   }
 
-  $("quiz-form").onchange = () => {
-    $("quiz-submit").disabled = quiz.questions.some((_, i) => !document.querySelector(`input[name="q${i}"]:checked`));
+  $("quiz-validate").onclick = () => {
+    const c = run?.validate();
+    if (!c) return;
+    const opts = [...$("quiz-options").children];
+    opts.forEach((label, j) => {
+      label.firstChild.disabled = true;
+      if (j === c.correctIndex) label.classList.add("ok");
+      else if (j === c.picked) label.classList.add("ko");
+    });
+    const fb = $("quiz-feedback");
+    fb.replaceChildren(el("p", "verdict", c.ok ? "✔ Bonne réponse" : "✘ Mauvaise réponse"));
+    if (!c.ok) fb.append(el("p", null, "Bonne réponse : " + run.question.options[c.correctIndex]));
+    if (c.passage) {
+      const b = el("blockquote");
+      b.append(el("strong", null, "Dans ton cours : "), c.passage);
+      fb.append(b);
+    } else fb.append(el("p", "note", "Passage non retrouvé dans le cours."));
+    fb.hidden = false;
+    $("quiz-validate").hidden = true;
+    $("quiz-next").textContent = run.last ? "Voir mon score" : "Suivante";
+    $("quiz-next").hidden = false;
+    $("quiz-next").focus();
   };
 
-  $("quiz-form").onsubmit = (e) => {
-    e.preventDefault();
-    const { questions, tronque } = quiz;
-    const picks = questions.map((_, i) => Number(document.querySelector(`input[name="q${i}"]:checked`).value));
-    const score = questions.filter((q, i) => picks[i] === q.correctIndex).length;
+  $("quiz-next").onclick = () => {
+    if (!run.next()) return renderQuestion();
     const box = $("quiz-result");
-    box.replaceChildren(el("p", "score", `Score : ${score}/${questions.length}`));
-    questions.forEach((q, i) => {
-      const ok = picks[i] === q.correctIndex;
-      const d = el("div", "qres " + (ok ? "ok" : "ko"));
-      d.append(el("strong", null, `${i + 1}. ${q.question}`));
-      d.append(el("p", null, (ok ? "✔ " : "✘ ") + "Ta réponse : " + q.options[picks[i]]));
-      if (!ok) d.append(el("p", null, "Bonne réponse : " + q.options[q.correctIndex]));
-      if (q.passage) {
-        const b = el("blockquote");
-        b.append(el("strong", null, "Dans ton cours : "), q.passage);
-        d.append(b);
-      } else d.append(el("p", "note", "Passage non retrouvé dans le cours."));
-      box.append(d);
-    });
+    box.replaceChildren(el("p", "score", `Score : ${run.score}/${run.total}`));
     const again = el("button", null, "Refaire un quiz"); again.type = "button"; again.onclick = start;
     const close = el("button", null, "Fermer"); close.type = "button"; close.onclick = reset;
     box.append(again, " ", close);
-    $("quiz-form").hidden = true; box.hidden = false;
-    saveScore({ score, total: questions.length, at: Date.now(), tronque });
+    $("quiz-run").hidden = true; box.hidden = false;
+    saveScore({ score: run.score, total: run.total, at: Date.now(), tronque });
   };
 
   async function start() {
@@ -88,8 +94,8 @@ export function createQuiz(saveScore) {
     try {
       const r = await generateQuiz({ doc: d });
       if (doc?.id !== d.id) return; // l'élève a changé de cours pendant l'appel
-      quiz = r;
-      renderForm();
+      run = createRun(r.questions); tronque = r.tronque;
+      renderQuestion();
       status(r.tronque ? NOTE_LONG : "");
     } catch {
       if (doc?.id === d.id) status("Le quiz n'a pas pu être généré.", true, start);

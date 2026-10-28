@@ -2,10 +2,15 @@ import { askAI } from "../ai/index.js";
 import { findPassage } from "../chat/ask.js";
 import { buildSystem, selectCoverage } from "../chat/context.js";
 
-export const QUIZ_SIZE = 5;
+export const QUIZ_MIN = 3;
+export const QUIZ_MAX = 10;
+const CHARS_PAR_QUESTION = 2000; // une question par tranche de texte (taille des blocs de context.js)
 
-const RULES =
-  `Tu génères un QCM de ${QUIZ_SIZE} questions pour tester la maîtrise du cours fourni plus bas.\n` +
+/** Nombre de questions proportionnel à la longueur du cours, borné. */
+export const quizSize = (text) => Math.min(QUIZ_MAX, Math.max(QUIZ_MIN, Math.ceil(text.length / CHARS_PAR_QUESTION)));
+
+const rules = (n) =>
+  `Tu génères un QCM de ${n} questions pour tester la maîtrise du cours fourni plus bas.\n` +
   "Réponds UNIQUEMENT par un objet JSON :\n" +
   '{"questions": [{"question": string, "options": [string, string, string, string], "correctIndex": 0 | 1 | 2 | 3, "passage": string}]}\n' +
   "- Questions STRICTEMENT tirées du contenu du cours : aucune connaissance extérieure, aucune question dont la réponse n'est pas dans le cours.\n" +
@@ -27,7 +32,7 @@ export function shuffle(arr, rnd = Math.random) {
 }
 
 /** data (sortie json du modèle) -> [{ question, options[4], correctIndex, passage|null }]. Lève bad_quiz si rien d'exploitable. */
-export function parseQuiz(data, text, rnd = Math.random) {
+export function parseQuiz(data, text, rnd = Math.random, max = QUIZ_MAX) {
   const out = [];
   for (const q of Array.isArray(data?.questions) ? data.questions : []) {
     if (!isText(q?.question) || !Array.isArray(q.options) || q.options.length !== 4 || !q.options.every(isText)) continue;
@@ -45,19 +50,20 @@ export function parseQuiz(data, text, rnd = Math.random) {
     });
   }
   if (!out.length) throw Object.assign(new Error("aucune question exploitable"), { code: "bad_quiz" });
-  return out.slice(0, QUIZ_SIZE);
+  return out.slice(0, max);
 }
 
 /** @returns {Promise<{questions: ReturnType<typeof parseQuiz>, tronque: boolean}>} tronque : le cours dépasse le budget, extraits répartis. */
 export async function generateQuiz({ doc, signal }) {
+  const n = quizSize(doc.text);
   const { text: cours, tronque } = selectCoverage(doc.text);
-  const system = buildSystem({ consigne: doc.onboarding.consigne, cours, tronque, rules: RULES });
+  const system = buildSystem({ consigne: doc.onboarding.consigne, cours, tronque, rules: rules(n) });
   const r = await askAI({
     system,
-    messages: [{ role: "user", content: `Génère le QCM de ${QUIZ_SIZE} questions.` }],
+    messages: [{ role: "user", content: `Génère le QCM de ${n} questions.` }],
     json: true,
     modelTier: "default",
     signal,
   });
-  return { questions: parseQuiz(r.data, doc.text), tronque };
+  return { questions: parseQuiz(r.data, doc.text, Math.random, n), tronque };
 }

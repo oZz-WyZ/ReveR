@@ -38,12 +38,11 @@
   #lib-list .titre { font: inherit; font-weight: 600; background: none; border: 0; color: #06c; cursor: pointer; padding: 0; text-align: left; }
   #lib-list .meta { color: #666; font-size: .85rem; flex: 1 1 12rem; }
   select.maitrise { font: inherit; }
-  #quiz fieldset { border: 1px solid #ddd; border-radius: 8px; margin: .5rem 0; } #quiz legend { font-weight: 600; }
-  #quiz label { display: block; padding: .15rem 0; }
-  #quiz .qres { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; }
-  #quiz .qres.ok { border-color: #2e7d32; background: #f1faf2; } #quiz .qres.ko { border-color: #c62828; background: #fdf3f3; }
+  #quiz .opt { display: block; padding: .5rem .75rem; margin: .35rem 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+  #quiz .opt.ok { border-color: #2e7d32; background: #f1faf2; } #quiz .opt.ko { border-color: #c62828; background: #fdf3f3; }
+  #quiz .verdict { font-weight: 600; margin: .5rem 0 .25rem; }
   #quiz .score { font-size: 1.4rem; font-weight: 700; } #quiz-status.err { color: #b00; }
-  #quiz blockquote { margin: .25rem 0; padding: .5rem .75rem; border-left: 4px solid #2e7d32; background: #eaf5ec; font-style: italic; }
+  #quiz blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #2e7d32; background: #eaf5ec; font-style: italic; }
   .reset { margin-top: 2rem; color: #b00; font-size: .9rem; }
 </style>
 </head>
@@ -105,10 +104,14 @@
   <p id="quiz-last" class="note"></p>
   <button id="quiz-start" type="button">Tester ma maîtrise</button>
   <p id="quiz-status" role="status"></p>
-  <form id="quiz-form" hidden>
-    <div id="quiz-questions"></div>
-    <button id="quiz-submit" disabled>Valider mes réponses</button>
-  </form>
+  <div id="quiz-run" hidden>
+    <p id="quiz-progress" class="note"></p>
+    <h3 id="quiz-q"></h3>
+    <div id="quiz-options" role="radiogroup" aria-labelledby="quiz-q"></div>
+    <div id="quiz-feedback" hidden></div>
+    <button id="quiz-validate" type="button" disabled>Valider</button>
+    <button id="quiz-next" type="button" hidden>Suivante</button>
+  </div>
   <div id="quiz-result" hidden></div>
 </section>
 <section id="chat" hidden>

@@ -23,7 +23,8 @@ function mockChat(system, last) {
 function mockQuiz(system) {
   const cours = system.match(/<<<COURS\n([\s\S]*?)\nCOURS>>>/)?.[1] ?? "";
   const phrases = cours.split(/(?<=[.!?])\s+/).filter((p) => p.trim().length >= 45);
-  const n = Math.min(5, phrases.length);
+  const want = Number(system.match(/QCM de (\d+) questions/)?.[1] ?? 5);
+  const n = Math.min(want, phrases.length);
   const picks = Array.from({ length: n }, (_, k) => phrases[Math.round((k * (phrases.length - 1)) / Math.max(1, n - 1))]);
   return {
     questions: picks.map((p) => ({
