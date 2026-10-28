@@ -102,7 +102,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 .seg[hidden] { display: none; }
 .seg { display: inline-flex; background: rgba(255, 255, 255, .6); border-radius: 999px; padding: .2rem; }
 .seg button { background: transparent; padding: .4rem 1.05rem; color: var(--muted); }
-.seg button[aria-pressed="true"] { background: var(--black); color: #fff; }
+.seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--black); color: #fff; }
 .seg button:hover:not(:disabled) { box-shadow: none; transform: none; }
 #workspace {
   flex: 1; min-height: 0; display: grid; gap: 1.5rem; align-items: stretch;
@@ -116,14 +116,10 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-xl); box-shadow: var(--shadow);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
-/* toggle Reviz | Me tester : un seul bouton en deux moitiés, le curseur noir glisse d'un côté à l'autre */
-.assistant-head { display: block; }
-.tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding: .25rem; background: #eadfd7; border-radius: 999px; box-shadow: inset 0 1px 4px rgba(90, 45, 10, .2); }
-.tabs::before { content: ""; position: absolute; top: .25rem; bottom: .25rem; left: .25rem; width: calc(50% - .25rem); background: var(--black); border-radius: 999px; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .25s ease; }
-.tabs[data-active="quiz"]::before { transform: translateX(100%); }
-.tabs button { position: relative; background: transparent; border: 0; box-shadow: none; color: var(--muted); font-size: .92rem; padding: .5rem 1rem; transition: color .2s; }
-.tabs button[aria-selected="true"] { color: #fff; }
-.tabs button:hover:not(:disabled) { transform: none; box-shadow: none; }
+/* toggle Reviz | Me tester : même style que le basculeur Origine | Texte de la visionneuse (.seg) */
+.assistant-head { display: flex; justify-content: flex-end; }
+.assistant-head .seg { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+.assistant-head .seg button { font-size: 1rem; }
 .quiz-box { flex: 1; min-height: 0; overflow-y: auto; }
 #quiz-loading { justify-content: center; padding: 3rem 0; }
 #pane-assistant .note { font-size: .8rem; }
