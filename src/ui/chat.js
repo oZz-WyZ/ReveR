@@ -17,7 +17,7 @@ function el(tag, cls, text) {
 
 /** Chat sourcé sur le cours. show(doc) exige doc.text et doc.onboarding.consigne (le system, jamais affiché). */
 export function createChat() {
-  let doc, chat, busy = false;
+  let doc, chat, busy = false, wait = null; // wait : { docId, question? } pendant un appel IA
 
   const status = (msg, err = false, retry) => {
     const s = $("chat-status");
@@ -26,9 +26,18 @@ export function createChat() {
     if (retry) { const b = el("button", null, "Réessayer"); b.type = "button"; b.onclick = retry; s.append(" ", b); }
   };
 
+  // Réponse de l'assistant : à gauche, avec son avatar, sans bulle (comme dans un chat de LLM).
+  const botRow = (body) => { const m = el("div", "msg bot"); m.append(el("span", "avatar"), body); return m; };
+
+  function thinking() {
+    const d = el("div", "bot-body dots");
+    d.append(el("i"), el("i"), el("i"));
+    return botRow(d);
+  }
+
   function bubble(t) {
     if (t.role === "user") return el("div", "msg user", t.content);
-    const m = el("div", "msg bot");
+    const m = el("div", "bot-body");
     if (t.reexplique) m.append(el("div", "tag", "Ré-explication"));
     if (t.passage) {
       const q = el("blockquote", "passage");
@@ -47,33 +56,42 @@ export function createChat() {
       fb.append(b);
     }
     m.append(fb);
-    return m;
+    return botRow(m);
   }
 
   function render() {
-    $("chat-log").replaceChildren(...chat.turns.map(bubble));
+    const rows = chat.turns.map(bubble);
+    if (wait?.docId === doc.id) {
+      if (wait.question) rows.push(el("div", "msg user", wait.question)); // la question s'affiche tout de suite
+      rows.push(thinking());
+    }
+    const log = $("chat-log");
+    log.replaceChildren(...rows);
+    $("chat-empty").hidden = rows.length > 0; // écran d'accueil tant qu'il n'y a pas d'échange
     $("chat-input").disabled = $("chat-send").disabled = busy;
+    log.scrollTop = log.scrollHeight;
   }
 
   async function send(question) {
     const d = doc;
-    busy = true; render(); status("Réflexion…");
+    busy = true; wait = { docId: d.id, question }; $("chat-input").value = ""; status(""); render();
     try {
       const a = await askCourse({ doc: d, turns: chat.turns, question });
       const ts = Date.now();
       const base = d.id === doc.id ? chat : loadChat(d.id);
       const next = { ...base, turns: [...base.turns, { id: uid(), role: "user", content: question, ts }, { id: uid(), role: "assistant", ...a, feedback: null, ts }] };
       saveChat(d.id, next);
-      if (d.id === doc.id) { chat = next; $("chat-input").value = ""; }
+      if (d.id === doc.id) chat = next;
       status("");
     } catch (e) {
+      if (d.id === doc.id) $("chat-input").value = question; // on rend sa question à l'élève
       status(ERRORS[e.code] ?? "La réponse n'a pas pu être obtenue. Réessaie.", true);
-    } finally { busy = false; render(); }
+    } finally { busy = false; wait = null; render(); if (d.id === doc.id) $("chat-input").focus(); }
   }
 
   async function explain(targetId) {
     const d = doc;
-    busy = true; render(); status("Je reformule plus simplement…");
+    busy = true; wait = { docId: d.id }; status(""); render();
     try {
       const a = await reexplain({ doc: d, turns: chat.turns, targetId });
       const turn = { id: uid(), role: "assistant", ...a, feedback: null, reexplique: targetId, ts: Date.now() };
@@ -84,7 +102,7 @@ export function createChat() {
       status("");
     } catch {
       status("La ré-explication a échoué.", true, () => explain(targetId));
-    } finally { busy = false; render(); }
+    } finally { busy = false; wait = null; render(); }
   }
 
   async function vote(turnId, v) {
@@ -100,6 +118,15 @@ export function createChat() {
     const q = $("chat-input").value.trim();
     if (q && !busy) send(q);
   };
+
+  // Suggestions de l'écran d'accueil : un clic envoie la question
+  const SUGGESTIONS = ["Résume ce cours", "Quels sont les points clés à retenir ?", "Explique le passage le plus difficile"];
+  $("chat-suggest").replaceChildren(...SUGGESTIONS.map((t) => {
+    const b = el("button", "chip", t);
+    b.type = "button";
+    b.onclick = () => { if (!busy) send(t); };
+    return b;
+  }));
 
   return {
     hide() { $("chat").hidden = true; },

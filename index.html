@@ -74,15 +74,20 @@
 
 
 <p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
-        <section id="chat" class="card" hidden>
-  <h2>Pose tes questions sur le cours</h2>
-  <div id="chat-log" aria-live="polite"></div>
-  <p id="chat-status" role="status"></p>
-  <form id="chat-form">
-    <input id="chat-input" placeholder="Ta question…" autocomplete="off" required>
-    <button id="chat-send">Envoyer</button>
-  </form>
-</section>
+        <section id="chat" class="card chat-box" hidden>
+          <div id="chat-empty" class="chat-empty">
+            <span class="orb" aria-hidden="true"></span>
+            <h2>Que veux-tu savoir sur ce cours ?</h2>
+            <p class="note">Je réponds d'après ton cours et je cite le passage utilisé.</p>
+            <div id="chat-suggest" class="suggest"></div>
+          </div>
+          <div id="chat-log" aria-live="polite"></div>
+          <p id="chat-status" role="status"></p>
+          <form id="chat-form" class="composer">
+            <input id="chat-input" placeholder="Pose une question sur ton cours…" autocomplete="off" required>
+            <button id="chat-send" aria-label="Envoyer">↑</button>
+          </form>
+        </section>
       </div>
     </section>
   </div>
