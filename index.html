@@ -14,8 +14,11 @@
 <main class="app">
 <p id="status" role="status"></p>
 <section id="home">
-  <h2>Mes cours</h2>
-  <p><button id="new-course" type="button" class="primary">Nouveau cours</button></p>
+  <div class="hero">
+    <h2>Mes cours</h2>
+    <p class="hero-sub">Reprends ton cours là où tu l'as laissé, ou importes-en un nouveau.</p>
+    <button id="new-course" type="button" class="primary">Nouveau cours</button>
+  </div>
   <div id="drop" hidden>
     <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
     <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
