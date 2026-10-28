@@ -41,3 +41,7 @@ Le panneau de lecture est en lecture seule ; « Corriger le texte » passe en é
 ## Quiz de maîtrise (itération 6)
 
 Bouton « Tester ma maîtrise » sur la fiche (assistant configuré). Une question à la fois : choisir une option, « Valider » (correction immédiate avec le passage), « Suivante », score cumulé à la fin (`src/quiz/run.js`). Nombre de questions = `ceil(longueur / 2000)` borné de 3 à 10 (`quizSize`). `generateQuiz` (`src/quiz/generate.js`) : `askAI` en `json` avec `system` = consigne + règles du quiz + cours ; `selectCoverage` (`src/chat/context.js`) envoie le cours entier, ou au-delà de 60 000 car. des blocs régulièrement espacés du début à la fin (signalé à l'élève). Parse défensif : questions invalides écartées, passage vérifié contre le texte (sinon `null`), options mélangées côté app, rien d'exploitable → `bad_quiz` + « Réessayer », rien n'est stocké. Le dernier score est stocké dans `doc.dernierQuiz = { score, total, at, tronque }` ; l'état de maîtrise reste manuel.
+
+## Interface (spec UX)
+
+Fiche en deux panneaux (cours + commentaires / assistant : réglages, quiz, chat), côte à côte ou empilés, chacun repliable (`src/ui/layout.js`, préférences dans `prefs`). Commentaires en pop-over au clic sur le surlignage. Mode réduit : « Réduire » replie l'app en pastille en bas à droite, un clic la rouvre (mémorisé). Thème dans `styles.css` (bleu-violet, composants originaux, texte de cours toujours sur fond blanc).
