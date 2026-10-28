@@ -71,3 +71,13 @@ export async function reexplain({ doc, turns, targetId, signal }) {
     signal,
   });
 }
+
+/** Question sur un passage sélectionné : fil ISOLÉ (aucun historique), même logique et mêmes règles que le chat. */
+export function askPassage({ doc, passage, question, signal }) {
+  return askCourse({
+    doc,
+    turns: [],
+    question: `À propos de ce passage du cours : « ${passage} »\n\nQuestion : ${question}`,
+    signal,
+  });
+}

@@ -29,3 +29,7 @@ Après « Valider » sur le texte : détection matière / sujet / niveau (`askAI
 ## Chat sourcé (itération 3)
 
 `askAI` en `json` avec `system` = `doc.onboarding.consigne` (jamais affichée) + règles + cours (`src/chat/context.js`). Réponse `{ reponse, source: "cours"|"general", passage }`, `passage` vérifié contre le texte (sinon ignoré). Cours au-delà de `MAX_COURS_CHARS` (60 000) : seuls les blocs les plus proches de la question sont envoyés, avec un message à l'élève. Historique : 10 derniers échanges, seul `reponse` est renvoyé. Pouce bas : ré-explication plus simple qui remplace la réponse dans l'historique. Stockage : `chat:<docId>` = `{ turns, counts }`. La capability veut des tours qui alternent : `system` est fondu dans le premier tour user (`artifact.js`).
+
+## Commentaires surlignés (itération 4)
+
+Le panneau de lecture est en lecture seule ; « Corriger le texte » passe en édition. Sélectionner un passage → « Poser une question sur ce passage » → `askPassage` (`src/chat/ask.js`, même logique que le chat, fil isolé sans historique). Le passage est surligné, un clic ouvre la carte question/réponse. Stockage : `doc:<id>.comments = [{ id, range:{start,end}, quote, prefix, suffix, question, reponse, source, orphan, createdAt }]`. Ancrage (`src/anchors.js`) : offsets sur `doc.text`, relocalisation par quote + contexte si le texte change, `orphan: true` si la quote a disparu (listé sous le texte, jamais de plantage). Chevauchements : le texte est découpé aux bornes des surlignages.

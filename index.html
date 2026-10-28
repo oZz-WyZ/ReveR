@@ -9,6 +9,15 @@
   #drop { border: 2px dashed #999; border-radius: 8px; padding: 1.5rem; text-align: center; }
   #drop.over { border-color: #06c; background: #eef5ff; }
   #reader { white-space: pre-wrap; border: 1px solid #ccc; border-radius: 6px; padding: 1rem; min-height: 8rem; margin: .5rem 0; }
+  #doc { position: relative; }
+  #ask-btn, #ask-pop { position: absolute; z-index: 5; background: #fff; border: 1px solid #06c; border-radius: 6px; padding: .35rem .5rem; box-shadow: 0 2px 8px #0003; }
+  #ask-btn { color: #06c; cursor: pointer; font: inherit; font-size: .9rem; }
+  #ask-input { font: inherit; width: 18rem; max-width: 70vw; }
+  #ask-status.err { color: #b00; }
+  mark { background: #ffe066; cursor: pointer; border-radius: 2px; } mark.multi { background: #ffc233; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; background: #fafafa; }
+  .card blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #e0a800; background: #fff6d6; font-style: italic; }
+  .card p { margin: .25rem 0; } .card .ask { color: #555; font-size: .9rem; }
   #status, #info { color: #555; font-size: .9rem; }
   #status.err { color: #b00; }
   #ob-form label { display: block; } #ob-form input, #ob-form select { font: inherit; }
@@ -40,8 +49,16 @@
 <section id="doc" hidden>
   <h2 id="title"></h2>
   <p id="info"></p>
-  <div id="reader" aria-label="Texte du cours (modifiable)"></div>
-  <button id="save">Valider</button>
+  <div id="reader" aria-label="Texte du cours"></div>
+  <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
+  <form id="ask-pop" hidden>
+    <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>
+    <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
+    <span id="ask-status" role="status"></span>
+  </form>
+  <button id="save">Valider</button> <button id="edit-text" type="button" hidden>Corriger le texte</button>
+  <div id="cards"></div>
+  <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
 </section>
 <section id="onboarding" hidden>
   <h2>À propos de ce cours</h2>
