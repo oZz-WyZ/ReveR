@@ -17,13 +17,19 @@ function impl() {
  * @param {{role:"user"|"assistant",content:string}[]} o.messages  finit par un tour user
  * @param {boolean} [o.json]     true : réponse parsée dans `data`
  * @param {AbortSignal} [o.signal]
+ * @param {Blob[]} [o.images]    images à lire (transcription) ; exige sample:{images:true}
+ * @param {"quick"|"default"|"complex"} [o.modelTier]
  * @param {(delta:string)=>void} [o.onToken]  streaming (optionnel)
- * @returns {Promise<{text:string,data:any,truncated:boolean,source:string}>}
+ * @returns {Promise<{text:string,truncated:boolean,data:any,source:string}>}
+ *   text/truncated = contrat ; data/source = diagnostic, aucune logique produit ne doit en dépendre
  * @throws {AIError}
  */
-export function askAI({ system, messages, json = false, signal, onToken } = {}) {
+export function askAI({ system, messages, json = false, images, modelTier, signal, onToken } = {}) {
   if (!messages?.length || messages[messages.length - 1].role !== "user") {
     throw new TypeError("askAI: messages doit finir par un tour user");
   }
-  return impl().complete({ system, messages, json, signal, onToken });
+  return impl().complete({ system, messages, json, images, modelTier, signal, onToken });
 }
+
+/** @returns {Promise<{maxImages:number}>} images max par appel dans ce runtime (0 = indisponible) */
+export const aiLimits = () => impl().limits();

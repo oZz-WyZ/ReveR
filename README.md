@@ -17,3 +17,7 @@ Le reste de l'app ignore quel mode tourne.
 - Local (mock) : `python3 -m http.server` puis http://localhost:8000
 - Vrai chemin `sample` : publier en artifact, puis ouvrir le lien.
 - Test : `node test/ai.test.mjs`
+
+## Import (itération 1)
+
+PDF (texte natif via pdf.js, gratuit) ou image/PDF scanné (transcription via `askAI({ images })`, déclarer `sample: {images: true}`). Détection natif/scanné : moyenne de caractères par page sur les 10 premières pages (`src/extract/index.js`). Le texte s'affiche dans un `contenteditable` (vrai DOM, sélectionnable) et se valide via `storage`.

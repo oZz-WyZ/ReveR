@@ -5,13 +5,15 @@ export function buildInput({ system, messages }) {
   return system ? [{ role: "user", content: system }, ...messages] : messages;
 }
 
-export async function complete({ system, messages, json, signal, onToken }) {
+export async function complete({ system, messages, json, images, modelTier, signal, onToken }) {
   const sample = await window.claude.use("sample");
   if (!sample) throw new AIError("unavailable", "capability sample indisponible");
   const opts = {
     signal,
     cache: false, // chat / ré-explication : chaque appel doit redemander
     onText: onToken && (({ delta }) => onToken(delta)),
+    ...(images?.length && { images }),
+    ...(modelTier && { modelTier }),
   };
   try {
     const input = buildInput({ system, messages });
@@ -24,4 +26,10 @@ export async function complete({ system, messages, json, signal, onToken }) {
   } catch (e) {
     throw new AIError(e.code ?? "upstream_error", e.message ?? String(e), e.text);
   }
+}
+
+export async function limits() {
+  const sample = await window.claude.use("sample");
+  const l = sample && (await sample.limits().catch(() => null));
+  return { maxImages: l?.images?.maxCount ?? 0 };
 }

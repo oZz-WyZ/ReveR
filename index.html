@@ -5,18 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reviz</title>
 <style>
-  body { font: 16px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
-  textarea { width: 100%; box-sizing: border-box; min-height: 5rem; font: inherit; }
-  #out { white-space: pre-wrap; margin-top: 1rem; }
-  #meta { color: #666; font-size: .85rem; }
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 44rem; margin: 2rem auto; padding: 0 1rem; }
+  #drop { border: 2px dashed #999; border-radius: 8px; padding: 1.5rem; text-align: center; }
+  #drop.over { border-color: #06c; background: #eef5ff; }
+  #reader { white-space: pre-wrap; border: 1px solid #ccc; border-radius: 6px; padding: 1rem; min-height: 8rem; margin: .5rem 0; }
+  #status, #info { color: #555; font-size: .9rem; }
+  #status.err { color: #b00; }
+  #docs button { margin: 0 .25rem .25rem 0; }
 </style>
 </head>
 <body>
 <h1>Reviz</h1>
-<textarea id="prompt" aria-label="Question"></textarea>
-<p><button id="send">Demander</button> <button id="stop" hidden>Stop</button></p>
-<div id="out" aria-live="polite"></div>
-<p id="meta"></p>
+<div id="drop">
+  <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
+  <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
+  <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden></label>
+</div>
+<p id="status" role="status"></p>
+<div id="docs"></div>
+<section id="doc" hidden>
+  <h2 id="title"></h2>
+  <p id="info"></p>
+  <div id="reader" aria-label="Texte du cours (modifiable)"></div>
+  <button id="save">Valider</button>
+</section>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>

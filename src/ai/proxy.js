@@ -4,3 +4,4 @@ import { AIError } from "./errors.js";
 export async function complete() {
   throw new AIError("not_implemented", "mode proxy pas encore implémenté");
 }
+export const limits = async () => ({ maxImages: 0 });
