@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 // Sans API de reconnaissance vocale : rien n'apparaît, pas d'erreur
 let { createVoice } = await import("../src/ui/voice.js?none");
 const mkEls = () => ({
-  input: { value: "", disabled: false },
+  input: { value: "", disabled: false, focused: 0, focus() { this.focused++; } },
   button: { hidden: true, attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, onclick: null },
   form: { submitted: 0, requestSubmit() { this.submitted++; } },
 });
@@ -29,23 +29,26 @@ assert.equal(current.lang, "fr-FR");
 assert.equal(current.interimResults, true);
 assert.equal(els.button.attrs["aria-pressed"], "true");
 
-// le texte dicté remplit le champ pendant qu'on parle, puis la question part à la fin
+// le texte dicté remplit le champ pendant qu'on parle ; à la fin il RESTE dans le champ (focus), rien n'est envoyé
 current.onresult({ results: [[{ transcript: "que dit" }]] });
 assert.equal(els.input.value, "que dit");
 current.onresult({ results: [[{ transcript: "que dit" }], [{ transcript: "le cours" }]] });
 assert.equal(els.input.value, "que dit le cours");
 current.onend();
 assert.equal(els.button.attrs["aria-pressed"], "false");
-assert.equal(els.form.submitted, 1);
+assert.equal(els.form.submitted, 0);
+assert.equal(els.input.value, "que dit le cours");
+assert.equal(els.input.focused, 1);
 
-// rien entendu : pas d'envoi
+// rien entendu : pas de focus ni d'envoi
 els.button.onclick(); current.onerror({ error: "no-speech" }); current.onend();
-assert.equal(els.form.submitted, 1);
+assert.equal(els.input.focused, 1);
 assert.deepEqual(errors, ["Je n'ai rien entendu, réessaie."]);
 
-// champ désactivé (réponse en cours) : on n'envoie pas
+// champ désactivé (réponse en cours) : pas de focus
 els.button.onclick(); current.onresult({ results: [[{ transcript: "bonjour" }]] }); els.input.disabled = true; current.onend();
-assert.equal(els.form.submitted, 1);
+assert.equal(els.input.focused, 1);
+assert.equal(els.form.submitted, 0);
 els.input.disabled = false;
 
 // 2e clic pendant l'écoute : arrête la dictée

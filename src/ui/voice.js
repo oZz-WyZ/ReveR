@@ -1,4 +1,5 @@
-// Saisie vocale (API Web Speech du navigateur) : un clic sur le micro dicte la question, qui est envoyée à la fin.
+// Saisie vocale (API Web Speech du navigateur) : un clic sur le micro dicte la question ; elle reste dans le champ,
+// l'élève la relit, la corrige si besoin et l'envoie lui-même.
 // Le bouton n'apparaît que si le navigateur sait faire de la reconnaissance vocale. Dans certains contextes (cadre
 // sandboxé d'un artifact, micro refusé) elle échoue : on prévient l'élève et on cache le bouton.
 const Recognition = globalThis.SpeechRecognition ?? globalThis.webkitSpeechRecognition;
@@ -11,7 +12,7 @@ const ERRORS = {
   network: "La dictée a besoin d'une connexion.",
 };
 
-export function createVoice({ input, button, form, onError }) {
+export function createVoice({ input, button, onError }) {
   if (!Recognition) return { supported: false };
   button.hidden = false;
   let rec = null, heard = "";
@@ -36,7 +37,7 @@ export function createVoice({ input, button, form, onError }) {
     rec.onend = () => {
       setOn(false);
       rec = null;
-      if (heard && !input.disabled) form.requestSubmit(); // la question dictée part toute seule
+      if (heard && !input.disabled) input.focus(); // la question reste dans le champ : relecture puis envoi par l'élève
     };
     try { rec.start(); setOn(true); } catch { rec = null; onError?.("La dictée n'a pas pu démarrer."); }
   }

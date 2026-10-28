@@ -229,8 +229,8 @@ function persist(doc) {
   return doc;
 }
 
-// Saisie vocale pour l'assistant : la question dictée remplit le champ puis part toute seule.
-createVoice({ input: $("chat-input"), button: $("chat-mic"), form: $("chat-form"), onError: (msg) => toast({ text: msg, tone: "err" }) });
+// Saisie vocale pour l'assistant : la question dictée remplit le champ, l'élève l'envoie quand il veut.
+createVoice({ input: $("chat-input"), button: $("chat-mic"), onError: (msg) => toast({ text: msg, tone: "err" }) });
 
 $("new-course").onclick = () => $("file").click(); // ouvre l'explorateur de fichiers
 $("back").onclick = () => go("repertoire");
