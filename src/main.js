@@ -9,6 +9,7 @@ import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
 import { createQuiz } from "./ui/quiz.js";
 import { maitriseSelect, renderLibrary } from "./ui/library.js";
+import { setupLayout } from "./ui/layout.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
@@ -141,5 +142,7 @@ $("save").onclick = () => {
   doc.onboarding ? onboarding.show(doc) : onboarding.start(doc);
 };
 
+$("brand").onclick = () => go("repertoire");
+setupLayout();
 rebuildIndex();
 route();

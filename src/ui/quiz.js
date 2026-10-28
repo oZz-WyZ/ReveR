@@ -90,7 +90,7 @@ export function createQuiz(saveScore) {
     if (busy) return;
     const d = doc;
     busy = true; $("quiz-start").disabled = true;
-    reset(); status("Génération du quiz…");
+    reset(); $("quiz").open = true; status("Génération du quiz…");
     try {
       const r = await generateQuiz({ doc: d });
       if (doc?.id !== d.id) return; // l'élève a changé de cours pendant l'appel

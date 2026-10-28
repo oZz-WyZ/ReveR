@@ -4,52 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reviz</title>
-<style>
-  body { font: 16px/1.5 system-ui, sans-serif; max-width: 44rem; margin: 2rem auto; padding: 0 1rem; }
-  #drop { border: 2px dashed #999; border-radius: 8px; padding: 1.5rem; text-align: center; }
-  #drop.over { border-color: #06c; background: #eef5ff; }
-  #reader { white-space: pre-wrap; border: 1px solid #ccc; border-radius: 6px; padding: 1rem; min-height: 8rem; margin: .5rem 0; }
-  #doc { position: relative; }
-  #ask-btn, #ask-pop { position: absolute; z-index: 5; background: #fff; border: 1px solid #06c; border-radius: 6px; padding: .35rem .5rem; box-shadow: 0 2px 8px #0003; }
-  #ask-btn { color: #06c; cursor: pointer; font: inherit; font-size: .9rem; }
-  #ask-input { font: inherit; width: 18rem; max-width: 70vw; }
-  #ask-status.err { color: #b00; }
-  mark { background: #ffe066; cursor: pointer; border-radius: 2px; } mark.multi { background: #ffc233; }
-  #cards { position: absolute; z-index: 6; width: min(26rem, 92%); box-shadow: 0 8px 28px #0003; }
-  #cards .card { margin: 0; background: #fff; }
-  .card { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; background: #fafafa; }
-  .card blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #e0a800; background: #fff6d6; font-style: italic; }
-  .card p { margin: .25rem 0; } .card .ask { color: #555; font-size: .9rem; }
-  #status, #info { color: #555; font-size: .9rem; }
-  #status.err { color: #b00; }
-  #ob-form label { display: block; } #ob-form input, #ob-form select { font: inherit; }
-  #ob-warn { color: #b60; }
-  #chat-log { display: flex; flex-direction: column; gap: .5rem; margin: .5rem 0; }
-  .msg { padding: .5rem .75rem; border-radius: 8px; max-width: 85%; white-space: pre-wrap; }
-  .msg.user { align-self: flex-end; background: #e8f0fe; }
-  .msg.bot { align-self: flex-start; background: #f4f4f4; }
-  .msg p { margin: .25rem 0; } .msg blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #2e7d32; background: #eaf5ec; color: #222; font-style: italic; }
-  .badge { font-size: .75rem; padding: .1rem .5rem; border-radius: 999px; }
-  .badge.cours { background: #d7f0dc; } .badge.general { background: #fde8c8; }
-  .tag, .note { font-size: .8rem; color: #666; }
-  .fb button { background: none; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
-  .fb button[aria-pressed="true"] { border-color: #06c; background: #eef5ff; }
-  #chat-form { display: flex; gap: .5rem; } #chat-input { flex: 1; font: inherit; padding: .4rem; }
-  #chat-status.err { color: #b00; }
-  #lib-list .row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem .75rem; border: 1px solid #ddd; border-radius: 8px; margin: .5rem 0; }
-  #lib-list .titre { font: inherit; font-weight: 600; background: none; border: 0; color: #06c; cursor: pointer; padding: 0; text-align: left; }
-  #lib-list .meta { color: #666; font-size: .85rem; flex: 1 1 12rem; }
-  select.maitrise { font: inherit; }
-  #quiz .opt { display: block; padding: .5rem .75rem; margin: .35rem 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-  #quiz .opt.ok { border-color: #2e7d32; background: #f1faf2; } #quiz .opt.ko { border-color: #c62828; background: #fdf3f3; }
-  #quiz .verdict { font-weight: 600; margin: .5rem 0 .25rem; }
-  #quiz .score { font-size: 1.4rem; font-weight: 700; } #quiz-status.err { color: #b00; }
-  #quiz blockquote { margin: .25rem 0 .5rem; padding: .5rem .75rem; border-left: 4px solid #2e7d32; background: #eaf5ec; font-style: italic; }
-  .reset { margin-top: 2rem; color: #b00; font-size: .9rem; }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1>Reviz</h1>
+<header class="app-bar">
+  <button id="brand" type="button" class="brand"><span class="brand-dot" aria-hidden="true"></span>Reviz</button>
+</header>
+<main class="app">
 <p id="status" role="status"></p>
 <section id="home">
   <h2>Mes cours</h2>
@@ -69,10 +30,21 @@
   </p>
 </section>
 <div id="fiche" hidden>
-<p><button id="back" type="button">← Répertoire</button> <span id="fiche-maitrise"></span></p>
-<p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
+  <div class="toolbar">
+    <button id="back" type="button" class="ghost">← Répertoire</button>
+    <span id="fiche-maitrise"></span>
+    <span class="spacer"></span>
+    <span class="seg" role="group" aria-label="Disposition">
+      <button type="button" id="lay-side">Côte à côte</button>
+      <button type="button" id="lay-stack">Empilé</button>
+    </span>
+  </div>
+  <p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
+  <div id="workspace" class="side">
+    <section class="pane" id="pane-texte">
+      <header class="pane-head"><h2 id="title"></h2><button type="button" class="fold ghost" data-pane="texte">Replier</button></header>
+      <div class="pane-body">
 <section id="doc">
-  <h2 id="title"></h2>
   <p id="info"></p>
   <div id="reader" aria-label="Texte du cours"></div>
   <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
@@ -84,9 +56,13 @@
   <button id="save">Valider</button> <button id="edit-text" type="button" hidden>Corriger le texte</button>
   <div id="cards" class="popover" hidden></div>
   <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
-</section>
-<section id="onboarding" hidden>
-  <h2>À propos de ce cours</h2>
+      </div>
+    </section>
+    <section class="pane" id="pane-assistant">
+      <header class="pane-head"><h2>Assistant</h2><button type="button" class="fold ghost" data-pane="assistant">Replier</button></header>
+      <div class="pane-body">
+<details id="onboarding" class="card" hidden>
+  <summary>À propos de ce cours</summary>
   <p id="ob-status" role="status"></p>
   <form id="ob-form">
     <p><label>Matière <input id="ob-matiere" required></label></p>
@@ -100,9 +76,9 @@
     <button>Confirmer</button>
   </form>
   <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
-</section>
-<section id="quiz" hidden>
-  <h2>Quiz de maîtrise</h2>
+</details>
+<details id="quiz" class="card" hidden>
+  <summary>Quiz de maîtrise</summary>
   <p id="quiz-last" class="note"></p>
   <button id="quiz-start" type="button">Tester ma maîtrise</button>
   <p id="quiz-status" role="status"></p>
@@ -115,8 +91,8 @@
     <button id="quiz-next" type="button" hidden>Suivante</button>
   </div>
   <div id="quiz-result" hidden></div>
-</section>
-<section id="chat" hidden>
+</details>
+<section id="chat" class="card" hidden>
   <h2>Pose tes questions sur le cours</h2>
   <div id="chat-log" aria-live="polite"></div>
   <p id="chat-status" role="status"></p>
@@ -125,7 +101,11 @@
     <button id="chat-send">Envoyer</button>
   </form>
 </section>
+      </div>
+    </section>
+  </div>
 </div>
+</main>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>

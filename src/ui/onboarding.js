@@ -57,7 +57,7 @@ export function createOnboarding(persist) {
     // Cours déjà configuré : réaffiche les valeurs stockées.
     show(d) {
       doc = d;
-      $("onboarding").hidden = false;
+      $("onboarding").hidden = false; $("onboarding").open = false;
       fill(d.onboarding);
       $("ob-echeance").value = d.onboarding.echeance ?? "";
       warnDate(); status(""); showConsigne();
@@ -65,7 +65,7 @@ export function createOnboarding(persist) {
     // Nouveau cours : détecte, préremplit, laisse l'élève corriger.
     async start(d) {
       doc = d; detecte = null;
-      $("onboarding").hidden = false;
+      $("onboarding").hidden = false; $("onboarding").open = true;
       fill({}); $("ob-echeance").value = ""; warnDate(); showConsigne();
       status("Détection de la matière…");
       try {
