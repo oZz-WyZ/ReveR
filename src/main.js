@@ -2,9 +2,11 @@ import { extractText } from "./extract/index.js";
 import { storage } from "./storage.js";
 import { setupImporter } from "./ui/importer.js";
 import { createReader } from "./ui/reader.js";
+import { createOnboarding } from "./ui/onboarding.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
+const onboarding = createOnboarding(persist);
 let current; // { id, name, method, truncated }
 
 const ERRORS = {
@@ -25,6 +27,17 @@ function open(doc) {
     (doc.truncated ? " Attention : transcription peut-être incomplète." : "");
   reader.show(doc.text);
   $("doc").hidden = false;
+  doc.onboarding ? onboarding.show(doc) : onboarding.hide();
+}
+
+function persist(doc) {
+  doc = { ...doc, updatedAt: Date.now() };
+  const ids = storage.get("docs", []);
+  storage.set("doc:" + doc.id, doc);
+  if (!ids.includes(doc.id)) storage.set("docs", [...ids, doc.id]);
+  current = doc;
+  renderDocs();
+  return doc;
 }
 
 function renderDocs() {
@@ -39,6 +52,7 @@ function renderDocs() {
 
 setupImporter($("drop"), $("file"), async (file) => {
   $("doc").hidden = true;
+  onboarding.hide();
   status("Import en cours…");
   try {
     const r = await extractText(file, {
@@ -53,13 +67,9 @@ setupImporter($("drop"), $("file"), async (file) => {
 });
 
 $("save").onclick = () => {
-  const doc = { ...current, text: reader.getText(), updatedAt: Date.now() };
-  const ids = storage.get("docs", []);
-  storage.set("doc:" + doc.id, doc);
-  if (!ids.includes(doc.id)) storage.set("docs", [...ids, doc.id]);
-  current = doc;
+  const doc = persist({ ...current, text: reader.getText() });
   status("Texte enregistré.");
-  renderDocs();
+  doc.onboarding ? onboarding.show(doc) : onboarding.start(doc);
 };
 
 renderDocs();

@@ -21,3 +21,7 @@ Le reste de l'app ignore quel mode tourne.
 ## Import (itération 1)
 
 PDF (texte natif via pdf.js, gratuit) ou image/PDF scanné (transcription via `askAI({ images })`, déclarer `sample: {images: true}`). Détection natif/scanné : moyenne de caractères par page sur les 10 premières pages (`src/extract/index.js`). Le texte s'affiche dans un `contenteditable` (vrai DOM, sélectionnable) et se valide via `storage`.
+
+## Onboarding (itération 2)
+
+Après « Valider » sur le texte : détection matière / sujet / niveau (`askAI` en `json`, `src/onboarding/detect.js`), formulaire prérempli et corrigeable, échéance facultative, puis génération d'une consigne experte (`src/onboarding/consigne.js`). Tout est stocké dans `doc:<id>.onboarding` = `{ matiere, sujet, niveau, echeance, consigne, detecte, updatedAt }`. La consigne servira de `system` au chat. La vraie détection ne se vérifie qu'en artifact publié ; en local le mock renvoie un JSON conforme (Droit si le nom de fichier évoque le droit, sinon Histoire).

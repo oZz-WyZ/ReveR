@@ -11,6 +11,8 @@
   #reader { white-space: pre-wrap; border: 1px solid #ccc; border-radius: 6px; padding: 1rem; min-height: 8rem; margin: .5rem 0; }
   #status, #info { color: #555; font-size: .9rem; }
   #status.err { color: #b00; }
+  #ob-form label { display: block; } #ob-form input, #ob-form select { font: inherit; }
+  #ob-warn { color: #b60; }
   #docs button { margin: 0 .25rem .25rem 0; }
 </style>
 </head>
@@ -28,6 +30,22 @@
   <p id="info"></p>
   <div id="reader" aria-label="Texte du cours (modifiable)"></div>
   <button id="save">Valider</button>
+</section>
+<section id="onboarding" hidden>
+  <h2>À propos de ce cours</h2>
+  <p id="ob-status" role="status"></p>
+  <form id="ob-form">
+    <p><label>Matière <input id="ob-matiere" required></label></p>
+    <p><label>Sujet <input id="ob-sujet" required></label></p>
+    <p><label>Niveau
+      <select id="ob-niveau" required>
+        <option value="">—</option><option>collège</option><option>lycée</option><option>supérieur</option>
+      </select></label></p>
+    <p><label>Échéance du devoir (facultatif) <input id="ob-echeance" type="date"></label>
+      <span id="ob-warn"></span></p>
+    <button>Confirmer</button>
+  </form>
+  <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
 </section>
 <script type="module" src="src/main.js"></script>
 </body>

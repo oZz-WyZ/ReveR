@@ -21,7 +21,8 @@ function impl() {
  * @param {"quick"|"default"|"complex"} [o.modelTier]
  * @param {(delta:string)=>void} [o.onToken]  streaming (optionnel)
  * @returns {Promise<{text:string,truncated:boolean,data:any,source:string}>}
- *   text/truncated = contrat ; data/source = diagnostic, aucune logique produit ne doit en dépendre
+ *   text/truncated = contrat. Avec json:true, data est aussi contractuel (sortie structurée = charge utile) :
+ *   le parser défensivement. Hors json, data/source = diagnostic, aucune logique produit ne doit en dépendre.
  * @throws {AIError}
  */
 export function askAI({ system, messages, json = false, images, modelTier, signal, onToken } = {}) {
