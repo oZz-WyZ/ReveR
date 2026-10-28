@@ -81,7 +81,7 @@ export function createQuiz(saveScore, onBack) {
     const box = $("quiz-result");
     box.replaceChildren(el("p", "score", `Score : ${run.score}/${run.total}`));
     const again = el("button", null, "Refaire un quiz"); again.type = "button"; again.onclick = start;
-    const close = el("button", null, "Retour au cours"); close.type = "button"; close.onclick = onBack;
+    const close = el("button", null, "Retour à Reviz"); close.type = "button"; close.onclick = onBack;
     box.append(again, " ", close);
     $("quiz-run").hidden = true; box.hidden = false;
     saveScore({ score: run.score, total: run.total, at: Date.now(), tronque });

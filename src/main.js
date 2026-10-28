@@ -18,7 +18,7 @@ const viewer = createViewer($("pdf-view"));
 const backToCourse = () => go("cours-" + current.id);
 const onboarding = createOnboarding(persist, backToCourse);
 const chat = createChat();
-const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), backToCourse);
+const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), () => setTab("chat"));
 const highlights = createHighlights({
   reader,
   viewer,
@@ -27,7 +27,7 @@ const highlights = createHighlights({
   saveComments: (comments) => { const d = persist({ ...current, comments }); highlights.render(d, false); },
 });
 let current = null; // le cours affiché : { id, name, text, method, truncated, importedAt, maitrise, onboarding?, comments? }
-let shown = null;   // "home" ou "<écran>:<id>" (cours / infos / quiz)
+let shown = null;   // "home" ou "<écran>:<id>" (cours / infos)
 let mode = "texte"; // affichage du cours : "original" (PDF / photo) ou "texte"
 let orig = null;    // { kind, canComment } si l'original est affiché
 let viewToken = 0;
@@ -43,25 +43,25 @@ const ERRORS = {
 };
 const status = (msg, err = false) => { $("status").textContent = msg; $("status").className = err ? "err" : ""; };
 
-// Écrans : répertoire, fiche (cours + assistant), infos du cours, quiz.
-const SCREENS = ["home", "fiche", "infos-page", "quiz-page"];
+// Écrans : répertoire, fiche (cours + assistant / quiz), infos du cours.
+const SCREENS = ["home", "fiche", "infos-page"];
 const screen = (name) => {
   SCREENS.forEach((s) => { $(s).hidden = s !== name; });
   document.body.classList.toggle("fiche-open", name === "fiche"); // la fiche tient dans la fenêtre : pas de scroll de page
 };
 
-// Navigation par hash : #repertoire, #cours-<id>, #infos-<id>, #quiz-<id> (les id sont en base 36, sans tiret).
+// Navigation par hash : #repertoire, #cours-<id>, #infos-<id> (les id sont en base 36, sans tiret).
 // go() appelle route() aussi, au cas où hashchange ne partirait pas.
 const go = (hash) => { location.hash = hash; route(); };
 function route() {
   const [kind, id] = location.hash.slice(1).split("-");
-  const key = id && ["cours", "infos", "quiz"].includes(kind) ? `${kind}:${id}` : "home";
+  const key = id && ["cours", "infos"].includes(kind) ? `${kind}:${id}` : "home";
   if (key === shown) return;
   if (key === "home") return showHome();
   // un import pas encore enregistré n'existe qu'en mémoire (fiche seulement)
   const doc = kind === "cours" && current?.id === id ? current : loadDoc(id);
   if (!doc) { showHome(); location.hash = "repertoire"; return; }
-  ({ cours: showFiche, infos: showInfos, quiz: showQuiz })[kind](doc);
+  ({ cours: showFiche, infos: showInfos })[kind](doc);
 }
 window.addEventListener("hashchange", route);
 
@@ -159,28 +159,35 @@ function showFiche(doc, edit = false) {
   const saved = !!loadDoc(doc.id);
   const ready = !!doc.onboarding?.consigne;
   $("unsaved").hidden = saved;
-  $("infos-open").hidden = $("quiz-open").hidden = !saved;
-  $("quiz-open").disabled = !ready;
   renderMaitrise(doc);
   $("title").textContent = doc.name;
   view(doc, edit);
   loadOriginal(doc, edit);
   ready ? chat.show(doc) : chat.hide();
-  $("assistant-off").hidden = ready || !saved;
+  quiz.show(doc); // nouveau cours : quiz remis à zéro
+  setTab("chat");
 }
+
+// Panneau de droite : « Reviz » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
+// Changer d'onglet ne remet pas le quiz à zéro.
+function setTab(t) {
+  const ready = !!current?.onboarding?.consigne, saved = !!current && !!loadDoc(current.id);
+  $("tab-quiz").disabled = !ready || !saved;
+  if (t === "quiz" && $("tab-quiz").disabled) t = "chat";
+  $("tab-chat").setAttribute("aria-selected", String(t === "chat"));
+  $("tab-quiz").setAttribute("aria-selected", String(t === "quiz"));
+  $("chat").hidden = t !== "chat" || !ready;
+  $("assistant-off").hidden = t !== "chat" || ready || !saved;
+  $("quiz").hidden = t !== "quiz";
+}
+$("tab-chat").onclick = () => setTab("chat");
+$("tab-quiz").onclick = () => setTab("quiz");
 
 function showInfos(doc) {
   shown = "infos:" + doc.id; current = doc;
   status("");
   screen("infos-page");
   doc.onboarding ? onboarding.show(doc) : onboarding.start(doc);
-}
-
-function showQuiz(doc) {
-  shown = "quiz:" + doc.id; current = doc;
-  status("");
-  screen("quiz-page");
-  quiz.show(doc);
 }
 
 function persist(doc) {
@@ -191,15 +198,14 @@ function persist(doc) {
   current = doc;
   $("unsaved").hidden = true;
   renderMaitrise(doc);
-  if (shown?.startsWith("cours:")) syncControls();
+  if (shown?.startsWith("cours:")) { syncControls(); setTab($("tab-quiz").getAttribute("aria-selected") === "true" ? "quiz" : "chat"); }
   return doc;
 }
 
 $("new-course").onclick = () => { $("drop").hidden = false; };
 $("back").onclick = () => go("repertoire");
-$("infos-open").onclick = $("to-infos").onclick = () => go("infos-" + current.id);
-$("quiz-open").onclick = () => go("quiz-" + current.id);
-$("infos-back").onclick = $("quiz-back").onclick = backToCourse;
+$("to-infos").onclick = () => go("infos-" + current.id);
+$("infos-back").onclick = backToCourse;
 
 setupImporter($("drop"), $("file"), async (file) => {
   status("Import en cours…");

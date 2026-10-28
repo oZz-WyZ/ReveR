@@ -36,8 +36,6 @@
     <button id="back" type="button" class="ghost">← Répertoire</button>
     <span id="fiche-maitrise"></span>
     <span class="spacer"></span>
-    <button id="infos-open" type="button" class="ghost" hidden>Infos du cours</button>
-    <button id="quiz-open" type="button" class="primary" hidden>Tester ma maîtrise</button>
   </div>
   <p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
   <div id="workspace">
@@ -73,11 +71,32 @@
       </div>
     </section>
     <section class="pane" id="pane-assistant">
-      <header class="pane-head"><h2>Assistant</h2><button type="button" class="fold ghost" data-pane="assistant">Replier</button></header>
+      <header class="pane-head">
+        <span class="seg tabs" role="tablist" aria-label="Assistant">
+          <button id="tab-chat" type="button" role="tab" aria-selected="true">Reviz</button>
+          <button id="tab-quiz" type="button" role="tab" aria-selected="false" disabled>Me tester</button>
+        </span>
+        <button type="button" class="fold ghost" data-pane="assistant">Replier</button>
+      </header>
       <div class="pane-body">
 
 
 <p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
+        <section id="quiz" class="card quiz-box" hidden>
+    <h2>Quiz de maîtrise</h2>
+  <p id="quiz-last" class="note"></p>
+  <button id="quiz-start" type="button">Commencer le quiz</button>
+  <p id="quiz-status" role="status"></p>
+  <div id="quiz-run" hidden>
+    <p id="quiz-progress" class="note"></p>
+    <h3 id="quiz-q"></h3>
+    <div id="quiz-options" role="radiogroup" aria-labelledby="quiz-q"></div>
+    <div id="quiz-feedback" hidden></div>
+    <button id="quiz-validate" type="button" disabled>Valider</button>
+    <button id="quiz-next" type="button" hidden>Suivante</button>
+  </div>
+  <div id="quiz-result" hidden></div>
+        </section>
         <section id="chat" class="card chat-box" hidden>
           <div id="chat-empty" class="chat-empty">
             <img class="orb" src="mascotte.svg" alt="">
@@ -117,24 +136,6 @@
   </div>
 </section>
 
-<section id="quiz-page" class="page" hidden>
-  <div class="toolbar"><button id="quiz-back" type="button" class="ghost">← Retour au cours</button></div>
-  <div id="quiz" class="card">
-    <h2>Quiz de maîtrise</h2>
-  <p id="quiz-last" class="note"></p>
-  <button id="quiz-start" type="button">Commencer le quiz</button>
-  <p id="quiz-status" role="status"></p>
-  <div id="quiz-run" hidden>
-    <p id="quiz-progress" class="note"></p>
-    <h3 id="quiz-q"></h3>
-    <div id="quiz-options" role="radiogroup" aria-labelledby="quiz-q"></div>
-    <div id="quiz-feedback" hidden></div>
-    <button id="quiz-validate" type="button" disabled>Valider</button>
-    <button id="quiz-next" type="button" hidden>Suivante</button>
-  </div>
-  <div id="quiz-result" hidden></div>
-  </div>
-</section>
 </main>
 <script type="module" src="src/main.js"></script>
 </body>

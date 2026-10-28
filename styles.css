@@ -9,6 +9,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* un display de classe ne doit jamais réafficher un élément caché */
 body {
   margin: 0; color: var(--ink); font: 400 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: linear-gradient(165deg, #f6eff3 0%, #f8e3d6 48%, #f1bb94 100%) fixed; min-height: 100vh;
@@ -112,8 +113,11 @@ body.fiche-open #status { display: none; }
 .pane-head h2 { margin: .25rem 0; font-size: 1.5rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pane-actions { display: flex; align-items: center; gap: .5rem; flex: none; }
 .pane-body { flex: 1; min-height: 0; }
-.pane.folded .pane-body, .pane.folded .pane-head h2 { display: none; }
+.pane.folded .pane-body, .pane.folded .pane-head h2, .pane.folded .tabs { display: none; }
 #pane-assistant .pane-body { display: flex; flex-direction: column; }
+.tabs { margin: .15rem 0; }
+.tabs button[aria-selected="true"] { background: var(--black); color: #fff; }
+.quiz-box { flex: 1; min-height: 0; margin: 0; overflow-y: auto; padding: 1.5rem 1.75rem; }
 
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
