@@ -14,7 +14,7 @@
 <p id="status" role="status"></p>
 <section id="home">
   <h2>Mes cours</h2>
-  <p><button id="new-course" type="button">Nouveau cours</button></p>
+  <p><button id="new-course" type="button" class="primary">Nouveau cours</button></p>
   <div id="drop" hidden>
     <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
     <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
@@ -53,7 +53,7 @@
     <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
     <span id="ask-status" role="status"></span>
   </form>
-  <button id="save">Valider</button> <button id="edit-text" type="button" hidden>Corriger le texte</button>
+  <button id="save" class="primary">Valider</button> <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
   <div id="cards" class="popover" hidden></div>
   <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
       </div>

@@ -18,7 +18,8 @@ export function maitriseSelect(value, onChange) {
   s.setAttribute("aria-label", "État de maîtrise");
   for (const [v, label] of Object.entries(MAITRISE)) s.append(new Option(label, v, false, v === value));
   s.value = value;
-  s.onchange = () => onChange(s.value);
+  s.dataset.v = value; // couleur selon l'état
+  s.onchange = () => { s.dataset.v = s.value; onChange(s.value); };
   return s;
 }
 
