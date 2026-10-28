@@ -45,7 +45,10 @@ const status = (msg, err = false) => { $("status").textContent = msg; $("status"
 
 // Écrans : répertoire, fiche (cours + assistant), infos du cours, quiz.
 const SCREENS = ["home", "fiche", "infos-page", "quiz-page"];
-const screen = (name) => SCREENS.forEach((s) => { $(s).hidden = s !== name; });
+const screen = (name) => {
+  SCREENS.forEach((s) => { $(s).hidden = s !== name; });
+  document.body.classList.toggle("fiche-open", name === "fiche"); // la fiche tient dans la fenêtre : pas de scroll de page
+};
 
 // Navigation par hash : #repertoire, #cours-<id>, #infos-<id>, #quiz-<id> (les id sont en base 36, sans tiret).
 // go() appelle route() aussi, au cas où hashchange ne partirait pas.
@@ -104,7 +107,12 @@ function syncControls() {
   $("view-seg").hidden = !orig;
   $("view-original").setAttribute("aria-pressed", String(mode === "original"));
   $("view-texte").setAttribute("aria-pressed", String(mode === "texte"));
-  $("view-hint").textContent = mode === "original" && orig && !orig.canComment ? "Pour commenter un passage, passe en « Texte »." : "";
+  // note discrète, seulement quand elle s'applique
+  const note = mode === "original"
+    ? (orig && !orig.canComment ? "Pour commenter un passage, passe en « Texte »." : "")
+    : [current.method === "ocr" && "Transcrit par l'IA : relis et corrige.", current.truncated && "Attention : transcription peut-être incomplète."].filter(Boolean).join(" ");
+  $("doc-note").textContent = note;
+  $("doc-note").hidden = !note;
 }
 
 function setMode(m) {
@@ -155,9 +163,6 @@ function showFiche(doc, edit = false) {
   $("quiz-open").disabled = !ready;
   renderMaitrise(doc);
   $("title").textContent = doc.name;
-  $("info").textContent =
-    (doc.method === "ocr" ? "Transcrit par l'IA : relis et corrige." : "Texte extrait du PDF.") +
-    (doc.truncated ? " Attention : transcription peut-être incomplète." : "");
   view(doc, edit);
   loadOriginal(doc, edit);
   ready ? chat.show(doc) : chat.hide();

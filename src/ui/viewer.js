@@ -1,6 +1,8 @@
 import { extractPdfPages, loadPdfLib, openPdf } from "../extract/pdf.js";
 import { overlap } from "../extract/layout.js";
 
+const MAX_PAGE_W = 820; // largeur d'une page, comme un aperçu avant impression (A4 ≈ 794 px)
+
 const el = (tag, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
 
 /**
@@ -69,9 +71,10 @@ export function createViewer(root) {
     const my = (st.build = (st.build ?? 0) + 1);
     observer?.disconnect();
     root.replaceChildren();
-    const width = root.clientWidth;
-    if (!width) return; // masqué : le ResizeObserver relancera le rendu
-    lastW = width;
+    const avail = root.clientWidth;
+    if (!avail) return; // masqué : le ResizeObserver relancera le rendu
+    lastW = avail; // largeur disponible (et non celle de la page) : sert à détecter un vrai redimensionnement
+    const width = Math.min(avail, MAX_PAGE_W);
     st.pages = [];
     observer = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && renderPage(e.target.__i)), { rootMargin: "800px 0px" });
     for (let n = 1; n <= st.pdf.numPages; n++) {

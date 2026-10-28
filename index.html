@@ -42,28 +42,34 @@
   <p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
   <div id="workspace">
     <section class="pane" id="pane-texte">
-      <header class="pane-head"><h2 id="title"></h2><button type="button" class="fold ghost" data-pane="texte">Replier</button></header>
-      <div class="pane-body">
-<section id="doc">
-  <p id="info"></p>
-  <div class="view-switch">
-      <span id="view-seg" class="seg" role="group" aria-label="Affichage du cours" hidden>
-        <button type="button" id="view-original">Original</button>
-        <button type="button" id="view-texte">Texte</button>
-      </span>
-      <span id="view-hint" class="note"></span>
-    </div>
-    <div id="pdf-view" hidden></div>
-    <div id="reader" aria-label="Texte du cours"></div>
-  <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
-  <form id="ask-pop" hidden>
-    <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>
-    <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
-    <span id="ask-status" role="status"></span>
-  </form>
-  <button id="save" class="primary">Valider</button> <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
-  <div id="cards" class="popover" hidden></div>
-  <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
+      <header class="pane-head">
+        <h2 id="title"></h2>
+        <span class="pane-actions">
+          <button id="save" type="button" class="primary">Valider</button>
+          <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
+          <button type="button" class="fold ghost" data-pane="texte">Replier</button>
+        </span>
+      </header>
+      <div class="pane-body viewer-shell">
+        <span id="view-seg" class="seg view-switch" role="group" aria-label="Affichage du cours" hidden>
+          <button type="button" id="view-original">Origine</button>
+          <button type="button" id="view-texte">Texte</button>
+        </span>
+        <div class="viewer-scroll">
+          <section id="doc">
+            <p id="doc-note" class="note" hidden></p>
+            <div id="pdf-view" hidden></div>
+            <div id="reader" aria-label="Texte du cours"></div>
+            <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
+            <form id="ask-pop" hidden>
+              <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>
+              <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
+              <span id="ask-status" role="status"></span>
+            </form>
+            <div id="cards" class="popover" hidden></div>
+            <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
+          </section>
+        </div>
       </div>
     </section>
     <section class="pane" id="pane-assistant">
