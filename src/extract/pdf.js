@@ -1,10 +1,12 @@
+import { layoutPages } from "./layout.js";
+
 // pdf.js (CDN autorisé par la CSP des artifacts). Le worker passe par un blob ;
 // si le navigateur le refuse, pdf.js retombe sur un worker sur le thread principal.
 const BASE = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
 const SCAN_MPX = 1.5e6; // la plateforme réduit de toute façon à ~1,2 Mpx
 
 let lib;
-function load() {
+export function loadPdfLib() {
   return (lib ??= new Promise((res, rej) => {
     const s = document.createElement("script");
     s.src = BASE + "pdf.min.js";
@@ -20,13 +22,27 @@ function load() {
 }
 
 export async function openPdf(file) {
-  return (await load()).getDocument({ data: await file.arrayBuffer() }).promise;
+  return (await loadPdfLib()).getDocument({ data: await file.arrayBuffer() }).promise;
 }
 
-// Pages numérotées à partir de 1.
-export async function pageText(doc, n) {
+// Morceaux de texte d'une page (numérotée à partir de 1), sans les éventuels marqueurs sans `str`.
+export async function pageItems(doc, n) {
   const { items } = await (await doc.getPage(n)).getTextContent();
-  return items.map((i) => i.str + (i.hasEOL ? "\n" : "")).join("");
+  return items.filter((i) => typeof i.str === "string");
+}
+
+export async function pageText(doc, n) {
+  return (await pageItems(doc, n)).map((i) => i.str + (i.hasEOL ? "\n" : "")).join("");
+}
+
+/** Texte et positions de tout le PDF (voir layout.js). */
+export async function extractPdfPages(doc, onProgress) {
+  const pages = [];
+  for (let p = 1; p <= doc.numPages; p++) {
+    pages.push(await pageItems(doc, p));
+    onProgress?.({ done: p, total: doc.numPages });
+  }
+  return layoutPages(pages);
 }
 
 export async function renderPage(doc, n) {

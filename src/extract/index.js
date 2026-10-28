@@ -1,4 +1,4 @@
-import { openPdf, pageText, renderPage } from "./pdf.js";
+import { extractPdfPages, openPdf, pageText, renderPage } from "./pdf.js";
 import { transcribe } from "./transcribe.js";
 
 export const MAX_PAGES_SCAN = 20;    // chemin transcription : 1 appel vision facturé par lot
@@ -39,10 +39,7 @@ export async function extractText(file, { signal, onProgress } = {}) {
     return { ...r, method: "ocr" };
   }
   if (n > MAX_PAGES_TEXTE) throw fail("too_many_pages", `PDF de ${n} pages : maximum ${MAX_PAGES_TEXTE}.`);
-  for (let p = texts.length + 1; p <= n; p++) {
-    if (signal?.aborted) throw fail("cancelled", "annulé");
-    texts.push(await pageText(doc, p));
-    onProgress?.({ done: p, total: n });
-  }
-  return { text: texts.map((t) => t.trim()).join("\n\n"), method: "pdf-text", truncated: false };
+  // texte non retouché : le visualiseur en a besoin à l'identique pour relier sélection et surlignages
+  const { text } = await extractPdfPages(doc, onProgress);
+  return { text, method: "pdf-text", truncated: false };
 }
