@@ -40,19 +40,16 @@
   <p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
   <div id="workspace">
     <section class="pane" id="pane-texte">
-      <header class="pane-head">
-        <h2 id="title"></h2>
-        <span class="pane-actions">
+      <div class="pane-body viewer-shell">
+        <div class="viewer-tools">
           <button id="save" type="button" class="primary">Valider</button>
           <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
+          <span id="view-seg" class="seg" role="group" aria-label="Affichage du cours" hidden>
+            <button type="button" id="view-original">Origine</button>
+            <button type="button" id="view-texte">Texte</button>
+          </span>
           <button type="button" class="fold ghost" data-pane="texte">Replier</button>
-        </span>
-      </header>
-      <div class="pane-body viewer-shell">
-        <span id="view-seg" class="seg view-switch" role="group" aria-label="Affichage du cours" hidden>
-          <button type="button" id="view-original">Origine</button>
-          <button type="button" id="view-texte">Texte</button>
-        </span>
+        </div>
         <div class="viewer-scroll">
           <section id="doc">
             <p id="doc-note" class="note" hidden></p>
@@ -71,21 +68,18 @@
       </div>
     </section>
     <section class="pane" id="pane-assistant">
-      <header class="pane-head">
-        <span class="seg tabs" role="tablist" aria-label="Assistant">
-          <button id="tab-chat" type="button" role="tab" aria-selected="true">Reviz</button>
-          <button id="tab-quiz" type="button" role="tab" aria-selected="false" disabled>Me tester</button>
-        </span>
-        <button type="button" class="fold ghost" data-pane="assistant">Replier</button>
-      </header>
-      <div class="pane-body">
-
-
-<p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
-        <section id="quiz" class="card quiz-box" hidden>
+      <div class="pane-body assistant-card">
+        <header class="assistant-head">
+          <span class="seg tabs" role="tablist" aria-label="Assistant">
+            <button id="tab-chat" type="button" role="tab" aria-selected="true">Reviz</button>
+            <button id="tab-quiz" type="button" role="tab" aria-selected="false" disabled>Me tester</button>
+          </span>
+          <button type="button" class="fold ghost" data-pane="assistant">Replier</button>
+        </header>
+        <p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
+        <section id="quiz" class="quiz-box" hidden>
     <h2>Quiz de maîtrise</h2>
   <p id="quiz-last" class="note"></p>
-  <button id="quiz-start" type="button">Commencer le quiz</button>
   <p id="quiz-status" role="status"></p>
   <div id="quiz-run" hidden>
     <p id="quiz-progress" class="note"></p>
@@ -97,7 +91,7 @@
   </div>
   <div id="quiz-result" hidden></div>
         </section>
-        <section id="chat" class="card chat-box" hidden>
+        <section id="chat" class="chat-box" hidden>
           <div id="chat-empty" class="chat-empty">
             <img class="orb" src="mascotte.svg" alt="">
             <h2>Que veux-tu savoir sur ce cours ?</h2>

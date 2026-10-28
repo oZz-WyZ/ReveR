@@ -160,7 +160,6 @@ function showFiche(doc, edit = false) {
   const ready = !!doc.onboarding?.consigne;
   $("unsaved").hidden = saved;
   renderMaitrise(doc);
-  $("title").textContent = doc.name;
   view(doc, edit);
   loadOriginal(doc, edit);
   ready ? chat.show(doc) : chat.hide();
@@ -181,7 +180,7 @@ function setTab(t) {
   $("quiz").hidden = t !== "quiz";
 }
 $("tab-chat").onclick = () => setTab("chat");
-$("tab-quiz").onclick = () => setTab("quiz");
+$("tab-quiz").onclick = () => { setTab("quiz"); quiz.open(); };
 
 function showInfos(doc) {
   shown = "infos:" + doc.id; current = doc;

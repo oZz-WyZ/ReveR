@@ -31,7 +31,6 @@ export function createQuiz(saveScore, onBack) {
     run = null;
     $("quiz-run").hidden = true; $("quiz-result").hidden = true;
     $("quiz-result").replaceChildren();
-    $("quiz-start").hidden = false;
     status("");
   }
 
@@ -90,24 +89,24 @@ export function createQuiz(saveScore, onBack) {
   async function start() {
     if (busy) return;
     const d = doc;
-    busy = true; $("quiz-start").disabled = true;
+    busy = true;
     reset(); status("Génération du quiz…");
     try {
       const r = await generateQuiz({ doc: d });
       if (doc?.id !== d.id) return; // l'élève a changé de cours pendant l'appel
       run = createRun(r.questions); tronque = r.tronque;
       renderQuestion();
-      $("quiz-start").hidden = true; // "Refaire un quiz" prend le relais à la fin
       status(r.tronque ? NOTE_LONG : "");
     } catch {
       if (doc?.id === d.id) status("Le quiz n'a pas pu être généré.", true, start);
-    } finally { busy = false; $("quiz-start").disabled = false; }
+    } finally { busy = false; }
   }
-  $("quiz-start").onclick = start;
 
   return {
     // page du quiz ouverte pour ce cours : remise à zéro
     show(d) { doc = d; reset(); renderLast(); },
+    // Onglet « Me tester » ouvert : le quiz se lance directement, sauf s'il est déjà en cours ou terminé
+    open() { if (!run && !busy && $("quiz-result").hidden) start(); },
     // le cours a été enregistré (ex. configuration terminée) : on rafraîchit seulement le dernier score
     update(d) { doc = d; renderLast(); },
   };
