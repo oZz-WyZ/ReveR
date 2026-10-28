@@ -38,6 +38,12 @@
   #lib-list .titre { font: inherit; font-weight: 600; background: none; border: 0; color: #06c; cursor: pointer; padding: 0; text-align: left; }
   #lib-list .meta { color: #666; font-size: .85rem; flex: 1 1 12rem; }
   select.maitrise { font: inherit; }
+  #quiz fieldset { border: 1px solid #ddd; border-radius: 8px; margin: .5rem 0; } #quiz legend { font-weight: 600; }
+  #quiz label { display: block; padding: .15rem 0; }
+  #quiz .qres { border: 1px solid #ddd; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; }
+  #quiz .qres.ok { border-color: #2e7d32; background: #f1faf2; } #quiz .qres.ko { border-color: #c62828; background: #fdf3f3; }
+  #quiz .score { font-size: 1.4rem; font-weight: 700; } #quiz-status.err { color: #b00; }
+  #quiz blockquote { margin: .25rem 0; padding: .5rem .75rem; border-left: 4px solid #2e7d32; background: #eaf5ec; font-style: italic; }
   .reset { margin-top: 2rem; color: #b00; font-size: .9rem; }
 </style>
 </head>
@@ -93,6 +99,17 @@
     <button>Confirmer</button>
   </form>
   <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
+</section>
+<section id="quiz" hidden>
+  <h2>Quiz de maîtrise</h2>
+  <p id="quiz-last" class="note"></p>
+  <button id="quiz-start" type="button">Tester ma maîtrise</button>
+  <p id="quiz-status" role="status"></p>
+  <form id="quiz-form" hidden>
+    <div id="quiz-questions"></div>
+    <button id="quiz-submit" disabled>Valider mes réponses</button>
+  </form>
+  <div id="quiz-result" hidden></div>
 </section>
 <section id="chat" hidden>
   <h2>Pose tes questions sur le cours</h2>

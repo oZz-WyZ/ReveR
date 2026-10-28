@@ -3,6 +3,7 @@ import { AIError } from "./errors.js";
 // JSON conforme au schéma de détection (it. 2) pour pouvoir tester le formulaire en local.
 // Les mots-clés viennent du nom de fichier / du texte envoyé.
 function mockJson(system, last) {
+  if (system?.includes('"correctIndex"')) return mockQuiz(system);
   if (system?.includes('"passage"')) return mockChat(system, last);
   const droit = /droit|juridi|code civil/i.test(last.split("\n")[0]); // première ligne = nom de fichier
   return droit
@@ -16,6 +17,22 @@ function mockChat(system, last) {
   const simple = last.startsWith("Je n'ai pas bien compris") ? "[mock simplifié] " : "";
   if (/hors cours/i.test(last)) return { reponse: `${simple}[mock] réponse générale`, source: "general", passage: null };
   return { reponse: `${simple}[mock] d'après le cours`, source: "cours", passage: cours.trim().slice(0, 80) };
+}
+
+// QCM (it. 6) : questions bâties sur des phrases réparties dans le cours reçu ; vide si aucune phrase exploitable.
+function mockQuiz(system) {
+  const cours = system.match(/<<<COURS\n([\s\S]*?)\nCOURS>>>/)?.[1] ?? "";
+  const phrases = cours.split(/(?<=[.!?])\s+/).filter((p) => p.trim().length >= 45);
+  const n = Math.min(5, phrases.length);
+  const picks = Array.from({ length: n }, (_, k) => phrases[Math.round((k * (phrases.length - 1)) / Math.max(1, n - 1))]);
+  return {
+    questions: picks.map((p) => ({
+      question: `Complète : « ${p.slice(0, 30)}… »`,
+      options: [p.slice(30, 70), "[mock] option fausse A", "[mock] option fausse B", "[mock] option fausse C"],
+      correctIndex: 0,
+      passage: p,
+    })),
+  };
 }
 
 // Dev local : la capability sample ne tourne que dans un artifact publié.

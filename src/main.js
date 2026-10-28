@@ -7,12 +7,14 @@ import { createReader } from "./ui/reader.js";
 import { createOnboarding } from "./ui/onboarding.js";
 import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
+import { createQuiz } from "./ui/quiz.js";
 import { maitriseSelect, renderLibrary } from "./ui/library.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const onboarding = createOnboarding(persist);
 const chat = createChat();
+const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }));
 const highlights = createHighlights({
   reader,
   getDoc: () => current,
@@ -48,7 +50,7 @@ function showHome() {
   shown = "home"; current = null;
   status("");
   $("fiche").hidden = true; $("home").hidden = false;
-  onboarding.hide(); chat.hide();
+  onboarding.hide(); chat.hide(); quiz.hide();
   const entries = listEntries();
   renderLibrary(entries, {
     onOpen: (id) => go("cours-" + id),
@@ -97,7 +99,7 @@ function showFiche(doc, edit) {
     (doc.truncated ? " Attention : transcription peut-être incomplète." : "");
   view(doc, edit);
   doc.onboarding ? onboarding.show(doc) : onboarding.hide();
-  doc.onboarding?.consigne ? chat.show(doc) : chat.hide();
+  doc.onboarding?.consigne ? (chat.show(doc), quiz.show(doc)) : (chat.hide(), quiz.hide());
 }
 
 function persist(doc) {
@@ -107,7 +109,7 @@ function persist(doc) {
   current = doc;
   $("unsaved").hidden = true;
   renderMaitrise(doc);
-  doc.onboarding?.consigne ? chat.show(doc) : chat.hide();
+  doc.onboarding?.consigne ? (chat.show(doc), quiz.update(doc)) : (chat.hide(), quiz.hide());
   return doc;
 }
 

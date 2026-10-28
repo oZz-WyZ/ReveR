@@ -49,9 +49,19 @@ export function selectCourse(text, queries, budget = MAX_COURS_CHARS) {
   return { text: chosen.map((x) => x.c).join(SEP), tronque: true };
 }
 
-export function buildSystem({ consigne, cours, tronque }) {
+/** `rules` : règles de la tâche (chat par défaut, quiz...). */
+export function buildSystem({ consigne, cours, tronque, rules = RULES }) {
   const note = tronque ? "Le cours ci-dessous est un extrait : « […] » marque une coupure.\n" : "";
-  return `${consigne}\n\n${RULES}\n\n${note}<<<COURS\n${cours}\nCOURS>>>`;
+  return `${consigne}\n\n${rules}\n\n${note}<<<COURS\n${cours}\nCOURS>>>`;
+}
+
+/** Pour le quiz : cours entier s'il tient ; sinon des blocs régulièrement espacés du début à la fin (pas de tri par pertinence). */
+export function selectCoverage(text, budget = MAX_COURS_CHARS) {
+  if (text.length <= budget) return { text, tronque: false };
+  const chunks = chunkText(text);
+  const n = Math.max(1, Math.floor(budget / (CHUNK_CHARS + SEP.length))); // pire cas : blocs de CHUNK_CHARS
+  const picks = n === 1 ? [0] : Array.from({ length: n }, (_, k) => Math.round((k * (chunks.length - 1)) / (n - 1)));
+  return { text: [...new Set(picks)].map((i) => chunks[i]).join(SEP), tronque: true };
 }
 
 /** Tours stockés -> messages qui alternent user/assistant. Par question, la dernière réponse l'emporte
