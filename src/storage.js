@@ -21,6 +21,11 @@ export const storage = {
     try { ls()?.removeItem(P + key); } catch {}
     mem.delete(P + key);
   },
+  // Efface toute la donnée Reviz (docs:index, doc:*, chat:*...), pas les clés des autres applis.
+  clear() {
+    this.keys().forEach((k) => this.remove(k));
+    mem.clear();
+  },
   keys(prefix = "") {
     const all = ls() ? Object.keys(ls()) : [...mem.keys()];
     return all.filter((k) => k.startsWith(P + prefix)).map((k) => k.slice(P.length));

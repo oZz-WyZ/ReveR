@@ -1,5 +1,6 @@
 import { extractText } from "./extract/index.js";
 import { relocateAll } from "./anchors.js";
+import { storage } from "./storage.js";
 import { listEntries, loadDoc, rebuildIndex, saveDoc, setMaitrise } from "./library.js";
 import { setupImporter } from "./ui/importer.js";
 import { createReader } from "./ui/reader.js";
@@ -54,7 +55,14 @@ function showHome() {
     onMaitrise: (id, v) => setMaitrise(id, v),
   });
   $("drop").hidden = entries.length > 0; // « Nouveau cours » l'affiche sinon
+  askReset(false);
 }
+
+// Réinitialisation : confirmation en deux clics dans la page (confirm() est bloqué en artifact).
+const askReset = (on) => { $("reset").hidden = on; $("reset-confirm").hidden = !on; };
+$("reset").onclick = () => askReset(true);
+$("reset-no").onclick = () => askReset(false);
+$("reset-yes").onclick = () => { storage.clear(); showHome(); status("Toutes les données ont été effacées."); };
 
 // Lecture seule + surlignages, ou mode correction (texte brut, éditable).
 function view(doc, edit) {

@@ -38,6 +38,7 @@
   #lib-list .titre { font: inherit; font-weight: 600; background: none; border: 0; color: #06c; cursor: pointer; padding: 0; text-align: left; }
   #lib-list .meta { color: #666; font-size: .85rem; flex: 1 1 12rem; }
   select.maitrise { font: inherit; }
+  .reset { margin-top: 2rem; color: #b00; font-size: .9rem; }
 </style>
 </head>
 <body>
@@ -53,6 +54,12 @@
   </div>
   <p id="lib-empty" hidden>Aucun cours : importe ton premier cours.</p>
   <div id="lib-list"></div>
+  <p class="reset">
+    <button id="reset" type="button">Réinitialiser</button>
+    <span id="reset-confirm" hidden>Tout effacer définitivement (cours, chats, commentaires) ?
+      <button id="reset-yes" type="button">Oui, tout effacer</button>
+      <button id="reset-no" type="button">Annuler</button></span>
+  </p>
 </section>
 <div id="fiche" hidden>
 <p><button id="back" type="button">← Répertoire</button> <span id="fiche-maitrise"></span></p>

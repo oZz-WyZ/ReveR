@@ -41,4 +41,10 @@ assert.equal(storage.get("docs", null), null);
 storage.set("doc:old3", doc("old3"));
 rebuildIndex();
 assert.equal(listEntries().length, 3);
+// storage.clear : tout part (index, cours, chats), l'index reconstruit est vide
+storage.set("chat:old1", { turns: [] });
+storage.clear();
+assert.deepEqual(storage.keys(), []);
+rebuildIndex();
+assert.deepEqual(listEntries(), []);
 console.log("ok");
