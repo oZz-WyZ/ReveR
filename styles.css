@@ -105,12 +105,11 @@ select.maitrise[data-v="maitrise"] { background: var(--black); color: #fff; }
 .seg button:hover:not(:disabled) { box-shadow: none; transform: none; }
 .pane-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: 0 .35rem; }
 .pane-head h2 { margin: .25rem 0; font-size: 1.6rem; }
-#workspace.side { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-#workspace.side:has(#pane-texte.folded) { grid-template-columns: auto minmax(0, 1fr); }
-#workspace.side:has(#pane-assistant.folded) { grid-template-columns: minmax(0, 1fr) auto; }
-#workspace.side:has(#pane-texte.folded):has(#pane-assistant.folded) { grid-template-columns: auto auto; }
-#workspace.stack { display: flex; flex-direction: column; gap: 1.5rem; }
-#workspace.side .pane-body { max-height: calc(100vh - 11rem); overflow: auto; padding: .25rem; }
+#workspace { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+#workspace:has(#pane-texte.folded) { grid-template-columns: auto minmax(0, 1fr); }
+#workspace:has(#pane-assistant.folded) { grid-template-columns: minmax(0, 1fr) auto; }
+#workspace:has(#pane-texte.folded):has(#pane-assistant.folded) { grid-template-columns: auto auto; }
+#workspace .pane-body { max-height: calc(100vh - 11rem); overflow: auto; padding: .25rem; }
 .pane.folded .pane-body, .pane.folded .pane-head h2 { display: none; }
 
 /* --- cours : texte (fond blanc) et original --- */

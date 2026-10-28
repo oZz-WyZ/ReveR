@@ -3,15 +3,11 @@ import { loadPrefs, savePrefs } from "../prefs.js";
 const $ = (id) => document.getElementById(id);
 const LABEL = { texte: "le cours", assistant: "l'assistant" };
 
-/** Disposition de la fiche (côte à côte / empilé, panneaux repliables) et mode réduit en pastille ; choix mémorisés. */
+/** Panneaux repliables de la fiche (toujours côte à côte) et mode réduit en pastille ; choix mémorisés. */
 export function setupLayout() {
   let prefs = loadPrefs();
 
   function apply() {
-    $("workspace").classList.toggle("side", prefs.layout === "side");
-    $("workspace").classList.toggle("stack", prefs.layout === "stack");
-    $("lay-side").setAttribute("aria-pressed", String(prefs.layout === "side"));
-    $("lay-stack").setAttribute("aria-pressed", String(prefs.layout === "stack"));
     for (const name of Object.keys(LABEL)) {
       const folded = !!prefs.fold[name];
       $("pane-" + name).classList.toggle("folded", folded);
@@ -29,8 +25,6 @@ export function setupLayout() {
     apply();
   }
 
-  $("lay-side").onclick = () => update({ layout: "side" });
-  $("lay-stack").onclick = () => update({ layout: "stack" });
   document.querySelectorAll(".fold").forEach((b) => {
     b.onclick = () => update({ fold: { ...prefs.fold, [b.dataset.pane]: !prefs.fold[b.dataset.pane] } });
   });
