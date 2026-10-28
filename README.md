@@ -25,3 +25,7 @@ PDF (texte natif via pdf.js, gratuit) ou image/PDF scanné (transcription via `a
 ## Onboarding (itération 2)
 
 Après « Valider » sur le texte : détection matière / sujet / niveau (`askAI` en `json`, `src/onboarding/detect.js`), formulaire prérempli et corrigeable, échéance facultative, puis génération d'une consigne experte (`src/onboarding/consigne.js`). Tout est stocké dans `doc:<id>.onboarding` = `{ matiere, sujet, niveau, echeance, consigne, detecte, updatedAt }`. La consigne servira de `system` au chat. La vraie détection ne se vérifie qu'en artifact publié ; en local le mock renvoie un JSON conforme (Droit si le nom de fichier évoque le droit, sinon Histoire).
+
+## Chat sourcé (itération 3)
+
+`askAI` en `json` avec `system` = `doc.onboarding.consigne` (jamais affichée) + règles + cours (`src/chat/context.js`). Réponse `{ reponse, source: "cours"|"general", passage }`, `passage` vérifié contre le texte (sinon ignoré). Cours au-delà de `MAX_COURS_CHARS` (60 000) : seuls les blocs les plus proches de la question sont envoyés, avec un message à l'élève. Historique : 10 derniers échanges, seul `reponse` est renvoyé. Pouce bas : ré-explication plus simple qui remplace la réponse dans l'historique. Stockage : `chat:<docId>` = `{ turns, counts }`. La capability veut des tours qui alternent : `system` est fondu dans le premier tour user (`artifact.js`).

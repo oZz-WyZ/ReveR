@@ -11,7 +11,11 @@ assert.match(r.text, /salut/);
 assert.throws(() => askAI({ messages: [{ role: "assistant", content: "x" }] }), TypeError);
 
 // system devient un tour user initial
-assert.deepEqual(buildInput({ system: "S", messages: msgs }), [{ role: "user", content: "S" }, ...msgs]);
+// system fondu dans le 1er tour user : historique vide, puis non vide (alternance conservée)
+assert.deepEqual(buildInput({ system: "S", messages: msgs }), [{ role: "user", content: "S\n\nsalut" }]);
+const hist = [...msgs, { role: "assistant", content: "yo" }, { role: "user", content: "et ?" }];
+assert.deepEqual(buildInput({ system: "S", messages: hist }), [{ role: "user", content: "S\n\nsalut" }, hist[1], hist[2]]);
+assert.throws(() => askAI({ messages: [msgs[0], msgs[0]] }), TypeError); // deux user de suite
 assert.deepEqual(buildInput({ messages: msgs }), msgs);
 
 // storage (repli mémoire sous node)

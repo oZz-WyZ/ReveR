@@ -26,8 +26,10 @@ function impl() {
  * @throws {AIError}
  */
 export function askAI({ system, messages, json = false, images, modelTier, signal, onToken } = {}) {
-  if (!messages?.length || messages[messages.length - 1].role !== "user") {
-    throw new TypeError("askAI: messages doit finir par un tour user");
+  // La capability veut des tours qui alternent, du premier user au dernier user.
+  const ok = messages?.length && messages.every((m, i) => m.role === (i % 2 ? "assistant" : "user"));
+  if (!ok || messages.length % 2 === 0) {
+    throw new TypeError("askAI: messages doit alterner user/assistant et finir par un tour user");
   }
   return impl().complete({ system, messages, json, images, modelTier, signal, onToken });
 }

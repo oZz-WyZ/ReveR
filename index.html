@@ -13,6 +13,18 @@
   #status.err { color: #b00; }
   #ob-form label { display: block; } #ob-form input, #ob-form select { font: inherit; }
   #ob-warn { color: #b60; }
+  #chat-log { display: flex; flex-direction: column; gap: .5rem; margin: .5rem 0; }
+  .msg { padding: .5rem .75rem; border-radius: 8px; max-width: 85%; white-space: pre-wrap; }
+  .msg.user { align-self: flex-end; background: #e8f0fe; }
+  .msg.bot { align-self: flex-start; background: #f4f4f4; }
+  .msg p { margin: .25rem 0; } .msg blockquote { margin: .25rem 0; padding-left: .75rem; border-left: 3px solid #aaa; color: #444; }
+  .badge { font-size: .75rem; padding: .1rem .5rem; border-radius: 999px; }
+  .badge.cours { background: #d7f0dc; } .badge.general { background: #fde8c8; }
+  .tag, .note { font-size: .8rem; color: #666; }
+  .fb button { background: none; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+  .fb button[aria-pressed="true"] { border-color: #06c; background: #eef5ff; }
+  #chat-form { display: flex; gap: .5rem; } #chat-input { flex: 1; font: inherit; padding: .4rem; }
+  #chat-status.err { color: #b00; }
   #docs button { margin: 0 .25rem .25rem 0; }
 </style>
 </head>
@@ -46,6 +58,15 @@
     <button>Confirmer</button>
   </form>
   <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
+</section>
+<section id="chat" hidden>
+  <h2>Pose tes questions sur le cours</h2>
+  <div id="chat-log" aria-live="polite"></div>
+  <p id="chat-status" role="status"></p>
+  <form id="chat-form">
+    <input id="chat-input" placeholder="Ta question…" autocomplete="off" required>
+    <button id="chat-send">Envoyer</button>
+  </form>
 </section>
 <script type="module" src="src/main.js"></script>
 </body>

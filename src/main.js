@@ -3,10 +3,12 @@ import { storage } from "./storage.js";
 import { setupImporter } from "./ui/importer.js";
 import { createReader } from "./ui/reader.js";
 import { createOnboarding } from "./ui/onboarding.js";
+import { createChat } from "./ui/chat.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const onboarding = createOnboarding(persist);
+const chat = createChat();
 let current; // { id, name, method, truncated }
 
 const ERRORS = {
@@ -28,6 +30,7 @@ function open(doc) {
   reader.show(doc.text);
   $("doc").hidden = false;
   doc.onboarding ? onboarding.show(doc) : onboarding.hide();
+  doc.onboarding?.consigne ? chat.show(doc) : chat.hide();
 }
 
 function persist(doc) {
@@ -37,6 +40,7 @@ function persist(doc) {
   if (!ids.includes(doc.id)) storage.set("docs", [...ids, doc.id]);
   current = doc;
   renderDocs();
+  doc.onboarding?.consigne ? chat.show(doc) : chat.hide();
   return doc;
 }
 
@@ -53,6 +57,7 @@ function renderDocs() {
 setupImporter($("drop"), $("file"), async (file) => {
   $("doc").hidden = true;
   onboarding.hide();
+  chat.hide();
   status("Import en cours…");
   try {
     const r = await extractText(file, {

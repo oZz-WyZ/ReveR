@@ -1,8 +1,11 @@
 import { AIError } from "./errors.js";
 
-// Pas de system prompt dans la capability : on le passe en tour user initial.
+// Pas de system prompt dans la capability : on le fond dans le premier tour user
+// (jamais en tour isolé), pour garder un tableau qui alterne user/assistant et finit sur user.
 export function buildInput({ system, messages }) {
-  return system ? [{ role: "user", content: system }, ...messages] : messages;
+  if (!system) return messages;
+  const [first, ...rest] = messages;
+  return [{ role: first.role, content: `${system}\n\n${first.content}` }, ...rest];
 }
 
 export async function complete({ system, messages, json, images, modelTier, signal, onToken }) {
