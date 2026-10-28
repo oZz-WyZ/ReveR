@@ -27,7 +27,12 @@ export function createChat() {
   };
 
   // Réponse de l'assistant : à gauche, avec son avatar, sans bulle (comme dans un chat de LLM).
-  const botRow = (body) => { const m = el("div", "msg bot"); m.append(el("span", "avatar"), body); return m; };
+  const botRow = (body) => {
+    const m = el("div", "msg bot");
+    const a = el("img", "avatar"); a.src = "mascotte.svg"; a.alt = "";
+    m.append(a, body);
+    return m;
+  };
 
   function thinking() {
     const d = el("div", "bot-body dots");
