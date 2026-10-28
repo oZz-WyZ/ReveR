@@ -68,11 +68,11 @@ export function createViewer(root) {
   }
 
   async function build() {
+    const avail = root.clientWidth;
+    if (!avail) return; // masqué : on ne touche à rien (les pages déjà là restent) ; refresh() relancera au réaffichage
     const my = (st.build = (st.build ?? 0) + 1);
     observer?.disconnect();
     root.replaceChildren();
-    const avail = root.clientWidth;
-    if (!avail) return; // masqué : le ResizeObserver relancera le rendu
     lastW = avail; // largeur disponible (et non celle de la page) : sert à détecter un vrai redimensionnement
     const width = Math.min(avail, MAX_PAGE_W);
     st.pages = [];
@@ -92,7 +92,7 @@ export function createViewer(root) {
 
   // Réajuste les pages quand le panneau change de largeur (fenêtre, repli, disposition).
   new ResizeObserver(() => {
-    if (st?.kind !== "pdf" || Math.abs(root.clientWidth - lastW) < 24) return;
+    if (st?.kind !== "pdf" || !root.clientWidth || Math.abs(root.clientWidth - lastW) < 24) return;
     clearTimeout(timer);
     timer = setTimeout(() => st?.kind === "pdf" && build(), 250);
   }).observe(root);
@@ -148,7 +148,7 @@ export function createViewer(root) {
     },
     close() { token++; clear(); },
     /** À appeler quand le conteneur vient d'être affiché : (re)calcule les pages à la bonne largeur. */
-    refresh() { if (st?.kind === "pdf" && (!st.pages.length || Math.abs(root.clientWidth - lastW) >= 24)) build(); },
+    refresh() { if (st?.kind === "pdf" && (!root.childElementCount || Math.abs(root.clientWidth - lastW) >= 24)) build(); },
     setComments(comments) {
       if (!st) return;
       st.comments = comments ?? [];

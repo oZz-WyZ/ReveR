@@ -116,10 +116,14 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-xl); box-shadow: var(--shadow);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
-/* toggle Reviz | Me tester : même style que le basculeur Origine | Texte de la visionneuse (.seg) */
-.assistant-head { display: flex; justify-content: flex-end; }
-.assistant-head .seg { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
-.assistant-head .seg button { font-size: 1rem; }
+/* toggle à deux moitiés (Reviz | Me tester, Origine | Texte) : un seul bouton, le curseur noir glisse d'un côté à l'autre */
+.assistant-head { display: block; }
+.tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding: .25rem; background: #eadfd7; border-radius: 999px; box-shadow: inset 0 1px 4px rgba(90, 45, 10, .2); }
+.tabs::before { content: ""; position: absolute; top: .25rem; bottom: .25rem; left: .25rem; width: calc(50% - .25rem); background: var(--black); border-radius: 999px; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .25s ease; }
+.tabs[data-active="quiz"]::before, .tabs[data-active="texte"]::before { transform: translateX(100%); }
+.tabs button { position: relative; background: transparent; border: 0; box-shadow: none; color: var(--muted); font-size: .92rem; padding: .5rem 1rem; transition: color .2s; }
+.tabs button[aria-selected="true"], .tabs button[aria-pressed="true"] { color: #fff; background: transparent; }
+.tabs button:hover:not(:disabled) { transform: none; box-shadow: none; }
 .quiz-box { flex: 1; min-height: 0; overflow-y: auto; }
 #quiz-loading { justify-content: center; padding: 3rem 0; }
 #pane-assistant .note { font-size: .8rem; }
@@ -130,8 +134,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 .viewer-shell { position: relative; background: #e6dcd5; border-radius: var(--r-lg); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(160, 80, 30, .08); }
 .viewer-scroll { position: absolute; inset: 0; overflow: auto; padding: 4rem 1.25rem 2rem; }
 .viewer-tools { position: absolute; top: .8rem; right: 1.6rem; z-index: 5; display: flex; align-items: center; gap: .5rem; }
-.viewer-tools .seg { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
-.viewer-tools .seg button { background: transparent; } .viewer-tools .seg button[aria-pressed="true"] { background: var(--black); }
+.viewer-tools .tabs { width: 14rem; }
 .viewer-tools button.primary { box-shadow: var(--shadow); }
 #doc { position: relative; }
 #doc-note { max-width: 794px; margin: 0 auto .75rem; }
@@ -164,13 +167,11 @@ mark.multi { background: #ffc233; }
 #orphans { margin-top: 1rem; }
 @keyframes pop { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
 
-/* --- passage cité, badges --- */
+/* --- passage cité --- */
 blockquote.passage, #quiz blockquote {
   margin: .4rem 0 .7rem; padding: .75rem 1.05rem; border-left: 5px solid var(--orange-2); background: #fff1e4; color: #2a1a10;
   border-radius: 0 var(--r-sm) var(--r-sm) 0; font-style: normal;
 }
-.badge { display: inline-block; font-size: .78rem; font-weight: 500; padding: .18rem .75rem; border-radius: 999px; }
-.badge.cours { background: var(--black); color: #fff; } .badge.general { background: var(--orange-soft); color: var(--orange-ink); }
 
 /* --- chat : écran d'accueil puis discussion, comme un assistant LLM --- */
 .chat-box { display: flex; flex-direction: column; flex: 1; min-height: 0; }
@@ -194,9 +195,6 @@ blockquote.passage, #quiz blockquote {
 .dots i { width: .5rem; height: .5rem; border-radius: 50%; background: var(--muted); opacity: .35; animation: blink 1s infinite; }
 .dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
 @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
-.fb { margin-top: .15rem; }
-.fb button { background: transparent; padding: .2rem .55rem; box-shadow: none; }
-.fb button[aria-pressed="true"] { background: var(--orange-soft); }
 #chat-status { min-height: 0; margin: 0 0 .4rem; }
 .composer { display: flex; align-items: center; gap: .5rem; background: #fff; border-radius: 999px; padding: .4rem .4rem .4rem 1.4rem; box-shadow: var(--shadow); border: 1px solid var(--line); }
 .composer:focus-within { box-shadow: 0 0 0 4px rgba(240, 137, 58, .22), var(--shadow); }
@@ -207,8 +205,7 @@ blockquote.passage, #quiz blockquote {
 /* --- quiz --- */
 #quiz h2 { font-size: 1.35rem; }
 #quiz-q { font-size: 1.15rem; font-weight: 400; margin: .25rem 0 .75rem; }
-#pane-assistant .badge { font-size: .7rem; padding: .12rem .6rem; }
-#quiz .opt { display: block; width: 100%; text-align: left; padding: .65rem 1.1rem; margin: .45rem 0; background: #fff; border: 2px solid var(--line); border-radius: 999px; box-shadow: none; font-weight: 400; }
+#pane-assistant #quiz .opt { display: block; width: 100%; text-align: left; padding: .65rem 1.1rem; margin: .45rem 0; background: #fff; border: 2px solid var(--line); border-radius: 999px; box-shadow: none; font-weight: 400; }
 #quiz .opt:hover:not(:disabled) { border-color: var(--orange-2); transform: none; box-shadow: none; }
 #quiz .opt:disabled { opacity: 1; cursor: default; }
 #quiz .opt.ok { background: #e3f4e8; color: #14532d; border-color: #2e9d57; }

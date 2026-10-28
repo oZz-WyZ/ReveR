@@ -21,7 +21,6 @@ function card(c, orphan = false) {
   const q = el("blockquote", "passage");
   q.append(el("strong", null, orphan ? "Passage introuvable : " : "Passage : "), c.quote);
   d.append(q, el("p", "ask", "Ta question : " + c.question));
-  d.append(el("span", "badge " + c.source, c.source === "cours" ? "d'après ton cours" : "connaissances générales"));
   d.append(el("p", null, c.reponse));
   return d;
 }

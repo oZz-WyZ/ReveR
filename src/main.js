@@ -135,6 +135,7 @@ function syncControls() {
   $("edit-text").textContent = editing ? "Enregistrer" : "Corriger le texte";
   $("edit-text").hidden = !editing && (mode !== "texte" || !canEdit(current));
   $("view-seg").hidden = !orig;
+  $("view-seg").dataset.active = mode; // fait glisser le curseur du toggle
   $("view-original").setAttribute("aria-pressed", String(mode === "original"));
   $("view-texte").setAttribute("aria-pressed", String(mode === "texte"));
   // note discrète, seulement quand elle s'applique
@@ -202,7 +203,7 @@ $("fiche-matiere").onclick = async () => {
 // Panneau de droite : « Reviz » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
 // Changer d'onglet ne remet pas le quiz à zéro.
 function setTab(t) {
-  document.querySelector(".tabs").dataset.active = t; // fait glisser le curseur du toggle
+  $("tab-chat").parentElement.dataset.active = t; // fait glisser le curseur du toggle de l'assistant
   $("tab-chat").setAttribute("aria-selected", String(t === "chat"));
   $("tab-quiz").setAttribute("aria-selected", String(t === "quiz"));
   $("chat").hidden = t !== "chat";

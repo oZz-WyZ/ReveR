@@ -1,5 +1,5 @@
-import { askCourse, reexplain } from "../chat/ask.js";
-import { insertAfter, loadChat, saveChat, setFeedback } from "../chat/store.js";
+import { askCourse } from "../chat/ask.js";
+import { loadChat, saveChat } from "../chat/store.js";
 
 const $ = (id) => document.getElementById(id);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -49,18 +49,8 @@ export function createChat() {
       q.append(el("strong", null, "Dans ton cours : "), t.passage);
       m.append(q);
     }
-    m.append(el("span", "badge " + t.source, t.source === "cours" ? "d'après ton cours" : "connaissances générales"));
     m.append(el("p", null, t.reponse));
     if (t.tronque) m.append(el("p", "note", "Ton cours est long : je m'appuie sur les passages les plus proches de ta question."));
-    const fb = el("div", "fb");
-    for (const [v, label, name] of [["up", "👍", "Utile"], ["down", "👎", "Pas clair"]]) {
-      const b = el("button", null, label);
-      b.type = "button"; b.title = name; b.setAttribute("aria-label", name);
-      b.setAttribute("aria-pressed", String(t.feedback === v));
-      b.onclick = () => vote(t.id, v);
-      fb.append(b);
-    }
-    m.append(fb);
     return botRow(m);
   }
 
@@ -92,30 +82,6 @@ export function createChat() {
       if (d.id === doc.id) $("chat-input").value = question; // on rend sa question à l'élève
       status(ERRORS[e.code] ?? "La réponse n'a pas pu être obtenue. Réessaie.", true);
     } finally { busy = false; wait = null; render(); if (d.id === doc.id) $("chat-input").focus(); }
-  }
-
-  async function explain(targetId) {
-    const d = doc;
-    busy = true; wait = { docId: d.id }; status(""); render();
-    try {
-      const a = await reexplain({ doc: d, turns: chat.turns, targetId });
-      const turn = { id: uid(), role: "assistant", ...a, feedback: null, reexplique: targetId, ts: Date.now() };
-      const base = d.id === doc.id ? chat : loadChat(d.id);
-      const next = { ...base, turns: insertAfter(base.turns, targetId, turn) };
-      saveChat(d.id, next);
-      if (d.id === doc.id) chat = next;
-      status("");
-    } catch {
-      status("La ré-explication a échoué.", true, () => explain(targetId));
-    } finally { busy = false; wait = null; render(); }
-  }
-
-  async function vote(turnId, v) {
-    if (busy) return;
-    chat = setFeedback(chat, turnId, v);
-    saveChat(doc.id, chat);
-    render();
-    if (chat.turns.find((t) => t.id === turnId).feedback === "down") await explain(turnId);
   }
 
   $("chat-form").onsubmit = (e) => {
