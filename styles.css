@@ -59,6 +59,10 @@ input:focus, select:focus { border-color: var(--c2); }
 label { display: block; }
 #ob-form p { margin: .75rem 0; } #ob-form label input, #ob-form label select { display: block; margin-top: .25rem; min-width: 18rem; }
 
+/* --- pages à part (infos du cours, quiz) --- */
+.page { max-width: 48rem; margin: 0 auto; }
+.page .card { padding: 1.5rem 1.75rem; }
+
 /* --- cartes --- */
 .card, details.card {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);

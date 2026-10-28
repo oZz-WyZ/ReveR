@@ -35,6 +35,8 @@
     <button id="back" type="button" class="ghost">← Répertoire</button>
     <span id="fiche-maitrise"></span>
     <span class="spacer"></span>
+    <button id="infos-open" type="button" class="ghost" hidden>Infos du cours</button>
+    <button id="quiz-open" type="button" class="primary" hidden>Tester ma maîtrise</button>
     <span class="seg" role="group" aria-label="Disposition">
       <button type="button" id="lay-side">Côte à côte</button>
       <button type="button" id="lay-stack">Empilé</button>
@@ -62,8 +64,27 @@
     <section class="pane" id="pane-assistant">
       <header class="pane-head"><h2>Assistant</h2><button type="button" class="fold ghost" data-pane="assistant">Replier</button></header>
       <div class="pane-body">
-<details id="onboarding" class="card" hidden>
-  <summary>À propos de ce cours</summary>
+
+
+<p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
+        <section id="chat" class="card" hidden>
+  <h2>Pose tes questions sur le cours</h2>
+  <div id="chat-log" aria-live="polite"></div>
+  <p id="chat-status" role="status"></p>
+  <form id="chat-form">
+    <input id="chat-input" placeholder="Ta question…" autocomplete="off" required>
+    <button id="chat-send">Envoyer</button>
+  </form>
+</section>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section id="infos-page" class="page" hidden>
+  <div class="toolbar"><button id="infos-back" type="button" class="ghost">← Retour au cours</button></div>
+  <div id="onboarding" class="card">
+    <h2>À propos de ce cours</h2>
   <p id="ob-status" role="status"></p>
   <form id="ob-form">
     <p><label>Matière <input id="ob-matiere" required></label></p>
@@ -77,11 +98,15 @@
     <button>Confirmer</button>
   </form>
   <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
-</details>
-<details id="quiz" class="card" hidden>
-  <summary>Quiz de maîtrise</summary>
+  </div>
+</section>
+
+<section id="quiz-page" class="page" hidden>
+  <div class="toolbar"><button id="quiz-back" type="button" class="ghost">← Retour au cours</button></div>
+  <div id="quiz" class="card">
+    <h2>Quiz de maîtrise</h2>
   <p id="quiz-last" class="note"></p>
-  <button id="quiz-start" type="button">Tester ma maîtrise</button>
+  <button id="quiz-start" type="button">Commencer le quiz</button>
   <p id="quiz-status" role="status"></p>
   <div id="quiz-run" hidden>
     <p id="quiz-progress" class="note"></p>
@@ -92,20 +117,8 @@
     <button id="quiz-next" type="button" hidden>Suivante</button>
   </div>
   <div id="quiz-result" hidden></div>
-</details>
-<section id="chat" class="card" hidden>
-  <h2>Pose tes questions sur le cours</h2>
-  <div id="chat-log" aria-live="polite"></div>
-  <p id="chat-status" role="status"></p>
-  <form id="chat-form">
-    <input id="chat-input" placeholder="Ta question…" autocomplete="off" required>
-    <button id="chat-send">Envoyer</button>
-  </form>
-</section>
-      </div>
-    </section>
   </div>
-</div>
+</section>
 </main>
 <button id="pill" type="button" aria-label="Rouvrir Reviz"><span class="brand-dot" aria-hidden="true"></span>Reviz</button>
 <script type="module" src="src/main.js"></script>

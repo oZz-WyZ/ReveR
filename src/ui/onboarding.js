@@ -6,7 +6,7 @@ const FIELDS = { matiere: "ob-matiere", sujet: "ob-sujet", niveau: "ob-niveau" }
 const today = () => new Date().toLocaleDateString("sv"); // yyyy-mm-dd, heure locale
 
 /** persist(doc) -> doc sauvegardé (main.js). Le doc porte `onboarding` (voir README). */
-export function createOnboarding(persist) {
+export function createOnboarding(persist, onDone) {
   let doc, detecte = null;
 
   const status = (msg, err = false) => { $("ob-status").textContent = msg; $("ob-status").className = err ? "err" : ""; };
@@ -28,12 +28,15 @@ export function createOnboarding(persist) {
       const consigne = await generateConsigne(doc.onboarding);
       doc = persist({ ...doc, onboarding: { ...doc.onboarding, consigne, updatedAt: Date.now() } });
       status("Assistant configuré.");
+      showConsigne();
+      return true;
     } catch {
       status("L'assistant n'a pas pu être configuré.", true);
+      showConsigne();
+      return false;
     }
-    showConsigne();
   }
-  $("ob-regen").onclick = generate;
+  $("ob-regen").onclick = async () => { if (await generate()) onDone?.(); };
 
   $("ob-form").onsubmit = async (e) => {
     e.preventDefault();
@@ -49,15 +52,14 @@ export function createOnboarding(persist) {
       ...doc,
       onboarding: { ...old, ...v, consigne: changed ? null : old.consigne, detecte: old?.detecte ?? detecte, updatedAt: Date.now() },
     });
-    if (doc.onboarding.consigne) { status("Enregistré."); showConsigne(); } else await generate();
+    const ok = doc.onboarding.consigne ? (status("Enregistré."), showConsigne(), true) : await generate();
+    if (ok) onDone?.(); // l'assistant est prêt : retour au cours
   };
 
   return {
-    hide() { $("onboarding").hidden = true; },
     // Cours déjà configuré : réaffiche les valeurs stockées.
     show(d) {
       doc = d;
-      $("onboarding").hidden = false; $("onboarding").open = false;
       fill(d.onboarding);
       $("ob-echeance").value = d.onboarding.echeance ?? "";
       warnDate(); status(""); showConsigne();
@@ -65,7 +67,6 @@ export function createOnboarding(persist) {
     // Nouveau cours : détecte, préremplit, laisse l'élève corriger.
     async start(d) {
       doc = d; detecte = null;
-      $("onboarding").hidden = false; $("onboarding").open = true;
       fill({}); $("ob-echeance").value = ""; warnDate(); showConsigne();
       status("Détection de la matière…");
       try {

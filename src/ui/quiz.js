@@ -12,7 +12,7 @@ function el(tag, cls, text) {
 }
 
 /** Quiz de maîtrise, une question à la fois. saveScore({ score, total, at, tronque }) persiste sur le cours à la fin. N'agit pas sur l'état de maîtrise. */
-export function createQuiz(saveScore) {
+export function createQuiz(saveScore, onBack) {
   let doc, run = null, tronque = false, busy = false;
 
   const status = (msg, err = false, retry) => {
@@ -80,7 +80,7 @@ export function createQuiz(saveScore) {
     const box = $("quiz-result");
     box.replaceChildren(el("p", "score", `Score : ${run.score}/${run.total}`));
     const again = el("button", null, "Refaire un quiz"); again.type = "button"; again.onclick = start;
-    const close = el("button", null, "Fermer"); close.type = "button"; close.onclick = reset;
+    const close = el("button", null, "Retour au cours"); close.type = "button"; close.onclick = onBack;
     box.append(again, " ", close);
     $("quiz-run").hidden = true; box.hidden = false;
     saveScore({ score: run.score, total: run.total, at: Date.now(), tronque });
@@ -90,7 +90,7 @@ export function createQuiz(saveScore) {
     if (busy) return;
     const d = doc;
     busy = true; $("quiz-start").disabled = true;
-    reset(); $("quiz").open = true; status("Génération du quiz…");
+    reset(); status("Génération du quiz…");
     try {
       const r = await generateQuiz({ doc: d });
       if (doc?.id !== d.id) return; // l'élève a changé de cours pendant l'appel
@@ -103,13 +103,10 @@ export function createQuiz(saveScore) {
   }
   $("quiz-start").onclick = start;
 
-  // nouveau cours affiché : remise à zéro
-  const show = (d) => { doc = d; reset(); renderLast(); $("quiz").hidden = false; };
   return {
-    show,
-    hide() { $("quiz").hidden = true; },
-    // le cours a été enregistré : on rafraîchit seulement le dernier score, sans toucher au quiz en cours
-    // (si l'assistant vient d'être configuré, la section apparaît)
-    update(d) { if ($("quiz").hidden) return show(d); doc = d; renderLast(); },
+    // page du quiz ouverte pour ce cours : remise à zéro
+    show(d) { doc = d; reset(); renderLast(); },
+    // le cours a été enregistré (ex. configuration terminée) : on rafraîchit seulement le dernier score
+    update(d) { doc = d; renderLast(); },
   };
 }
