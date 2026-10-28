@@ -1,33 +1,36 @@
 import { extractText } from "./extract/index.js";
 import { relocateAll } from "./anchors.js";
-import { deleteDoc, listEntries, loadDoc, rebuildIndex, restoreDoc, saveDoc } from "./library.js";
+import { NON_CLASSE, deleteDoc, entriesOf, listEntries, loadDoc, rebuildIndex, restoreDoc, saveDoc } from "./library.js";
+import { classify, isSure } from "./classify.js";
+import { loadProfile, saveProfile } from "./profile.js";
+import { buildConsigne } from "./chat/consigne.js";
 import { storage } from "./storage.js";
 import { setupImporter } from "./ui/importer.js";
 import { createReader } from "./ui/reader.js";
-import { createOnboarding } from "./ui/onboarding.js";
 import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
 import { createQuiz } from "./ui/quiz.js";
 import { renderLibrary } from "./ui/library.js";
+import { chooseMatiere, renderSubjects } from "./ui/subjects.js";
+import { startSetup } from "./ui/profile-setup.js";
 import { toast } from "./ui/toast.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const viewer = createViewer($("pdf-view"));
-const backToCourse = () => go("cours-" + current.id);
-const onboarding = createOnboarding(persist, backToCourse);
 const chat = createChat();
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), () => setTab("chat"));
 const highlights = createHighlights({
   reader,
   viewer,
   getMode: () => mode,
-  getDoc: () => current,
+  getDoc: () => withConsigne(current),
   saveComments: (comments) => { const d = persist({ ...current, comments }); highlights.render(d, false); },
 });
-let current = null; // le cours affiché : { id, name, text, method, truncated, importedAt, maitrise, onboarding?, comments? }
-let shown = null;   // "home" ou "<écran>:<id>" (cours / infos)
+let profil = loadProfile(); // { niveau, classe..., matieres: [{ id, nom }] } ; absent = onboarding à faire
+let current = null; // le cours affiché : { id, name, text, method, truncated, importedAt, matiereId?, comments? }
+let shown = null;   // "setup", "home", ou "<écran>:<id>" (matiere / cours)
 let mode = "texte"; // affichage du cours : "original" (PDF / photo) ou "texte"
 let orig = null;    // { kind, canComment } si l'original est affiché
 let viewToken = 0;
@@ -41,41 +44,68 @@ const ERRORS = {
   rate_limited: "Trop de requêtes : réessaie dans un moment.",
 };
 
-// Écrans : répertoire, fiche (cours + assistant / quiz), infos du cours.
-const SCREENS = ["home", "fiche", "infos-page"];
+// Écrans : onboarding du profil, accueil (cartes par matière), page d'une matière, fiche (cours + assistant / quiz).
+const SCREENS = ["setup", "home", "matiere-page", "fiche"];
 const screen = (name) => {
   SCREENS.forEach((s) => { $(s).hidden = s !== name; });
   document.body.classList.toggle("fiche-open", name === "fiche"); // la fiche tient dans la fenêtre : pas de scroll de page
 };
 
-// Navigation par hash : #repertoire, #cours-<id>, #infos-<id> (les id sont en base 36, sans tiret).
-// go() appelle route() aussi, au cas où hashchange ne partirait pas.
+const matiereName = (d) => profil?.matieres.find((m) => m.id === d?.matiereId)?.nom ?? null;
+// La consigne de l'assistant se déduit du profil et de la matière du cours (aucun appel IA).
+const withConsigne = (d) => d && { ...d, consigne: buildConsigne(profil, matiereName(d)) };
+
+// Navigation par hash : #repertoire, #matiere-<id>, #cours-<id>. go() appelle route() aussi, au cas où hashchange ne partirait pas.
 const go = (hash) => { location.hash = hash; route(); };
 function route() {
-  const [kind, id] = location.hash.slice(1).split("-");
-  const key = id && ["cours", "infos"].includes(kind) ? `${kind}:${id}` : "home";
+  if (!profil) return shown === "setup" ? undefined : showSetup();
+  const [, kind, id] = location.hash.slice(1).match(/^([a-z]+)-(.+)$/) ?? [];
+  const key = id && ["cours", "matiere"].includes(kind) ? `${kind}:${id}` : "home";
   if (key === shown) return;
   if (key === "home") return showHome();
-  // un import pas encore enregistré n'existe qu'en mémoire (fiche seulement)
-  const doc = kind === "cours" && current?.id === id ? current : loadDoc(id);
+  if (kind === "matiere") return showMatiere(id);
+  const doc = loadDoc(id);
   if (!doc) { showHome(); location.hash = "repertoire"; return; }
-  ({ cours: showFiche, infos: showInfos })[kind](doc);
+  showFiche(doc);
 }
 window.addEventListener("hashchange", route);
+
+function showSetup() {
+  shown = "setup"; current = null;
+  screen("setup");
+  startSetup({
+    onDone: (p) => { saveProfile(p); profil = p; go("repertoire"); },
+  });
+}
 
 function showHome() {
   shown = "home"; current = null;
   screen("home");
   const entries = listEntries();
-  renderLibrary(entries, { onOpen: (id) => go("cours-" + id), onDelete: removeCourse });
+  const known = new Set(profil.matieres.map((m) => m.id));
+  renderSubjects(
+    profil.matieres,
+    (id) => entries.filter((e) => e.matiereId === id).length,
+    entries.filter((e) => !e.matiereId || !known.has(e.matiereId)).length,
+    (id) => go("matiere-" + id),
+  );
 }
+
+function showMatiere(id) {
+  shown = "matiere:" + id; current = null;
+  screen("matiere-page");
+  $("matiere-title").textContent = id === NON_CLASSE ? "Non classé" : (profil.matieres.find((m) => m.id === id)?.nom ?? "Matière");
+  renderLibrary(entriesOf(id, profil.matieres), { onOpen: (cid) => go("cours-" + cid), onDelete: removeCourse });
+}
+
+const refreshList = () => (shown?.startsWith("matiere:") ? showMatiere(shown.slice(8)) : shown === "home" ? showHome() : undefined);
 
 // Suppression d'un cours : immédiate, avec un message qui permet d'annuler pendant quelques secondes.
 async function removeCourse(id) {
   const blob = await storage.blob.get(id);
   const snap = deleteDoc(id);
   await storage.blob.remove(id);
-  if (shown === "home") showHome();
+  refreshList();
   toast({
     text: "Cours supprimé",
     duration: 5000,
@@ -84,7 +114,7 @@ async function removeCourse(id) {
       onClick: async () => {
         restoreDoc(snap);
         if (blob) await storage.blob.put(id, blob);
-        if (shown === "home") showHome();
+        refreshList();
       },
     },
   });
@@ -146,61 +176,70 @@ function showFiche(doc, edit = false) {
   if (JSON.stringify(comments) !== JSON.stringify(doc.comments ?? [])) doc = persist({ ...doc, comments });
   current = doc;
   screen("fiche");
-  const saved = !!loadDoc(doc.id);
-  const ready = !!doc.onboarding?.consigne;
+  renderMatiereChip();
   view(doc, edit);
   loadOriginal(doc, edit);
-  ready ? chat.show(doc) : chat.hide();
-  quiz.show(doc); // nouveau cours : quiz remis à zéro
+  chat.show(withConsigne(doc));
+  quiz.show(withConsigne(doc)); // nouveau cours : quiz remis à zéro
   setTab("chat");
 }
+
+// Matière du cours : puce dans la barre d'outils (change la matière) et retour vers la liste de cette matière.
+function renderMatiereChip() {
+  const nom = matiereName(current) ?? "Non classé";
+  $("fiche-matiere").textContent = nom + " ▾";
+  $("back").textContent = "← " + nom;
+}
+$("fiche-matiere").onclick = async () => {
+  const choice = await chooseMatiere({ matieres: profil.matieres, titre: "Changer de matière", sous: current.name, dismissable: true, current: current.matiereId });
+  if (choice === null) return;
+  const d = persist({ ...current, matiereId: choice === NON_CLASSE ? null : choice });
+  renderMatiereChip();
+  chat.show(withConsigne(d)); // l'assistant s'adapte à la nouvelle matière
+  quiz.update(withConsigne(d));
+};
 
 // Panneau de droite : « Reviz » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
 // Changer d'onglet ne remet pas le quiz à zéro.
 function setTab(t) {
-  const ready = !!current?.onboarding?.consigne, saved = !!current && !!loadDoc(current.id);
-  $("tab-quiz").disabled = !ready || !saved;
-  if (t === "quiz" && $("tab-quiz").disabled) t = "chat";
   document.querySelector(".tabs").dataset.active = t; // fait glisser le curseur du toggle
   $("tab-chat").setAttribute("aria-selected", String(t === "chat"));
   $("tab-quiz").setAttribute("aria-selected", String(t === "quiz"));
-  $("chat").hidden = t !== "chat" || !ready;
-  $("assistant-off").hidden = t !== "chat" || ready || !saved;
+  $("chat").hidden = t !== "chat";
   $("quiz").hidden = t !== "quiz";
 }
 $("tab-chat").onclick = () => setTab("chat");
 $("tab-quiz").onclick = () => { setTab("quiz"); quiz.open(); };
 
-function showInfos(doc) {
-  shown = "infos:" + doc.id; current = doc;
-  screen("infos-page");
-  doc.onboarding ? onboarding.show(doc) : onboarding.start(doc);
-}
-
 function persist(doc) {
   doc = saveDoc({ ...doc, updatedAt: Date.now() });
-  quiz.update(doc);
-  if (shown?.split(":")[1] !== doc.id) return doc; // l'élève a quitté ce cours pendant un appel
+  quiz.update(withConsigne(doc));
+  if (shown !== "cours:" + doc.id) return doc; // l'élève a quitté ce cours pendant un appel
   current = doc;
-  if (shown?.startsWith("cours:")) { syncControls(); setTab($("tab-quiz").getAttribute("aria-selected") === "true" ? "quiz" : "chat"); }
+  syncControls();
   return doc;
 }
 
 $("new-course").onclick = () => $("file").click(); // ouvre l'explorateur de fichiers
-$("back").onclick = () => go("repertoire");
-$("to-infos").onclick = () => go("infos-" + current.id);
-$("infos-back").onclick = backToCourse;
+$("back").onclick = () => go("matiere-" + (matiereName(current) ? current.matiereId : NON_CLASSE));
+$("matiere-back").onclick = () => go("repertoire");
 
+// Import : texte extrait, puis classement dans la bonne matière. Si l'app n'est pas sûre, elle demande tout de suite à l'élève.
 setupImporter($("hero"), $("file"), async (file) => {
   const t = toast({ text: "Import du cours…", progress: true }); // la barre suit la lecture des pages
   try {
-    const r = await extractText(file, { onProgress: ({ done, total }) => t.set(done / total) });
+    const r = await extractText(file, { onProgress: ({ done, total }) => t.set((0.85 * done) / total) });
     if (!r.text.trim()) throw Object.assign(new Error("Aucun texte trouvé."), { code: "empty" });
-    t.set(1);
     const doc = { id: Date.now().toString(36), name: file.name, text: r.text, method: r.method, truncated: r.truncated, importedAt: Date.now() };
     await storage.blob.put(doc.id, file); // l'original (PDF / photo) est gardé avec le cours
-    saveDoc({ ...doc, updatedAt: Date.now() });
-    go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
+    t.set(0.9);
+    let choix = await classify({ name: file.name, text: r.text, matieres: profil.matieres }).then((c) => (isSure(c) ? c.matiereId : undefined), () => undefined);
+    if (choix === undefined) {
+      choix = await chooseMatiere({ matieres: profil.matieres, titre: "Dans quelle matière ranger ce cours ?", sous: file.name });
+    }
+    saveDoc({ ...doc, matiereId: choix === NON_CLASSE ? null : choix, updatedAt: Date.now() });
+    t.set(1);
+    go("cours-" + doc.id);
   } catch (e) {
     t.close();
     toast({ text: ERRORS[e.code] ?? e.message, tone: "err" });
@@ -213,6 +252,23 @@ $("edit-text").onclick = () => {
   const text = reader.getText();
   const doc = persist({ ...current, text, comments: relocateAll(text, current.comments ?? []) });
   view(doc, false);
+};
+
+// Bouton « Reset » (provisoire, pour retester l'onboarding) : efface tout, après un second clic de confirmation.
+let resetTimer;
+const disarmReset = () => { clearTimeout(resetTimer); $("reset").textContent = "Reset"; };
+$("reset").onclick = async () => {
+  if ($("reset").textContent === "Reset") {
+    $("reset").textContent = "Confirmer ?";
+    resetTimer = setTimeout(disarmReset, 4000);
+    return;
+  }
+  disarmReset();
+  await storage.blob.clear();
+  storage.clear();
+  profil = null; current = null;
+  location.hash = "";
+  showSetup();
 };
 
 rebuildIndex();

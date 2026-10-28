@@ -49,7 +49,7 @@ export function createHighlights({ reader, viewer, getMode, getDoc, saveComments
     if (popOpen || busy) return;
     const doc = getDoc();
     const surface = getMode() === "original" ? viewer : reader; // PDF d'origine ou texte
-    const s = !surface.isEditing?.() && doc?.onboarding?.consigne ? surface.selection() : null;
+    const s = !surface.isEditing?.() && doc?.consigne ? surface.selection() : null;
     if (!s) return hideBtn();
     // on rogne les espaces de bord pour que la quote commence et finisse sur du texte
     let { start, end } = s;

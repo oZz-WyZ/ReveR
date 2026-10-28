@@ -38,7 +38,7 @@ export function parseAnswer(data, text) {
 
 async function run({ doc, messages, queries, signal }) {
   const { text: cours, tronque } = selectCourse(doc.text, queries);
-  const system = buildSystem({ consigne: doc.onboarding.consigne, cours, tronque });
+  const system = buildSystem({ consigne: doc.consigne, cours, tronque });
   const r = await askAI({ system, messages, json: true, modelTier: "default", signal });
   return { ...parseAnswer(r.data, doc.text), tronque };
 }

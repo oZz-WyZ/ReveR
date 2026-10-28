@@ -40,7 +40,6 @@ input, select, textarea {
 }
 input:focus, select:focus { border-color: var(--orange-2); outline: 0; box-shadow: 0 0 0 4px rgba(240, 137, 58, .22); }
 label { display: block; }
-#ob-form p { margin: .9rem 0; } #ob-form label input, #ob-form label select { display: block; margin-top: .3rem; min-width: 18rem; }
 
 /* --- cartes : crème qui s'éclaircit, énormes arrondis --- */
 .card, details.card {
@@ -219,6 +218,41 @@ blockquote.passage, #quiz blockquote {
 .qres { padding: .7rem 1rem; margin: .6rem 0; border-radius: var(--r-md); background: #fff; border: 2px solid var(--line); }
 .qres.ok { border-color: #2e9d57; background: #f1faf3; } .qres.ko { border-color: #d64545; background: #fdf3f3; }
 .qres p { margin: .3rem 0; }
+
+/* --- onboarding du profil --- */
+.setup { padding: 2rem 2.4rem 1.8rem; margin: 2vh auto; }
+.setup-brand { display: flex; align-items: center; gap: .75rem; font-size: 1.2rem; margin-bottom: 1rem; }
+.setup-brand .logo-tile { width: 3rem; height: 3rem; box-shadow: var(--shadow); }
+.setup h2 { font-size: 1.9rem; font-weight: 300; margin-bottom: .4rem; }
+#setup-body input { width: 100%; margin-top: .6rem; }
+.choices { display: grid; gap: .55rem; margin: 1.1rem 0 .5rem; }
+.choices.wrap { display: flex; flex-wrap: wrap; }
+.choice { text-align: left; padding: .7rem 1.2rem; background: #fff; border: 2px solid var(--line); border-radius: var(--r-md); font-weight: 400; box-shadow: none; }
+.choices.wrap .choice { border-radius: 999px; padding: .5rem 1.05rem; }
+.choice:hover:not(:disabled) { border-color: var(--orange-2); transform: none; box-shadow: none; }
+.choice[aria-pressed="true"] { background: var(--black); color: #fff; border-color: var(--black); }
+.tags { display: flex; flex-wrap: wrap; gap: .45rem; margin: .8rem 0; }
+.tag-chip { display: inline-flex; align-items: center; gap: .2rem; background: var(--orange-soft); color: var(--orange-ink); padding: .3rem .35rem .3rem .95rem; border-radius: 999px; font-size: .95rem; }
+.tag-chip button { background: none; border: 0; padding: 0 .5rem; font-size: 1.1rem; line-height: 1; color: inherit; box-shadow: none; }
+.guide-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+.setup-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.4rem; }
+.setup-nav .primary { margin-left: auto; }
+
+/* --- accueil : cartes par matière ; page d'une matière --- */
+.subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.subject { display: flex; align-items: center; gap: .95rem; text-align: left; padding: 1.1rem 1.3rem; border: 0; border-radius: var(--r-lg);
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); }
+.subject:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.subject .dot { flex: none; width: 2.7rem; height: 2.7rem; display: grid; place-items: center; border-radius: 50%; background: var(--tint); color: var(--ink); font-weight: 500; font-size: 1.1rem; }
+.subject-text { display: flex; flex-direction: column; min-width: 0; }
+.subject-name { font-weight: 500; overflow-wrap: anywhere; }
+.subject .count { color: var(--muted); font-size: .85rem; font-weight: 400; }
+.page-title { font-size: 2.2rem; font-weight: 300; margin: .2rem .3rem 1rem; }
+#fiche-matiere { font-size: .92rem; padding: .45rem 1rem; }
+#chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(40, 20, 5, .35); backdrop-filter: blur(3px); }
+.chooser-card { width: calc(100% - 2rem); max-width: 36rem; max-height: 82vh; overflow: auto; padding: 1.6rem 1.8rem; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); animation: pop .18s ease; }
+.chooser-card h2 { font-size: 1.5rem; font-weight: 300; }
+.reset-fixed { position: fixed; left: 1rem; bottom: 1rem; z-index: 40; font-size: .8rem; opacity: .75; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

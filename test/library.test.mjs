@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
 import { storage } from "../src/storage.js";
-import { entryOf, saveDoc, loadDoc, listEntries, setMaitrise, rebuildIndex, deleteDoc, restoreDoc } from "../src/library.js";
+import { entryOf, saveDoc, loadDoc, listEntries, setMaitrise, rebuildIndex, deleteDoc, restoreDoc, entriesOf, NON_CLASSE } from "../src/library.js";
 
 const wipe = () => storage.keys("").forEach((k) => storage.remove(k));
 const doc = (id, extra = {}) => ({ id, name: id + ".pdf", text: "texte " + id, ...extra });
 
-// entryOf : titre depuis l'onboarding sinon nom de fichier ; défauts ; importedAt déduit de l'id
-assert.equal(entryOf(doc("abc")).titre, "abc.pdf");
-assert.equal(entryOf(doc("abc", { onboarding: { matiere: "Droit", sujet: "Contrats", echeance: "2026-11-15" } })).titre, "Droit — Contrats");
+// entryOf : titre = nom de fichier sans extension ; matière (null = non classé) ; défauts ; importedAt déduit de l'id
+assert.equal(entryOf(doc("abc")).titre, "abc");
+assert.equal(entryOf({ id: "z", name: "Cours de droit.v2.pdf" }).titre, "Cours de droit.v2");
+assert.equal(entryOf(doc("abc")).matiereId, null);
+assert.equal(entryOf(doc("abc", { matiereId: "histoire" })).matiereId, "histoire");
 assert.equal(entryOf(doc("abc")).maitrise, "a_reviser");
 assert.equal(entryOf(doc("mvryclwd")).importedAt, parseInt("mvryclwd", 36));
 assert.equal(entryOf(doc("x", { importedAt: 42 })).importedAt, 42);
@@ -16,9 +18,16 @@ assert.equal(entryOf(doc("x", { importedAt: 42 })).importedAt, 42);
 wipe();
 saveDoc(doc("a", { importedAt: 100 }));
 saveDoc(doc("b", { importedAt: 200 }));
-saveDoc(doc("a", { importedAt: 100, onboarding: { matiere: "Histoire", sujet: "1789" } }));
+saveDoc(doc("a", { importedAt: 100, matiereId: "histoire" }));
 assert.deepEqual(listEntries().map((e) => e.id), ["b", "a"]);
-assert.equal(listEntries().find((e) => e.id === "a").titre, "Histoire — 1789");
+assert.equal(listEntries().find((e) => e.id === "a").matiereId, "histoire");
+// entriesOf : par matière ; « non classé » = sans matière ou matière absente du profil
+const MAT = [{ id: "histoire", nom: "Histoire" }, { id: "maths", nom: "Maths" }];
+assert.deepEqual(entriesOf("histoire", MAT).map((e) => e.id), ["a"]);
+assert.deepEqual(entriesOf("maths", MAT), []);
+assert.deepEqual(entriesOf(NON_CLASSE, MAT).map((e) => e.id), ["b"]);
+saveDoc(doc("c", { importedAt: 300, matiereId: "supprimee" }));
+assert.deepEqual(entriesOf(NON_CLASSE, MAT).map((e) => e.id), ["c", "b"]);
 assert.equal(loadDoc("a").maitrise, "a_reviser");
 
 // setMaitrise : met à jour le cours et l'index, refuse une valeur inconnue ou un cours absent

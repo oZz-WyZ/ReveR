@@ -57,7 +57,7 @@ export function parseQuiz(data, text, rnd = Math.random, max = QUIZ_MAX) {
 export async function generateQuiz({ doc, signal }) {
   const n = quizSize(doc.text);
   const { text: cours, tronque } = selectCoverage(doc.text);
-  const system = buildSystem({ consigne: doc.onboarding.consigne, cours, tronque, rules: rules(n) });
+  const system = buildSystem({ consigne: doc.consigne, cours, tronque, rules: rules(n) });
   const r = await askAI({
     system,
     messages: [{ role: "user", content: `Génère le QCM de ${n} questions.` }],

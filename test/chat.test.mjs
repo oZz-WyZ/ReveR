@@ -48,7 +48,7 @@ chat = setFeedback(chat, "a1", "down"); assert.deepEqual(chat.counts, { up: 0, d
 assert.deepEqual(insertAfter(turns, "a1", A("n", "x")).map((t) => t.id), ["u1", "a1", "a1b", "n", "u2", "a2"]);
 
 // bout en bout avec le mock : historique vide puis non vide ; cours / hors cours / ré-explication
-const doc = { id: "d", text: TEXT, onboarding: { consigne: "Tu es un expert en histoire." } };
+const doc = { id: "d", text: TEXT, consigne: "Tu es un expert en histoire." };
 const a1 = await askCourse({ doc, turns: [], question: "Que s'est-il passé le 14 juillet ?" });
 assert.equal(a1.source, "cours");
 assert.ok(TEXT.includes(a1.passage));

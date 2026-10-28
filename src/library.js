@@ -5,14 +5,13 @@ import { storage } from "./storage.js";
 export const MAITRISE = { a_reviser: "À réviser", en_cours: "En cours", maitrise: "Maîtrisé" };
 const INDEX = "docs:index";
 
+const stripExt = (n) => n.replace(/\.[^./\\]+$/, "");
+
 export function entryOf(doc) {
-  const ob = doc.onboarding;
   return {
     id: doc.id,
-    titre: ob?.matiere && ob?.sujet ? `${ob.matiere} — ${ob.sujet}` : doc.name,
-    matiere: ob?.matiere ?? "",
-    sujet: ob?.sujet ?? "",
-    echeance: ob?.echeance ?? null,
+    titre: stripExt(doc.name),
+    matiereId: doc.matiereId ?? null, // null = non classé
     importedAt: doc.importedAt ?? (parseInt(doc.id, 36) || 0), // l'id est un horodatage base 36
     maitrise: doc.maitrise ?? "a_reviser",
   };
@@ -30,6 +29,13 @@ export function saveDoc(doc) {
 
 /** Cours du plus récent au plus ancien. */
 export const listEntries = () => [...storage.get(INDEX, [])].sort((a, b) => b.importedAt - a.importedAt);
+
+export const NON_CLASSE = "none";
+/** Cours d'une matière (`NON_CLASSE` = sans matière, ou dont la matière n'existe plus dans le profil). */
+export function entriesOf(matiereId, matieres) {
+  const known = new Set(matieres.map((m) => m.id));
+  return listEntries().filter((e) => (matiereId === NON_CLASSE ? !e.matiereId || !known.has(e.matiereId) : e.matiereId === matiereId));
+}
 
 export function setMaitrise(id, value) {
   const doc = loadDoc(id);

@@ -4,11 +4,16 @@ import { AIError } from "./errors.js";
 // Les mots-clés viennent du nom de fichier / du texte envoyé.
 function mockJson(system, last) {
   if (system?.includes('"correctIndex"')) return mockQuiz(system);
+  if (system?.includes("Liste des matières")) return mockClassify(system, last);
   if (system?.includes('"passage"')) return mockChat(system, last);
-  const droit = /droit|juridi|code civil/i.test(last.split("\n")[0]); // première ligne = nom de fichier
-  return droit
-    ? { matiere: "Droit", sujet: "Responsabilité civile (mock)", niveau_estime: "supérieur" }
-    : { matiere: "Histoire", sujet: "La Révolution française (mock)", niveau_estime: "lycée" };
+}
+
+// Classement d'un cours (it. 9) : cherche, dans le nom de fichier, un mot d'une matière de la liste ; sinon « ne sait pas ».
+function mockClassify(system, last) {
+  const name = (last.split("\n")[0] ?? "").toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
+  const lignes = [...(system.split("Liste des matières")[1] ?? "").matchAll(/^- (\S+) : (.+)$/gm)].map((x) => ({ id: x[1], nom: x[2] }));
+  const hit = lignes.find((l) => l.nom.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "").split(/[^a-z]+/).some((w) => w.length > 3 && name.includes(w)));
+  return hit ? { matiere: hit.id, confiance: "haute" } : { matiere: null, confiance: "faible" };
 }
 
 // Réponse de chat (it. 3) : passage réel tiré du cours reçu dans le system.

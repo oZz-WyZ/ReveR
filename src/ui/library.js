@@ -8,7 +8,6 @@ function el(tag, cls, text) {
 }
 
 const dateFr = (ms) => new Date(ms).toLocaleDateString("fr-FR");
-const isoFr = (iso) => iso.split("-").reverse().join("/");
 
 function trashIcon() {
   const NS = "http://www.w3.org/2000/svg";
@@ -26,8 +25,7 @@ export function renderLibrary(entries, { onOpen, onDelete }) {
     const row = el("div", "row");
     const open = el("button", "titre", e.titre);
     open.type = "button"; open.onclick = () => onOpen(e.id);
-    const meta = [e.matiere, e.echeance && "échéance : " + isoFr(e.echeance), "importé le " + dateFr(e.importedAt)]
-      .filter(Boolean).join(" · ");
+    const meta = "importé le " + dateFr(e.importedAt);
     const del = el("button", "trash");
     del.type = "button"; del.title = "Supprimer ce cours"; del.setAttribute("aria-label", "Supprimer ce cours");
     del.append(trashIcon());

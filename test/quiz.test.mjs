@@ -97,7 +97,7 @@ assert.match(sys, /REGLES-QUIZ/);
 assert.doesNotMatch(sys, /source/);
 
 // bout en bout avec le mock : 5 questions réparties ; un cours sans phrase exploitable échoue proprement
-const doc = { id: "d", text: TEXT + "\n\nLa monarchie constitutionnelle dure jusqu'en 1792 avant la chute.\n\nLouis XVI est exécuté en janvier 1793 sur la place publique.", onboarding: { consigne: "Tu es un expert." } };
+const doc = { id: "d", text: TEXT + "\n\nLa monarchie constitutionnelle dure jusqu'en 1792 avant la chute.\n\nLouis XVI est exécuté en janvier 1793 sur la place publique.", consigne: "Tu es un expert." };
 const r = await generateQuiz({ doc });
 assert.equal(r.questions.length, quizSize(doc.text)); // cours court -> 3
 assert.equal(r.tronque, false);

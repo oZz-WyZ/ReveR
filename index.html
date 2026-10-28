@@ -9,7 +9,19 @@
 </head>
 <body>
 <main class="app">
-<section id="home">
+<section id="setup" class="page" hidden>
+  <div class="card setup">
+    <div class="setup-brand"><span class="logo-tile"><img src="mascotte.svg" alt=""></span><span>Reviz</span></div>
+    <h2 id="setup-title"></h2>
+    <p id="setup-aide" class="note"></p>
+    <div id="setup-body"></div>
+    <div class="setup-nav">
+      <button id="setup-back" type="button" class="ghost">Retour</button>
+      <button id="setup-next" type="button" class="primary">Continuer</button>
+    </div>
+  </div>
+</section>
+<section id="home" hidden>
   <div class="hero" id="hero">
     <div class="hero-brand"><span class="logo-tile"><img src="mascotte.svg" alt=""></span><span>Reviz</span></div>
     <h2>Mes cours</h2>
@@ -17,12 +29,18 @@
     <button id="new-course" type="button" class="primary">Nouveau cours</button>
     <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden>
   </div>
+  <div id="subjects" class="subjects"></div>
+</section>
+<section id="matiere-page" hidden>
+  <div class="toolbar"><button id="matiere-back" type="button" class="ghost">← Mes matières</button></div>
+  <h2 id="matiere-title" class="page-title"></h2>
   <div id="lib-list"></div>
 </section>
 <div id="fiche" hidden>
   <div class="toolbar">
-    <button id="back" type="button" class="ghost">← Répertoire</button>
+    <button id="back" type="button" class="ghost">← Mes matières</button>
     <span class="spacer"></span>
+    <button id="fiche-matiere" type="button" class="chip" title="Changer de matière"></button>
   </div>
   <div id="workspace">
     <section class="pane" id="pane-texte">
@@ -56,10 +74,9 @@
         <header class="assistant-head">
           <span class="tabs" role="tablist" aria-label="Assistant" data-active="chat">
             <button id="tab-chat" type="button" role="tab" aria-selected="true">Reviz</button>
-            <button id="tab-quiz" type="button" role="tab" aria-selected="false" disabled>Me tester</button>
+            <button id="tab-quiz" type="button" role="tab" aria-selected="false">Me tester</button>
           </span>
         </header>
-        <p id="assistant-off" class="note" hidden>L'assistant n'est pas encore configuré. <button id="to-infos" type="button" class="ghost">Configurer le cours</button></p>
         <section id="quiz" class="quiz-box" hidden>
           <h2>Quiz de maîtrise</h2>
           <p id="quiz-status" role="status"></p>
@@ -88,28 +105,10 @@
   </div>
 </div>
 
-<section id="infos-page" class="page" hidden>
-  <div class="toolbar"><button id="infos-back" type="button" class="ghost">← Retour au cours</button></div>
-  <div id="onboarding" class="card">
-    <h2>À propos de ce cours</h2>
-  <p id="ob-status" role="status"></p>
-  <form id="ob-form">
-    <p><label>Matière <input id="ob-matiere" required></label></p>
-    <p><label>Sujet <input id="ob-sujet" required></label></p>
-    <p><label>Niveau
-      <select id="ob-niveau" required>
-        <option value="">—</option><option>collège</option><option>lycée</option><option>supérieur</option>
-      </select></label></p>
-    <p><label>Échéance du devoir (facultatif) <input id="ob-echeance" type="date"></label>
-      <span id="ob-warn"></span></p>
-    <button>Confirmer</button>
-  </form>
-  <button id="ob-regen" hidden>Réessayer la configuration de l'assistant</button>
-  </div>
-</section>
-
 </main>
+<div id="chooser" hidden></div>
 <div id="toasts" aria-live="polite"></div>
+<button id="reset" type="button" class="ghost reset-fixed">Reset</button>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>
