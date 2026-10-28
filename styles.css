@@ -51,8 +51,7 @@ label { display: block; }
 .page .card { padding: 1.9rem 2.1rem; }
 
 /* --- accueil / répertoire --- */
-#status { min-height: 1.4rem; color: var(--muted); font-size: .95rem; }
-#status.err, .err { color: var(--danger); }
+.err { color: var(--danger); }
 .hero {
   background: linear-gradient(175deg, var(--orange-1) 0%, var(--orange-2) 100%); color: #fff;
   border-radius: var(--r-xl); padding: 2.4rem 2.6rem 2.2rem; box-shadow: var(--shadow-lg); margin: .25rem 0 1.25rem;
@@ -66,31 +65,41 @@ label { display: block; }
 .hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
 #lib-list .row {
-  display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr) auto; align-items: center; gap: 1rem;
-  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-lg); padding: 1.2rem 1.7rem;
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr); align-items: center; gap: 1rem;
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-lg); padding: 1.2rem 4.2rem 1.2rem 1.7rem;
   margin: .85rem 0; box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
 }
 #lib-list .row:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 #lib-list .titre { text-align: left; border: 0; background: none; padding: 0; font-size: 1.2rem; font-weight: 500; color: var(--ink); }
 #lib-list .titre:hover { color: var(--orange-ink); transform: none; box-shadow: none; }
 #lib-list .meta { color: var(--muted); font-size: .92rem; }
-select.maitrise { border-radius: 999px; font-weight: 500; padding: .4rem 1rem; border: 0; cursor: pointer; }
-select.maitrise[data-v="a_reviser"] { background: var(--orange-soft); color: var(--orange-ink); }
-select.maitrise[data-v="en_cours"] { background: #efe6df; color: #3b2a1e; }
-select.maitrise[data-v="maitrise"] { background: var(--black); color: #fff; }
-.reset { margin-top: 3rem; font-size: .9rem; color: var(--muted); }
-#reset-confirm { color: var(--danger); }
-#reset-yes { color: #fff; background: var(--danger); }
+.trash {
+  position: absolute; top: .75rem; right: .85rem; width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center;
+  border-radius: 50%; background: #fff; color: var(--muted); border: 1.5px solid var(--line); box-shadow: none;
+}
+.trash:hover:not(:disabled) { color: var(--danger); border-color: #f0b8b3; box-shadow: none; }
+
+/* --- notifications : petite carte en bas à droite avec une barre de progression --- */
+#toasts { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50; display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; pointer-events: none; }
+.toast { pointer-events: auto; min-width: 16rem; max-width: 24rem; background: #fff; border-radius: 18px; overflow: hidden; font-size: .92rem;
+  box-shadow: 0 12px 34px rgba(60, 30, 10, .18), 0 0 0 1px rgba(60, 30, 10, .06); animation: toast-in .22s ease; }
+.toast-line { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 1rem .8rem 1.1rem; }
+.toast .act { background: none; border: 0; padding: .25rem .7rem; font-weight: 600; color: var(--orange-ink); }
+.toast .act:hover:not(:disabled) { background: var(--orange-soft); box-shadow: none; transform: none; }
+.toast .track { height: 3px; background: rgba(60, 30, 10, .08); }
+.toast .fill { height: 100%; width: 0; background: var(--black); }
+.toast.err .fill { background: var(--danger); }
+.toast.err .toast-text { color: var(--danger); }
+.toast.out { opacity: 0; transform: translateY(6px); transition: opacity .2s, transform .2s; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* --- fiche : tient dans la fenêtre (pas de scroll de page), chaque colonne scrolle en interne --- */
 body.fiche-open { overflow: hidden; }
 body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
-body.fiche-open #status { display: none; }
 #fiche { display: flex; flex-direction: column; height: calc(100dvh - 2.25rem); min-height: 30rem; }
 #fiche[hidden] { display: none; }
 .toolbar { display: flex; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }
 .toolbar .spacer { flex: 1; }
-#unsaved { margin: 0 0 .5rem; flex: none; }
 .seg[hidden] { display: none; }
 .seg { display: inline-flex; background: rgba(255, 255, 255, .6); border-radius: 999px; padding: .2rem; }
 .seg button { background: transparent; padding: .4rem 1.05rem; color: var(--muted); }

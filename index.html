@@ -9,7 +9,6 @@
 </head>
 <body>
 <main class="app">
-<p id="status" role="status"></p>
 <section id="home">
   <div class="hero" id="hero">
     <div class="hero-brand"><span class="logo-tile"><img src="mascotte.svg" alt=""></span><span>Reviz</span></div>
@@ -19,20 +18,12 @@
     <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden>
   </div>
   <div id="lib-list"></div>
-  <p class="reset">
-    <button id="reset" type="button">Réinitialiser</button>
-    <span id="reset-confirm" hidden>Tout effacer définitivement (cours, chats, commentaires) ?
-      <button id="reset-yes" type="button">Oui, tout effacer</button>
-      <button id="reset-no" type="button">Annuler</button></span>
-  </p>
 </section>
 <div id="fiche" hidden>
   <div class="toolbar">
     <button id="back" type="button" class="ghost">← Répertoire</button>
-    <span id="fiche-maitrise"></span>
     <span class="spacer"></span>
   </div>
-  <p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
   <div id="workspace">
     <section class="pane" id="pane-texte">
       <div class="pane-body viewer-shell">
@@ -119,6 +110,7 @@
 </section>
 
 </main>
+<div id="toasts" aria-live="polite"></div>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>

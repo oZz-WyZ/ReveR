@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { storage } from "../src/storage.js";
-import { entryOf, saveDoc, loadDoc, listEntries, setMaitrise, rebuildIndex } from "../src/library.js";
+import { entryOf, saveDoc, loadDoc, listEntries, setMaitrise, rebuildIndex, deleteDoc, restoreDoc } from "../src/library.js";
 
 const wipe = () => storage.keys("").forEach((k) => storage.remove(k));
 const doc = (id, extra = {}) => ({ id, name: id + ".pdf", text: "texte " + id, ...extra });
@@ -41,6 +41,24 @@ assert.equal(storage.get("docs", null), null);
 storage.set("doc:old3", doc("old3"));
 rebuildIndex();
 assert.equal(listEntries().length, 3);
+// suppression : cours, chat et entrée d'index partent ; restauration à l'identique (annulation)
+wipe();
+saveDoc(doc("keep", { importedAt: 1 }));
+saveDoc(doc("gone", { importedAt: 2, comments: [{ id: "c1" }] }));
+storage.set("chat:gone", { turns: [{ id: "t" }], counts: { up: 0, down: 0 } });
+const snap = deleteDoc("gone");
+assert.equal(loadDoc("gone"), null);
+assert.equal(storage.get("chat:gone", null), null);
+assert.deepEqual(listEntries().map((e) => e.id), ["keep"]);
+assert.equal(loadDoc("keep").id, "keep");                 // les autres cours ne bougent pas
+restoreDoc(snap);
+assert.equal(loadDoc("gone").comments[0].id, "c1");
+assert.equal(storage.get("chat:gone").turns.length, 1);
+assert.deepEqual(listEntries().map((e) => e.id), ["gone", "keep"]);
+assert.doesNotThrow(() => deleteDoc("inexistant"));       // cours absent : sans effet
+restoreDoc({ doc: null, chat: null });                    // rien à restaurer : sans effet
+assert.equal(listEntries().length, 2);
+
 // storage.clear : tout part (index, cours, chats), l'index reconstruit est vide
 storage.set("chat:old1", { turns: [] });
 storage.clear();

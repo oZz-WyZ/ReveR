@@ -38,6 +38,10 @@ const blob = {
     try { return (await idb("readonly", (s) => s.get(id))) ?? blobMem.get(id) ?? null; }
     catch { return blobMem.get(id) ?? null; }
   },
+  async remove(id) {
+    blobMem.delete(id);
+    try { await idb("readwrite", (st) => st.delete(id)); } catch { /* rien à effacer */ }
+  },
   async clear() {
     blobMem.clear();
     try { await idb("readwrite", (s) => s.clear()); } catch { /* rien à effacer */ }

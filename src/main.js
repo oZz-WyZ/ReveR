@@ -1,6 +1,6 @@
 import { extractText } from "./extract/index.js";
 import { relocateAll } from "./anchors.js";
-import { listEntries, loadDoc, rebuildIndex, saveDoc, setMaitrise } from "./library.js";
+import { deleteDoc, listEntries, loadDoc, rebuildIndex, restoreDoc, saveDoc } from "./library.js";
 import { storage } from "./storage.js";
 import { setupImporter } from "./ui/importer.js";
 import { createReader } from "./ui/reader.js";
@@ -9,7 +9,8 @@ import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
 import { createQuiz } from "./ui/quiz.js";
-import { maitriseSelect, renderLibrary } from "./ui/library.js";
+import { renderLibrary } from "./ui/library.js";
+import { toast } from "./ui/toast.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
@@ -40,7 +41,6 @@ const ERRORS = {
   not_granted: "Autorise Claude pour transcrire ce document.",
   rate_limited: "Trop de requêtes : réessaie dans un moment.",
 };
-const status = (msg, err = false) => { $("status").textContent = msg; $("status").className = err ? "err" : ""; };
 
 // Écrans : répertoire, fiche (cours + assistant / quiz), infos du cours.
 const SCREENS = ["home", "fiche", "infos-page"];
@@ -66,26 +66,30 @@ window.addEventListener("hashchange", route);
 
 function showHome() {
   shown = "home"; current = null;
-  status("");
   screen("home");
   const entries = listEntries();
-  renderLibrary(entries, {
-    onOpen: (id) => go("cours-" + id),
-    onMaitrise: (id, v) => setMaitrise(id, v),
-  });
-  askReset(false);
+  renderLibrary(entries, { onOpen: (id) => go("cours-" + id), onDelete: removeCourse });
 }
 
-// Réinitialisation : confirmation en deux clics dans la page (confirm() est bloqué en artifact).
-const askReset = (on) => { $("reset").hidden = on; $("reset-confirm").hidden = !on; };
-$("reset").onclick = () => askReset(true);
-$("reset-no").onclick = () => askReset(false);
-$("reset-yes").onclick = async () => {
-  await storage.blob.clear();
-  storage.clear();
-  showHome();
-  status("Toutes les données ont été effacées.");
-};
+// Suppression d'un cours : immédiate, avec un message qui permet d'annuler pendant quelques secondes.
+async function removeCourse(id) {
+  const blob = await storage.blob.get(id);
+  const snap = deleteDoc(id);
+  await storage.blob.remove(id);
+  if (shown === "home") showHome();
+  toast({
+    text: "Cours supprimé",
+    duration: 5000,
+    action: {
+      label: "Annuler",
+      onClick: async () => {
+        restoreDoc(snap);
+        if (blob) await storage.blob.put(id, blob);
+        if (shown === "home") showHome();
+      },
+    },
+  });
+}
 
 // Lecture seule + surlignages, ou mode correction (texte brut, éditable).
 function view(doc, edit) {
@@ -137,27 +141,15 @@ async function loadOriginal(doc, edit) {
   setMode(orig && !edit ? "original" : "texte");
 }
 
-function renderMaitrise(doc) {
-  const s = maitriseSelect(doc.maitrise ?? "a_reviser", (v) => {
-    const d = setMaitrise(doc.id, v);
-    if (d) current = { ...current, maitrise: d.maitrise };
-  });
-  s.disabled = !loadDoc(doc.id); // pas de maîtrise tant que le cours n'est pas enregistré
-  $("fiche-maitrise").replaceChildren(s);
-}
-
 function showFiche(doc, edit = false) {
   shown = "cours:" + doc.id;
   // texte modifié depuis : on relocalise les commentaires (les introuvables deviennent orphelins)
   const comments = relocateAll(doc.text, doc.comments ?? []);
   if (JSON.stringify(comments) !== JSON.stringify(doc.comments ?? [])) doc = persist({ ...doc, comments });
   current = doc;
-  status("");
   screen("fiche");
   const saved = !!loadDoc(doc.id);
   const ready = !!doc.onboarding?.consigne;
-  $("unsaved").hidden = saved;
-  renderMaitrise(doc);
   view(doc, edit);
   loadOriginal(doc, edit);
   ready ? chat.show(doc) : chat.hide();
@@ -183,19 +175,15 @@ $("tab-quiz").onclick = () => { setTab("quiz"); quiz.open(); };
 
 function showInfos(doc) {
   shown = "infos:" + doc.id; current = doc;
-  status("");
   screen("infos-page");
   doc.onboarding ? onboarding.show(doc) : onboarding.start(doc);
 }
 
 function persist(doc) {
-  // la maîtrise peut avoir changé depuis le répertoire pendant un appel IA : on ne l'écrase pas
-  doc = saveDoc({ ...doc, updatedAt: Date.now(), maitrise: loadDoc(doc.id)?.maitrise ?? doc.maitrise });
+  doc = saveDoc({ ...doc, updatedAt: Date.now() });
   quiz.update(doc);
   if (shown?.split(":")[1] !== doc.id) return doc; // l'élève a quitté ce cours pendant un appel
   current = doc;
-  $("unsaved").hidden = true;
-  renderMaitrise(doc);
   if (shown?.startsWith("cours:")) { syncControls(); setTab($("tab-quiz").getAttribute("aria-selected") === "true" ? "quiz" : "chat"); }
   return doc;
 }
@@ -206,18 +194,18 @@ $("to-infos").onclick = () => go("infos-" + current.id);
 $("infos-back").onclick = backToCourse;
 
 setupImporter($("hero"), $("file"), async (file) => {
-  status("Import en cours…");
+  const t = toast({ text: "Import du cours…", progress: true }); // la barre suit la lecture des pages
   try {
-    const r = await extractText(file, {
-      onProgress: ({ done, total }) => status(`Lecture… ${done}/${total} pages`),
-    });
+    const r = await extractText(file, { onProgress: ({ done, total }) => t.set(done / total) });
     if (!r.text.trim()) throw Object.assign(new Error("Aucun texte trouvé."), { code: "empty" });
+    t.set(1);
     const doc = { id: Date.now().toString(36), name: file.name, text: r.text, method: r.method, truncated: r.truncated, importedAt: Date.now() };
     pendingFile = { id: doc.id, file };
     showFiche(doc, r.method === "ocr"); // pas encore enregistré : il entre dans le répertoire au « Valider »
     go("cours-" + doc.id);
   } catch (e) {
-    status(ERRORS[e.code] ?? e.message, true);
+    t.close();
+    toast({ text: ERRORS[e.code] ?? e.message, tone: "err" });
   }
 });
 

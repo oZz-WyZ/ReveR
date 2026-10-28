@@ -46,3 +46,18 @@ export function rebuildIndex() {
   }
   storage.remove("docs"); // ancienne liste d'identifiants
 }
+
+/** Supprime un cours (texte, commentaires, chat) et son entrée d'index ; renvoie de quoi le restaurer (l'original est géré à part). */
+export function deleteDoc(id) {
+  const snap = { doc: loadDoc(id), chat: storage.get("chat:" + id, null) };
+  storage.remove("doc:" + id);
+  storage.remove("chat:" + id);
+  storage.set(INDEX, storage.get(INDEX, []).filter((e) => e.id !== id));
+  return snap;
+}
+
+export function restoreDoc({ doc, chat }) {
+  if (!doc) return;
+  saveDoc(doc);
+  if (chat) storage.set("chat:" + doc.id, chat);
+}
