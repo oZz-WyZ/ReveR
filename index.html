@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reviz</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 5rem; font: inherit; }
+  #out { white-space: pre-wrap; margin-top: 1rem; }
+  #meta { color: #666; font-size: .85rem; }
+</style>
+</head>
+<body>
+<h1>Reviz</h1>
+<textarea id="prompt" aria-label="Question"></textarea>
+<p><button id="send">Demander</button> <button id="stop" hidden>Stop</button></p>
+<div id="out" aria-live="polite"></div>
+<p id="meta"></p>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
