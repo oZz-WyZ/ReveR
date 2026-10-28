@@ -15,6 +15,7 @@ import { renderLibrary } from "./ui/library.js";
 import { chooseMatiere, renderSubjects } from "./ui/subjects.js";
 import { startSetup } from "./ui/profile-setup.js";
 import { toast } from "./ui/toast.js";
+import { createVoice } from "./ui/voice.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
@@ -196,8 +197,7 @@ function showFiche(doc, edit = false) {
 // Matière du cours : puce dans la barre d'outils (change la matière) et retour vers la liste de cette matière.
 function renderMatiereChip() {
   const nom = matiereName(current) ?? "Non classé";
-  $("fiche-matiere").textContent = nom + " ▾";
-  $("back").textContent = "← " + nom;
+  $("fiche-matiere-nom").textContent = nom;
 }
 $("fiche-matiere").onclick = async () => {
   const choice = await chooseMatiere({ matieres: profil.matieres, titre: "Changer de matière", sous: current.name, dismissable: true, current: current.matiereId });
@@ -229,8 +229,11 @@ function persist(doc) {
   return doc;
 }
 
+// Saisie vocale pour l'assistant : la question dictée remplit le champ puis part toute seule.
+createVoice({ input: $("chat-input"), button: $("chat-mic"), form: $("chat-form"), onError: (msg) => toast({ text: msg, tone: "err" }) });
+
 $("new-course").onclick = () => $("file").click(); // ouvre l'explorateur de fichiers
-$("back").onclick = () => go("matiere-" + (matiereName(current) ? current.matiereId : NON_CLASSE));
+$("back").onclick = () => go("repertoire");
 $("matiere-back").onclick = () => go("repertoire");
 
 // Import : texte extrait, puis classement dans la bonne matière. Si l'app n'est pas sûre, elle demande tout de suite à l'élève.

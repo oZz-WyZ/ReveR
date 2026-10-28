@@ -32,15 +32,18 @@
   <div id="subjects" class="subjects"></div>
 </section>
 <section id="matiere-page" hidden>
-  <div class="toolbar"><button id="matiere-back" type="button" class="ghost">← Mes matières</button></div>
+  <div class="toolbar"><button id="matiere-back" type="button" class="ghost">← Retour à l'accueil</button></div>
   <h2 id="matiere-title" class="page-title"></h2>
   <div id="lib-list"></div>
 </section>
 <div id="fiche" hidden>
   <div class="toolbar">
-    <button id="back" type="button" class="ghost">← Mes matières</button>
+    <button id="back" type="button" class="ghost">← Retour à l'accueil</button>
     <span class="spacer"></span>
-    <button id="fiche-matiere" type="button" class="chip" title="Changer de matière"></button>
+    <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
+      <span id="fiche-matiere-nom"></span>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
   </div>
   <div id="workspace">
     <section class="pane" id="pane-texte">
@@ -98,6 +101,9 @@
           <p id="chat-status" role="status"></p>
           <form id="chat-form" class="composer">
             <input id="chat-input" placeholder="Pose une question sur ton cours…" autocomplete="off" required>
+            <button id="chat-mic" type="button" aria-label="Dicter ta question" aria-pressed="false" title="Dicter ta question" hidden>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+            </button>
             <button id="chat-send" aria-label="Envoyer">↑</button>
           </form>
         </section>

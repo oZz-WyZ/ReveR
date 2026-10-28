@@ -113,7 +113,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 /* panneau de droite : une grande carte avec le toggle Reviz | Me tester en haut, puis le contenu */
 .assistant-card {
   display: flex; flex-direction: column; font-size: 15px; padding: 1rem 1.25rem 1.1rem;
-  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-xl); box-shadow: var(--shadow);
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; box-shadow: var(--shadow);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
 /* toggle à deux moitiés (Reviz | Me tester, Origine | Texte) : un seul bouton, le curseur noir glisse d'un côté à l'autre */
@@ -131,7 +131,8 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
-.viewer-shell { position: relative; background: #e6dcd5; border-radius: var(--r-lg); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(160, 80, 30, .08); }
+/* même fond blanc que la carte de l'assistant, coins moins arrondis */
+.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); }
 .viewer-scroll { position: absolute; inset: 0; overflow: auto; padding: 4rem 1.25rem 2rem; }
 .viewer-tools { position: absolute; top: .8rem; right: 1.6rem; z-index: 5; display: flex; align-items: center; gap: .5rem; }
 .viewer-tools .tabs { width: 14rem; }
@@ -139,7 +140,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 #doc { position: relative; }
 #doc-note { max-width: 794px; margin: 0 auto .75rem; }
 #pdf-view { margin: 0 auto 1rem; }
-.pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: var(--r-sm); box-shadow: var(--shadow); overflow: hidden; }
+.pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: var(--r-sm); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
 .pdf-page canvas { display: block; }
 .hl-layer { position: absolute; inset: 0; pointer-events: none; }
 .hl-group { position: absolute; inset: 0; mix-blend-mode: multiply; } /* groupes de commentaires différents : ils foncent en se recouvrant */
@@ -150,7 +151,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 .orig-img { display: block; max-width: 100%; margin: 0 auto; border-radius: var(--r-md); box-shadow: var(--shadow); }
 #reader {
   white-space: pre-wrap; background: #fff; color: var(--ink); border-radius: 4px; width: min(100%, 794px); aspect-ratio: 210 / 297;
-  padding: 3.5rem 4rem; margin: 0 auto 1.5rem; font-size: 1.05rem; line-height: 1.8; box-shadow: var(--shadow);
+  padding: 3.5rem 4rem; margin: 0 auto 1.5rem; font-size: 1.05rem; line-height: 1.8; border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 #reader[contenteditable="true"], #reader[contenteditable="plaintext-only"] { outline: 0; box-shadow: 0 0 0 4px rgba(240, 137, 58, .3); }
 mark { background: #ffe066; color: var(--ink); border-radius: 6px; padding: .05em .12em; cursor: pointer; transition: background .15s; }
@@ -203,6 +204,10 @@ blockquote.passage, #quiz blockquote {
 .composer:focus-within { box-shadow: 0 0 0 4px rgba(240, 137, 58, .22), var(--shadow); }
 #chat-input { flex: 1; border: 0; background: transparent; padding: .55rem 0; box-shadow: none; }
 #chat-input:focus { box-shadow: none; }
+#chat-mic { width: 2.4rem; height: 2.4rem; padding: 0; display: grid; place-items: center; border-radius: 50%; background: transparent; color: var(--muted); box-shadow: none; }
+#chat-mic:hover:not(:disabled) { background: var(--soft); box-shadow: none; transform: none; }
+#chat-mic[aria-pressed="true"] { background: #fde9e8; color: var(--danger); animation: mic-pulse 1.2s ease-in-out infinite; }
+@keyframes mic-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(179, 38, 30, .35); } 50% { box-shadow: 0 0 0 7px rgba(179, 38, 30, 0); } }
 #chat-send { width: 2.4rem; height: 2.4rem; padding: 0; border-radius: 50%; font-size: 1.1rem; line-height: 1; display: grid; place-items: center; }
 
 /* --- quiz --- */
@@ -251,7 +256,8 @@ blockquote.passage, #quiz blockquote {
 .subject-name { font-weight: 500; overflow-wrap: anywhere; }
 .subject .count { color: var(--muted); font-size: .85rem; font-weight: 400; }
 .page-title { font-size: 2.2rem; font-weight: 300; margin: .2rem .3rem 1rem; }
-#fiche-matiere { font-size: .92rem; padding: .45rem 1rem; }
+#fiche-matiere { display: inline-flex; align-items: center; gap: .65rem; font-size: .92rem; padding: .45rem .9rem .45rem 1.1rem; }
+#fiche-matiere svg { flex: none; color: var(--muted); }
 #chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(40, 20, 5, .35); backdrop-filter: blur(3px); }
 .chooser-card { width: calc(100% - 2rem); max-width: 36rem; max-height: 82vh; overflow: auto; padding: 1.6rem 1.8rem; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); animation: pop .18s ease; }
 .chooser-card h2 { font-size: 1.5rem; font-weight: 300; }

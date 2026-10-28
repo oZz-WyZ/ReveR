@@ -67,7 +67,7 @@ export function createChat({ onPassage } = {}) {
     const log = $("chat-log");
     log.replaceChildren(...rows);
     $("chat-empty").hidden = rows.length > 0; // écran d'accueil tant qu'il n'y a pas d'échange
-    $("chat-input").disabled = $("chat-send").disabled = busy;
+    $("chat-input").disabled = $("chat-send").disabled = $("chat-mic").disabled = busy;
     log.scrollTop = log.scrollHeight;
   }
 
