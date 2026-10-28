@@ -37,23 +37,24 @@
   <div id="lib-list"></div>
 </section>
 <div id="fiche" hidden>
-  <div class="toolbar">
-    <button id="back" type="button" class="ghost">← Retour à l'accueil</button>
-    <span class="spacer"></span>
-    <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
-      <span id="fiche-matiere-nom"></span>
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-  </div>
   <div id="workspace">
     <section class="pane" id="pane-texte">
       <div class="pane-body viewer-shell">
         <div class="viewer-tools">
-          <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
-          <span id="view-seg" class="tabs" role="group" aria-label="Affichage du cours" data-active="original" hidden>
-            <button type="button" id="view-original">Origine</button>
-            <button type="button" id="view-texte">Texte</button>
+          <div class="tools-left">
+            <button id="back" type="button" class="ghost">← Retour à l'accueil</button>
+            <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
+              <span id="fiche-matiere-nom"></span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+          <div class="tools-right">
+            <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
+            <span id="view-seg" class="tabs" role="group" aria-label="Affichage du cours" data-active="original" hidden>
+              <button type="button" id="view-original">Origine</button>
+              <button type="button" id="view-texte">Texte</button>
           </span>
+          </div>
         </div>
         <div class="viewer-scroll">
           <section id="doc">

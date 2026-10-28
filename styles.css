@@ -94,8 +94,9 @@ label { display: block; }
 
 /* --- fiche : tient dans la fenêtre (pas de scroll de page), chaque colonne scrolle en interne --- */
 body.fiche-open { overflow: hidden; }
-body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
-#fiche { display: flex; flex-direction: column; height: calc(100dvh - 2.25rem); min-height: 30rem; }
+/* la fiche occupe toute la fenêtre avec la même marge (1,5 rem) en haut, en bas, à gauche, à droite et entre les deux panneaux */
+body.fiche-open .app { max-width: none; padding: 1.5rem; }
+#fiche { display: flex; flex-direction: column; height: calc(100dvh - 3rem); min-height: 30rem; }
 #fiche[hidden] { display: none; }
 .toolbar { display: flex; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }
 .toolbar .spacer { flex: 1; }
@@ -134,7 +135,10 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 /* même fond blanc que la carte de l'assistant, coins moins arrondis */
 .viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); }
 .viewer-scroll { position: absolute; inset: 0; overflow: auto; padding: 4rem 1.25rem 2rem; }
-.viewer-tools { position: absolute; top: .8rem; right: 1.6rem; z-index: 5; display: flex; align-items: center; gap: .5rem; }
+.viewer-tools { position: absolute; top: .9rem; left: 1rem; right: 1.4rem; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: .75rem; pointer-events: none; }
+.viewer-tools > div { display: flex; align-items: center; gap: .5rem; pointer-events: auto; }
+.tools-left button { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+#fiche-matiere-nom { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .viewer-tools .tabs { width: 14rem; }
 .viewer-tools button.primary { box-shadow: var(--shadow); }
 #doc { position: relative; }
@@ -261,7 +265,7 @@ blockquote.passage, #quiz blockquote {
 #chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(40, 20, 5, .35); backdrop-filter: blur(3px); }
 .chooser-card { width: calc(100% - 2rem); max-width: 36rem; max-height: 82vh; overflow: auto; padding: 1.6rem 1.8rem; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); animation: pop .18s ease; }
 .chooser-card h2 { font-size: 1.5rem; font-weight: 300; }
-.reset-fixed { position: fixed; left: 1rem; bottom: 1rem; z-index: 40; font-size: .8rem; opacity: .75; }
+.reset-fixed { position: fixed; left: 1.75rem; bottom: 1.75rem; z-index: 40; font-size: .8rem; padding: .3rem .8rem; background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
