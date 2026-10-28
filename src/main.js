@@ -31,7 +31,6 @@ let shown = null;   // "home" ou "<écran>:<id>" (cours / infos)
 let mode = "texte"; // affichage du cours : "original" (PDF / photo) ou "texte"
 let orig = null;    // { kind, canComment } si l'original est affiché
 let viewToken = 0;
-let pendingFile = null; // { id, file } : original d'un import pas encore enregistré
 
 const ERRORS = {
   unsupported: "Format non pris en charge (PDF, JPEG ou PNG).",
@@ -102,10 +101,9 @@ function view(doc, edit) {
 const canEdit = (doc) => doc.method === "ocr" || !orig;
 
 function syncControls() {
-  const saved = !!loadDoc(current.id);
   const editing = reader.isEditing();
-  $("save").hidden = !(editing || !saved);
-  $("edit-text").hidden = editing || mode !== "texte" || !canEdit(current);
+  $("edit-text").textContent = editing ? "Enregistrer" : "Corriger le texte";
+  $("edit-text").hidden = !editing && (mode !== "texte" || !canEdit(current));
   $("view-seg").hidden = !orig;
   $("view-original").setAttribute("aria-pressed", String(mode === "original"));
   $("view-texte").setAttribute("aria-pressed", String(mode === "texte"));
@@ -133,7 +131,7 @@ async function loadOriginal(doc, edit) {
   const my = ++viewToken;
   viewer.close(); orig = null;
   $("pdf-view").hidden = $("reader").hidden = !edit; // pas de clignotement texte -> PDF
-  const file = pendingFile?.id === doc.id ? pendingFile.file : await storage.blob.get(doc.id);
+  const file = await storage.blob.get(doc.id);
   const r = file ? await viewer.open({ doc, blob: file }) : { ok: false };
   if (my !== viewToken) return r.ok && viewer.close();
   orig = r.ok ? r : null;
@@ -200,22 +198,21 @@ setupImporter($("hero"), $("file"), async (file) => {
     if (!r.text.trim()) throw Object.assign(new Error("Aucun texte trouvé."), { code: "empty" });
     t.set(1);
     const doc = { id: Date.now().toString(36), name: file.name, text: r.text, method: r.method, truncated: r.truncated, importedAt: Date.now() };
-    pendingFile = { id: doc.id, file };
-    showFiche(doc, r.method === "ocr"); // pas encore enregistré : il entre dans le répertoire au « Valider »
-    go("cours-" + doc.id);
+    await storage.blob.put(doc.id, file); // l'original (PDF / photo) est gardé avec le cours
+    saveDoc({ ...doc, updatedAt: Date.now() });
+    go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
   } catch (e) {
     t.close();
     toast({ text: ERRORS[e.code] ?? e.message, tone: "err" });
   }
 });
 
-$("edit-text").onclick = () => view(current, true);
-
-$("save").onclick = async () => {
-  const text = reader.isEditing() ? reader.getText() : current.text; // le texte d'un PDF natif n'est pas retouché
-  if (pendingFile?.id === current.id) { await storage.blob.put(current.id, pendingFile.file); pendingFile = null; }
+// « Corriger le texte » passe en édition ; « Enregistrer » enregistre le texte corrigé (commentaires relocalisés).
+$("edit-text").onclick = () => {
+  if (!reader.isEditing()) return view(current, true);
+  const text = reader.getText();
   const doc = persist({ ...current, text, comments: relocateAll(text, current.comments ?? []) });
-  go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
+  view(doc, false);
 };
 
 rebuildIndex();

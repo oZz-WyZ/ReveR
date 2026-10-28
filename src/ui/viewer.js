@@ -128,7 +128,7 @@ export function createViewer(root) {
           const img = el("img", "orig-img");
           img.src = url; img.alt = "Cours d'origine";
           root.append(img);
-          st = { kind: "image", url, comments: [] };
+          st = { kind: "image", url, pages: [], comments: [] };
           return { ok: true, kind: "image", canComment: false };
         }
         const pdf = await openPdf(blob);

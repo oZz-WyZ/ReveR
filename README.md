@@ -24,7 +24,7 @@ PDF (texte natif via pdf.js, gratuit) ou image/PDF scanné (transcription via `a
 
 ## Onboarding (itération 2)
 
-Après « Valider » sur le texte : détection matière / sujet / niveau (`askAI` en `json`, `src/onboarding/detect.js`), formulaire prérempli et corrigeable, échéance facultative, puis génération d'une consigne experte (`src/onboarding/consigne.js`). Tout est stocké dans `doc:<id>.onboarding` = `{ matiere, sujet, niveau, echeance, consigne, detecte, updatedAt }`. La consigne servira de `system` au chat. La vraie détection ne se vérifie qu'en artifact publié ; en local le mock renvoie un JSON conforme (Droit si le nom de fichier évoque le droit, sinon Histoire).
+Après l'import : détection matière / sujet / niveau (`askAI` en `json`, `src/onboarding/detect.js`), formulaire prérempli et corrigeable, échéance facultative, puis génération d'une consigne experte (`src/onboarding/consigne.js`). Tout est stocké dans `doc:<id>.onboarding` = `{ matiere, sujet, niveau, echeance, consigne, detecte, updatedAt }`. La consigne servira de `system` au chat. La vraie détection ne se vérifie qu'en artifact publié ; en local le mock renvoie un JSON conforme (Droit si le nom de fichier évoque le droit, sinon Histoire).
 
 ## Chat sourcé (itération 3)
 
@@ -36,7 +36,7 @@ Le panneau de lecture est en lecture seule ; « Corriger le texte » passe en é
 
 ## Répertoire (itération 5)
 
-Écran d'accueil = liste des cours (`#repertoire`), fiche = `#cours-<id>`. `src/library.js` est le seul module qui écrit `doc:<id>` ; il tient à jour l'index `docs:index = [{ id, titre, matiere, sujet, echeance, importedAt, maitrise }]` dans le même appel, et `rebuildIndex()` le reconstruit au démarrage s'il diverge (migration de l'ancienne clé `docs`). Rouvrir une fiche relit `doc:<id>` (texte, onboarding, commentaires) et `chat:<id>`. Un cours importé n'entre dans le répertoire qu'au « Valider ». Chaque carte a une corbeille (coin haut droit) : suppression immédiate (cours, commentaires, chat, original) avec une notification « Annuler » de 5 s (`deleteDoc` / `restoreDoc`). Notifications : `src/ui/toast.js` (carte en bas à droite, barre de progression qui se remplit puis ferme ; pilotée par le temps, ou par le code pour l'import). Plus de bouton « Réinitialiser », de sélecteur de maîtrise ni de message « Pas encore enregistré ».
+Écran d'accueil = liste des cours (`#repertoire`), fiche = `#cours-<id>`. `src/library.js` est le seul module qui écrit `doc:<id>` ; il tient à jour l'index `docs:index = [{ id, titre, matiere, sujet, echeance, importedAt, maitrise }]` dans le même appel, et `rebuildIndex()` le reconstruit au démarrage s'il diverge (migration de l'ancienne clé `docs`). Rouvrir une fiche relit `doc:<id>` (texte, onboarding, commentaires) et `chat:<id>`. Un cours est enregistré (texte + original) dès l'import, puis la page « Infos du cours » s'ouvre ; plus de bouton « Valider ». Pour une photo, « Corriger le texte » passe en édition et devient « Enregistrer ». Chaque carte a une corbeille (coin haut droit) : suppression immédiate (cours, commentaires, chat, original) avec une notification « Annuler » de 5 s (`deleteDoc` / `restoreDoc`). Notifications : `src/ui/toast.js` (carte en bas à droite, barre de progression qui se remplit puis ferme ; pilotée par le temps, ou par le code pour l'import). Plus de bouton « Réinitialiser », de sélecteur de maîtrise ni de message « Pas encore enregistré ».
 
 ## Quiz de maîtrise (itération 6)
 
