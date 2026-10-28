@@ -9,7 +9,11 @@ const RULES =
   'Réponds UNIQUEMENT par un objet JSON : {"reponse": string, "source": "cours" | "general", "passage": string | null}.\n' +
   '- source "cours" seulement si ta réponse repose sur le cours ; sinon "general".\n' +
   '- passage : si source est "cours", un extrait du cours copié MOT POUR MOT (une à trois phrases, sans reformuler), celui sur lequel tu t\'appuies ; sinon null.\n' +
-  "- reponse : en français, adaptée au niveau de l'élève.";
+  "- reponse : en français, adaptée au niveau de l'élève.\n" +
+  "Sois BREF : va droit au but, 3 à 5 phrases sauf si la question exige davantage. " +
+  "Pas de formule de remplissage (« Bonne question ! », « Bien sûr ! »). " +
+  "Ne termine pas par une question de vérification ou de relance que l'élève n'a pas demandée. " +
+  "Reste fidèle au cours, n'invente rien, et signale clairement quand tu sors du cours.";
 
 const norm = (s) => s.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
 const words = (s) => new Set(norm(s).match(/\p{L}{4,}/gu) ?? []);

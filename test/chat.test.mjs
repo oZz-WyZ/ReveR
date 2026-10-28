@@ -57,4 +57,10 @@ assert.equal((await askCourse({ doc, turns: t2, question: "Et hors cours, la mé
 const re = await reexplain({ doc, turns: t2, targetId: "a1" });
 assert.match(re.reponse, /^\[mock simplifié\]/);
 await assert.rejects(() => reexplain({ doc, turns: t2, targetId: "nope" }), { code: "bad_target" });
+// règles de concision présentes dans le system
+import { buildSystem } from "../src/chat/context.js";
+const sys = buildSystem({ consigne: "C", cours: "texte", tronque: false });
+assert.match(sys, /BREF/);
+assert.match(sys, /3 à 5 phrases/);
+assert.match(sys, /Ne termine pas par une question/);
 console.log("ok");

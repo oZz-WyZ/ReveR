@@ -30,9 +30,13 @@ export function createChat() {
     if (t.role === "user") return el("div", "msg user", t.content);
     const m = el("div", "msg bot");
     if (t.reexplique) m.append(el("div", "tag", "Ré-explication"));
+    if (t.passage) {
+      const q = el("blockquote", "passage");
+      q.append(el("strong", null, "Dans ton cours : "), t.passage);
+      m.append(q);
+    }
     m.append(el("span", "badge " + t.source, t.source === "cours" ? "d'après ton cours" : "connaissances générales"));
     m.append(el("p", null, t.reponse));
-    if (t.passage) m.append(el("blockquote", null, t.passage));
     if (t.tronque) m.append(el("p", "note", "Ton cours est long : je m'appuie sur les passages les plus proches de ta question."));
     const fb = el("div", "fb");
     for (const [v, label, name] of [["up", "👍", "Utile"], ["down", "👎", "Pas clair"]]) {
