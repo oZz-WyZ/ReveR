@@ -4,7 +4,7 @@ import { buildHistory, buildSystem, selectCourse } from "./context.js";
 const REEXPLAIN =
   "Je n'ai pas bien compris ta réponse. Ré-explique la même chose plus simplement : " +
   "phrases courtes, mots du quotidien, et au moins un exemple concret ou une analogie. " +
-  "Reste fidèle au cours et n'invente rien. Garde exactement le même format JSON " +
+  "Reste fidèle au cours, n'invente rien, garde un ton neutre et factuel. Garde exactement le même format JSON " +
   "(reponse, source, passage) ; si tu cites un passage du cours, il doit rester une copie exacte.";
 
 const fail = (code, message) => Object.assign(new Error(message), { code });

@@ -60,6 +60,8 @@ await assert.rejects(() => reexplain({ doc, turns: t2, targetId: "nope" }), { co
 // règles de concision présentes dans le system
 import { buildSystem } from "../src/chat/context.js";
 const sys = buildSystem({ consigne: "C", cours: "texte", tronque: false });
+assert.match(sys, /NEUTRE et EFFICACE/);
+assert.match(sys, /sans encouragement/);
 assert.match(sys, /BREF/);
 assert.match(sys, /3 à 5 phrases/);
 assert.match(sys, /Ne termine pas par une question/);

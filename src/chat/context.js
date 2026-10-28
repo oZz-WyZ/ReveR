@@ -10,6 +10,7 @@ const RULES =
   '- source "cours" seulement si ta réponse repose sur le cours ; sinon "general".\n' +
   '- passage : si source est "cours", un extrait du cours copié MOT POUR MOT (une à trois phrases, sans reformuler), celui sur lequel tu t\'appuies ; sinon null.\n' +
   "- reponse : en français, adaptée au niveau de l'élève.\n" +
+  "Ton NEUTRE et EFFICACE : factuel, sans affect, sans formule de politesse, sans encouragement ni félicitations. " +
   "Sois BREF : va droit au but, 3 à 5 phrases sauf si la question exige davantage. " +
   "Pas de formule de remplissage (« Bonne question ! », « Bien sûr ! »). " +
   "Ne termine pas par une question de vérification ou de relance que l'élève n'a pas demandée. " +
