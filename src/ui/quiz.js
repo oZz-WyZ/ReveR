@@ -11,8 +11,8 @@ function el(tag, cls, text) {
   return e;
 }
 
-/** Quiz de maîtrise, une question à la fois : un clic sur une option = réponse, puis question suivante.
- *  La correction (bonne réponse + passage du cours) est donnée à la fin, avec le score.
+/** Quiz de maîtrise, une question à la fois : un clic sur une option = réponse. La correction de CETTE question
+ *  (bonne réponse + passage du cours) s'affiche tout de suite, puis « Suivante » ; l'écran final ne montre que le score.
  *  saveScore({ score, total, at, tronque }) persiste sur le cours. N'agit pas sur l'état de maîtrise. */
 export function createQuiz(saveScore, onBack) {
   let doc, run = null, tronque = false, busy = false, readyAt = 0;
@@ -40,13 +40,36 @@ export function createQuiz(saveScore, onBack) {
       b.onclick = () => answer(j);
       return b;
     }));
+    $("quiz-feedback").hidden = true; $("quiz-feedback").replaceChildren();
     readyAt = Date.now() + 250; // évite qu'un double-clic réponde aussi à la question suivante
     $("quiz-run").hidden = false;
   }
 
+  // Un clic sur une option : réponse définitive et correction immédiate de cette question.
   function answer(j) {
-    if (!run || Date.now() < readyAt) return;
-    run.answer(j) ? showResult() : renderQuestion();
+    if (!run || run.answered || Date.now() < readyAt) return;
+    run.pick(j);
+    const c = run.validate();
+    [...$("quiz-options").children].forEach((b, k) => {
+      b.disabled = true;
+      if (k === c.correctIndex) b.classList.add("ok");
+      else if (k === c.picked) b.classList.add("ko");
+    });
+    const fb = $("quiz-feedback");
+    fb.replaceChildren(el("p", "verdict", c.ok ? "✔ Bonne réponse" : "✘ Mauvaise réponse"));
+    if (!c.ok) fb.append(el("p", null, "Bonne réponse : " + run.question.options[c.correctIndex]));
+    if (c.passage) {
+      const b = el("blockquote");
+      b.append(el("strong", null, "Dans ton cours : "), c.passage);
+      fb.append(b);
+    } else fb.append(el("p", "note", "Passage non retrouvé dans le cours."));
+    const next = el("button", "primary", run.last ? "Voir mon score" : "Suivante");
+    next.type = "button";
+    next.onclick = () => (run.next() ? showResult() : renderQuestion());
+    fb.append(next);
+    fb.hidden = false;
+    next.focus();
+    fb.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function showResult() {
@@ -57,18 +80,6 @@ export function createQuiz(saveScore, onBack) {
     const actions = el("div", "result-actions");
     actions.append(again, back);
     box.append(actions);
-    run.answers.forEach((a, i) => {
-      const d = el("div", "qres " + (a.ok ? "ok" : "ko"));
-      d.append(el("strong", null, `${i + 1}. ${a.question}`));
-      d.append(el("p", null, (a.ok ? "✔ " : "✘ ") + "Ta réponse : " + a.options[a.picked]));
-      if (!a.ok) d.append(el("p", null, "Bonne réponse : " + a.options[a.correctIndex]));
-      if (a.passage) {
-        const b = el("blockquote");
-        b.append(el("strong", null, "Dans ton cours : "), a.passage);
-        d.append(b);
-      } else d.append(el("p", "note", "Passage non retrouvé dans le cours."));
-      box.append(d);
-    });
     $("quiz-run").hidden = true; box.hidden = false;
     saveScore({ score: run.score, total: run.total, at: Date.now(), tronque });
   }
@@ -77,7 +88,7 @@ export function createQuiz(saveScore, onBack) {
     if (busy) return;
     const d = doc;
     busy = true;
-    reset(); status("Génération du quiz…");
+    reset(); $("quiz-loading").hidden = false; // trois points pendant la génération, pas de texte
     try {
       const r = await generateQuiz({ doc: d });
       if (doc?.id !== d.id) return; // l'élève a changé de cours pendant l'appel
@@ -86,7 +97,7 @@ export function createQuiz(saveScore, onBack) {
       status(r.tronque ? NOTE_LONG : "");
     } catch {
       if (doc?.id === d.id) status("Le quiz n'a pas pu être généré.", true, start);
-    } finally { busy = false; }
+    } finally { busy = false; $("quiz-loading").hidden = true; }
   }
 
   return {

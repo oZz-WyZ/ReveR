@@ -125,6 +125,7 @@ body.fiche-open .app { padding: 1rem 1.75rem 1.25rem; }
 .tabs button[aria-selected="true"] { color: #fff; }
 .tabs button:hover:not(:disabled) { transform: none; box-shadow: none; }
 .quiz-box { flex: 1; min-height: 0; overflow-y: auto; }
+#quiz-loading { justify-content: center; padding: 3rem 0; }
 #pane-assistant .note { font-size: .8rem; }
 
 /* --- cours : texte (fond blanc) et original --- */
@@ -213,6 +214,12 @@ blockquote.passage, #quiz blockquote {
 #pane-assistant .badge { font-size: .7rem; padding: .12rem .6rem; }
 #quiz .opt { display: block; width: 100%; text-align: left; padding: .65rem 1.1rem; margin: .45rem 0; background: #fff; border: 2px solid var(--line); border-radius: 999px; box-shadow: none; font-weight: 400; }
 #quiz .opt:hover:not(:disabled) { border-color: var(--orange-2); transform: none; box-shadow: none; }
+#quiz .opt:disabled { opacity: 1; cursor: default; }
+#quiz .opt.ok { background: #e3f4e8; color: #14532d; border-color: #2e9d57; }
+#quiz .opt.ko { background: #fdeaea; color: #7a1c1c; border-color: #d64545; }
+#quiz-feedback { margin-top: .9rem; }
+#quiz .verdict { font-weight: 500; margin: .4rem 0 .25rem; }
+#quiz-feedback .primary { margin-top: .6rem; }
 #quiz .score { font-size: 2.3rem; font-weight: 300; color: var(--orange-1); line-height: 1.1; margin: .25rem 0 .5rem; }
 .result-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .25rem 0 1rem; }
 .qres { padding: .7rem 1rem; margin: .6rem 0; border-radius: var(--r-md); background: #fff; border: 2px solid var(--line); }

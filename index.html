@@ -78,11 +78,12 @@
           </span>
         </header>
         <section id="quiz" class="quiz-box" hidden>
-          <h2>Quiz de maîtrise</h2>
+          <div id="quiz-loading" class="dots" role="status" aria-label="Chargement du quiz" hidden><i></i><i></i><i></i></div>
           <p id="quiz-status" role="status"></p>
           <div id="quiz-run" hidden>
             <h3 id="quiz-q"></h3>
             <div id="quiz-options"></div>
+            <div id="quiz-feedback" hidden></div>
           </div>
           <div id="quiz-result" hidden></div>
         </section>
