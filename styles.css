@@ -127,6 +127,18 @@ mark { background: #ffe27a; color: var(--ink); border-radius: 6px; padding: .05e
 mark:hover { background: #ffd24d; }
 mark.multi { background: #ffc247; }
 
+/* --- original (PDF page par page, photo) --- */
+.view-switch { display: flex; align-items: center; gap: .75rem; margin: .25rem 0 .5rem; min-height: 2rem; }
+#pdf-view { margin: .25rem 0 1rem; }
+.pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+.pdf-page canvas { display: block; }
+.hl-layer { position: absolute; inset: 0; pointer-events: none; }
+.hl { position: absolute; background: #ffe27a; mix-blend-mode: multiply; border-radius: 3px; }
+.textLayer { position: absolute; inset: 0; overflow: hidden; line-height: 1; text-size-adjust: none; }
+.textLayer span, .textLayer br { color: transparent; position: absolute; white-space: pre; cursor: text; transform-origin: 0% 0%; }
+.textLayer ::selection { background: rgba(123, 77, 255, .35); }
+.orig-img { display: block; max-width: 100%; margin: 0 auto; border-radius: 12px; box-shadow: var(--shadow); }
+
 /* --- sélection -> question, pop-over de commentaire --- */
 #ask-btn, #ask-pop, #cards { position: absolute; z-index: 6; }
 #ask-btn, #ask-pop {

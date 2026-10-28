@@ -7,23 +7,31 @@ import { createReader } from "./ui/reader.js";
 import { createOnboarding } from "./ui/onboarding.js";
 import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
+import { createViewer } from "./ui/viewer.js";
 import { createQuiz } from "./ui/quiz.js";
 import { maitriseSelect, renderLibrary } from "./ui/library.js";
 import { setupLayout } from "./ui/layout.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
+const viewer = createViewer($("pdf-view"));
 const backToCourse = () => go("cours-" + current.id);
 const onboarding = createOnboarding(persist, backToCourse);
 const chat = createChat();
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), backToCourse);
 const highlights = createHighlights({
   reader,
+  viewer,
+  getMode: () => mode,
   getDoc: () => current,
   saveComments: (comments) => { const d = persist({ ...current, comments }); highlights.render(d, false); },
 });
 let current = null; // le cours affiché : { id, name, text, method, truncated, importedAt, maitrise, onboarding?, comments? }
 let shown = null;   // "home" ou "<écran>:<id>" (cours / infos / quiz)
+let mode = "texte"; // affichage du cours : "original" (PDF / photo) ou "texte"
+let orig = null;    // { kind, canComment } si l'original est affiché
+let viewToken = 0;
+let pendingFile = null; // { id, file } : original d'un import pas encore enregistré
 
 const ERRORS = {
   unsupported: "Format non pris en charge (PDF, JPEG ou PNG).",
@@ -82,8 +90,45 @@ $("reset-yes").onclick = async () => {
 function view(doc, edit) {
   reader.setEditable(edit);
   highlights.render(doc, edit);
-  $("save").hidden = !edit;
-  $("edit-text").hidden = edit;
+  syncControls();
+}
+
+// Texte transcrit corrigeable seulement si le texte ne vient pas tel quel d'un PDF affiché.
+const canEdit = (doc) => doc.method === "ocr" || !orig;
+
+function syncControls() {
+  const saved = !!loadDoc(current.id);
+  const editing = reader.isEditing();
+  $("save").hidden = !(editing || !saved);
+  $("edit-text").hidden = editing || mode !== "texte" || !canEdit(current);
+  $("view-seg").hidden = !orig;
+  $("view-original").setAttribute("aria-pressed", String(mode === "original"));
+  $("view-texte").setAttribute("aria-pressed", String(mode === "texte"));
+  $("view-hint").textContent = mode === "original" && orig && !orig.canComment ? "Pour commenter un passage, passe en « Texte »." : "";
+}
+
+function setMode(m) {
+  mode = m;
+  $("pdf-view").hidden = m !== "original";
+  $("reader").hidden = m !== "texte";
+  if (m === "original") { viewer.refresh(); requestAnimationFrame(() => viewer.refresh()); } // 2e passage : la mise en page peut ne pas être prête
+  highlights.render(current, reader.isEditing());
+  syncControls();
+}
+$("view-original").onclick = () => setMode("original");
+$("view-texte").onclick = () => setMode("texte");
+
+// Affiche l'original (PDF page par page, photo) s'il est disponible ; sinon on reste sur le texte.
+async function loadOriginal(doc, edit) {
+  const my = ++viewToken;
+  viewer.close(); orig = null;
+  $("pdf-view").hidden = $("reader").hidden = !edit; // pas de clignotement texte -> PDF
+  const file = pendingFile?.id === doc.id ? pendingFile.file : await storage.blob.get(doc.id);
+  const r = file ? await viewer.open({ doc, blob: file }) : { ok: false };
+  if (my !== viewToken) return r.ok && viewer.close();
+  orig = r.ok ? r : null;
+  if (orig) viewer.setComments(doc.comments);
+  setMode(orig && !edit ? "original" : "texte");
 }
 
 function renderMaitrise(doc) {
@@ -114,6 +159,7 @@ function showFiche(doc, edit = false) {
     (doc.method === "ocr" ? "Transcrit par l'IA : relis et corrige." : "Texte extrait du PDF.") +
     (doc.truncated ? " Attention : transcription peut-être incomplète." : "");
   view(doc, edit);
+  loadOriginal(doc, edit);
   ready ? chat.show(doc) : chat.hide();
   $("assistant-off").hidden = ready || !saved;
 }
@@ -140,6 +186,7 @@ function persist(doc) {
   current = doc;
   $("unsaved").hidden = true;
   renderMaitrise(doc);
+  if (shown?.startsWith("cours:")) syncControls();
   return doc;
 }
 
@@ -157,7 +204,8 @@ setupImporter($("drop"), $("file"), async (file) => {
     });
     if (!r.text.trim()) throw Object.assign(new Error("Aucun texte trouvé."), { code: "empty" });
     const doc = { id: Date.now().toString(36), name: file.name, text: r.text, method: r.method, truncated: r.truncated, importedAt: Date.now() };
-    showFiche(doc, true); // pas encore enregistré : il entre dans le répertoire au « Valider »
+    pendingFile = { id: doc.id, file };
+    showFiche(doc, r.method === "ocr"); // pas encore enregistré : il entre dans le répertoire au « Valider »
     go("cours-" + doc.id);
   } catch (e) {
     status(ERRORS[e.code] ?? e.message, true);
@@ -166,8 +214,9 @@ setupImporter($("drop"), $("file"), async (file) => {
 
 $("edit-text").onclick = () => view(current, true);
 
-$("save").onclick = () => {
-  const text = reader.getText();
+$("save").onclick = async () => {
+  const text = reader.isEditing() ? reader.getText() : current.text; // le texte d'un PDF natif n'est pas retouché
+  if (pendingFile?.id === current.id) { await storage.blob.put(current.id, pendingFile.file); pendingFile = null; }
   const doc = persist({ ...current, text, comments: relocateAll(text, current.comments ?? []) });
   go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
 };

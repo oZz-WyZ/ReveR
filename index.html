@@ -49,7 +49,15 @@
       <div class="pane-body">
 <section id="doc">
   <p id="info"></p>
-  <div id="reader" aria-label="Texte du cours"></div>
+  <div class="view-switch">
+      <span id="view-seg" class="seg" role="group" aria-label="Affichage du cours" hidden>
+        <button type="button" id="view-original">Original</button>
+        <button type="button" id="view-texte">Texte</button>
+      </span>
+      <span id="view-hint" class="note"></span>
+    </div>
+    <div id="pdf-view" hidden></div>
+    <div id="reader" aria-label="Texte du cours"></div>
   <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
   <form id="ask-pop" hidden>
     <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>

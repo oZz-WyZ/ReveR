@@ -27,7 +27,7 @@ function card(c, orphan = false) {
 }
 
 /** Sélection -> question -> commentaire surligné. getDoc() = doc courant ; saveComments(list) persiste puis rappelle render(). */
-export function createHighlights({ reader, getDoc, saveComments }) {
+export function createHighlights({ reader, viewer, getMode, getDoc, saveComments }) {
   let pending = null, popOpen = false, busy = false;
   const btn = $("ask-btn"), pop = $("ask-pop"), input = $("ask-input"), status = $("ask-status");
 
@@ -48,7 +48,8 @@ export function createHighlights({ reader, getDoc, saveComments }) {
   function onSelection() {
     if (popOpen || busy) return;
     const doc = getDoc();
-    const s = !reader.isEditing() && doc?.onboarding?.consigne ? reader.selection() : null;
+    const surface = getMode() === "original" ? viewer : reader; // PDF d'origine ou texte
+    const s = !surface.isEditing?.() && doc?.onboarding?.consigne ? surface.selection() : null;
     if (!s) return hideBtn();
     // on rogne les espaces de bord pour que la quote commence et finisse sur du texte
     let { start, end } = s;
@@ -85,8 +86,8 @@ export function createHighlights({ reader, getDoc, saveComments }) {
       closePop(); hideBtn();
       getSelection().removeAllRanges();
       saveComments([...(getDoc().comments ?? []), c]);
-      const mark = reader.el.querySelector(`mark[data-ids~="${c.id}"]`);
-      openCards([c.id], mark?.getBoundingClientRect() ?? selRect ?? reader.el.getBoundingClientRect());
+      const anchor = getMode() === "original" ? viewer.rectOf(c.id) : reader.el.querySelector(`mark[data-ids~="${c.id}"]`)?.getBoundingClientRect();
+      openCards([c.id], anchor ?? selRect ?? reader.el.getBoundingClientRect());
     } catch (err) {
       status.textContent = ERRORS[err.code] ?? "La réponse n'a pas pu être obtenue. Réessaie.";
       status.className = "err";
@@ -122,12 +123,20 @@ export function createHighlights({ reader, getDoc, saveComments }) {
     if (m && getSelection().isCollapsed) openCards(m.dataset.ids.split(" "), m.getBoundingClientRect());
   });
 
+  // Clic sur un surlignage du PDF
+  viewer.root.addEventListener("click", (e) => {
+    if (!getSelection().isCollapsed) return;
+    const hits = viewer.hit(e.clientX, e.clientY);
+    if (hits.length) openCards(hits.map((h) => h.id), hits[0].rect);
+  });
+
   return {
     /** Réaffiche le texte (surligné en lecture, brut en correction) et la liste des orphelins. */
     render(doc, editing) {
       const comments = doc.comments ?? [];
       hideBtn(); closePop(); closeCards();
       editing ? reader.show(doc.text) : reader.showMarked(doc.text, segments(comments));
+      viewer.setComments(comments);
       const orphans = comments.filter((c) => c.orphan);
       $("orphans").hidden = !orphans.length;
       $("orphans-list").replaceChildren(...orphans.map((c) => card(c, true)));
