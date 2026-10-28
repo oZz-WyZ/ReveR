@@ -18,19 +18,7 @@ h2 { font-size: 1.7rem; } h3 { font-size: 1.2rem; font-weight: 400; }
 p { margin: .4rem 0; }
 .note { color: var(--muted); font-size: .9rem; }
 
-/* --- barre d'application : pilule noire flottante --- */
-.app-bar {
-  position: sticky; top: .9rem; z-index: 10; display: flex; align-items: center; justify-content: space-between;
-  max-width: 1400px; margin: .9rem auto 1rem; width: calc(100% - 3.5rem); padding: .55rem .7rem .55rem 1.2rem;
-  background: var(--black); color: #fff; border-radius: 999px; box-shadow: var(--shadow);
-}
-.brand {
-  display: inline-flex; align-items: center; gap: .6rem; font: inherit; font-size: 1.3rem; font-weight: 400;
-  letter-spacing: -.01em; background: none; border: 0; padding: .2rem .3rem; cursor: pointer; color: #fff;
-}
-.brand-dot { width: 1.05rem; height: 1.05rem; border-radius: 50%; background: linear-gradient(160deg, var(--orange-2), var(--orange-1)); position: relative; }
-.brand-dot::after { content: ""; position: absolute; inset: 32%; border-radius: 50%; background: #fff; }
-.app { max-width: 1400px; margin: 0 auto; padding: .5rem 1.75rem 4rem; }
+.app { max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.75rem 4rem; }
 
 /* --- boutons : blanc en pastille ; noir = action principale --- */
 button {
@@ -45,7 +33,6 @@ button.primary, #ob-form button:not([type=button]), #chat-send, #ask-pop button:
 #quiz-start, #quiz-validate, #quiz-next { color: #fff; background: var(--black); }
 button.ghost { background: transparent; color: var(--muted); padding: .45rem .9rem; }
 button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .6); box-shadow: none; }
-.app-bar button.ghost { color: #fff; } .app-bar button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, .14); }
 :focus-visible { outline: 3px solid var(--orange-2); outline-offset: 2px; }
 
 input, select, textarea {
@@ -197,15 +184,6 @@ blockquote.passage, #quiz blockquote {
 #quiz .verdict { font-weight: 500; margin: .8rem 0 .25rem; }
 #quiz .score { font-size: 3rem; font-weight: 300; color: var(--orange-1); line-height: 1.1; }
 #quiz-validate:disabled { background: #ead9ce; color: var(--muted); }
-
-/* --- mode réduit : seule la pastille reste, pour rouvrir l'app en grand --- */
-#pill { display: none; }
-body.mini { background: transparent; min-height: 0; }
-body.mini .app-bar, body.mini .app { display: none; }
-body.mini #pill {
-  display: inline-flex; align-items: center; gap: .6rem; position: fixed; right: 1.25rem; bottom: 1.25rem;
-  color: #fff; background: var(--black); padding: .8rem 1.4rem; font-size: 1.05rem; box-shadow: var(--shadow-lg); animation: pop .2s ease;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

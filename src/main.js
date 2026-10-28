@@ -221,7 +221,6 @@ $("save").onclick = async () => {
   go("infos-" + doc.id); // étape suivante : infos du cours (matière détectée, échéance)
 };
 
-$("brand").onclick = () => go("repertoire");
 setupLayout();
 rebuildIndex();
 route();
