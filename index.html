@@ -34,19 +34,30 @@
   .fb button[aria-pressed="true"] { border-color: #06c; background: #eef5ff; }
   #chat-form { display: flex; gap: .5rem; } #chat-input { flex: 1; font: inherit; padding: .4rem; }
   #chat-status.err { color: #b00; }
-  #docs button { margin: 0 .25rem .25rem 0; }
+  #lib-list .row { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem .75rem; border: 1px solid #ddd; border-radius: 8px; margin: .5rem 0; }
+  #lib-list .titre { font: inherit; font-weight: 600; background: none; border: 0; color: #06c; cursor: pointer; padding: 0; text-align: left; }
+  #lib-list .meta { color: #666; font-size: .85rem; flex: 1 1 12rem; }
+  select.maitrise { font: inherit; }
 </style>
 </head>
 <body>
 <h1>Reviz</h1>
-<div id="drop">
-  <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
-  <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
-  <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden></label>
-</div>
 <p id="status" role="status"></p>
-<div id="docs"></div>
-<section id="doc" hidden>
+<section id="home">
+  <h2>Mes cours</h2>
+  <p><button id="new-course" type="button">Nouveau cours</button></p>
+  <div id="drop" hidden>
+    <p>Glisse un cours ici (PDF, JPEG, PNG) ou</p>
+    <label><button type="button" onclick="this.nextElementSibling.click()">Choisir un fichier</button>
+    <input id="file" type="file" accept="application/pdf,image/jpeg,image/png" hidden></label>
+  </div>
+  <p id="lib-empty" hidden>Aucun cours : importe ton premier cours.</p>
+  <div id="lib-list"></div>
+</section>
+<div id="fiche" hidden>
+<p><button id="back" type="button">← Répertoire</button> <span id="fiche-maitrise"></span></p>
+<p id="unsaved" class="note" hidden>Pas encore enregistré : clique « Valider ».</p>
+<section id="doc">
   <h2 id="title"></h2>
   <p id="info"></p>
   <div id="reader" aria-label="Texte du cours"></div>
@@ -85,6 +96,7 @@
     <button id="chat-send">Envoyer</button>
   </form>
 </section>
+</div>
 <script type="module" src="src/main.js"></script>
 </body>
 </html>

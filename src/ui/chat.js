@@ -56,13 +56,15 @@ export function createChat() {
   }
 
   async function send(question) {
+    const d = doc;
     busy = true; render(); status("Réflexion…");
     try {
-      const a = await askCourse({ doc, turns: chat.turns, question });
+      const a = await askCourse({ doc: d, turns: chat.turns, question });
       const ts = Date.now();
-      chat = { ...chat, turns: [...chat.turns, { id: uid(), role: "user", content: question, ts }, { id: uid(), role: "assistant", ...a, feedback: null, ts }] };
-      saveChat(doc.id, chat);
-      $("chat-input").value = "";
+      const base = d.id === doc.id ? chat : loadChat(d.id);
+      const next = { ...base, turns: [...base.turns, { id: uid(), role: "user", content: question, ts }, { id: uid(), role: "assistant", ...a, feedback: null, ts }] };
+      saveChat(d.id, next);
+      if (d.id === doc.id) { chat = next; $("chat-input").value = ""; }
       status("");
     } catch (e) {
       status(ERRORS[e.code] ?? "La réponse n'a pas pu être obtenue. Réessaie.", true);
@@ -70,12 +72,15 @@ export function createChat() {
   }
 
   async function explain(targetId) {
+    const d = doc;
     busy = true; render(); status("Je reformule plus simplement…");
     try {
-      const a = await reexplain({ doc, turns: chat.turns, targetId });
+      const a = await reexplain({ doc: d, turns: chat.turns, targetId });
       const turn = { id: uid(), role: "assistant", ...a, feedback: null, reexplique: targetId, ts: Date.now() };
-      chat = { ...chat, turns: insertAfter(chat.turns, targetId, turn) };
-      saveChat(doc.id, chat);
+      const base = d.id === doc.id ? chat : loadChat(d.id);
+      const next = { ...base, turns: insertAfter(base.turns, targetId, turn) };
+      saveChat(d.id, next);
+      if (d.id === doc.id) chat = next;
       status("");
     } catch {
       status("La ré-explication a échoué.", true, () => explain(targetId));

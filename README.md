@@ -33,3 +33,7 @@ Après « Valider » sur le texte : détection matière / sujet / niveau (`askAI
 ## Commentaires surlignés (itération 4)
 
 Le panneau de lecture est en lecture seule ; « Corriger le texte » passe en édition. Sélectionner un passage → « Poser une question sur ce passage » → `askPassage` (`src/chat/ask.js`, même logique que le chat, fil isolé sans historique). Le passage est surligné, un clic ouvre la carte question/réponse. Stockage : `doc:<id>.comments = [{ id, range:{start,end}, quote, prefix, suffix, question, reponse, source, orphan, createdAt }]`. Ancrage (`src/anchors.js`) : offsets sur `doc.text`, relocalisation par quote + contexte si le texte change, `orphan: true` si la quote a disparu (listé sous le texte, jamais de plantage). Chevauchements : le texte est découpé aux bornes des surlignages.
+
+## Répertoire (itération 5)
+
+Écran d'accueil = liste des cours (`#repertoire`), fiche = `#cours-<id>`. `src/library.js` est le seul module qui écrit `doc:<id>` ; il tient à jour l'index `docs:index = [{ id, titre, matiere, sujet, echeance, importedAt, maitrise }]` dans le même appel, et `rebuildIndex()` le reconstruit au démarrage s'il diverge (migration de l'ancienne clé `docs`). Maîtrise manuelle : `a_reviser` (défaut) / `en_cours` / `maitrise`, stockée dans `doc.maitrise`, modifiable depuis le répertoire ou la fiche. Rouvrir une fiche relit `doc:<id>` (texte, onboarding, commentaires) et `chat:<id>`. Un cours importé n'entre dans le répertoire qu'au « Valider ». Pas de suppression de cours ni de réinitialisation globale pour l'instant.

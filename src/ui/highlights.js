@@ -71,8 +71,10 @@ export function createHighlights({ reader, getDoc, saveComments }) {
     if (!question || busy || !pending) return;
     busy = true;
     status.textContent = "Réflexion…"; status.className = "";
+    const doc = getDoc();
     try {
-      const a = await askPassage({ doc: getDoc(), passage: pending.quote, question });
+      const a = await askPassage({ doc, passage: pending.quote, question });
+      if (getDoc()?.id !== doc.id) return; // l'élève a changé de cours pendant l'appel
       const c = { id: uid(), ...pending, question, reponse: a.reponse, source: a.source, orphan: false, createdAt: Date.now() };
       closePop(); hideBtn();
       getSelection().removeAllRanges();
