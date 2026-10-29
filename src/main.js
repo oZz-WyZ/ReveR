@@ -208,6 +208,7 @@ function setTab(t) {
   $("tab-chat").parentElement.dataset.active = t; // fait glisser le curseur du toggle de l'assistant
   $("tab-chat").setAttribute("aria-selected", String(t === "chat"));
   $("tab-quiz").setAttribute("aria-selected", String(t === "quiz"));
+  $("fiche").dataset.tab = t; // le CSS floute le cours pendant « Me tester »
   $("chat").hidden = t !== "chat";
   $("quiz").hidden = t !== "quiz";
 }

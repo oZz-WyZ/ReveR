@@ -12,7 +12,7 @@ function el(tag, cls, text) {
 }
 
 /** Quiz de maîtrise, une question à la fois : un clic sur une option = réponse. La correction de CETTE question
- *  (bonne réponse + passage du cours) s'affiche tout de suite, puis « Suivante » ; l'écran final ne montre que le score.
+ *  (option choisie en vert ou rouge, bonne réponse en vert) s'affiche tout de suite, puis « Suivante » ; l'écran final ne montre que le score.
  *  saveScore({ score, total, at, tronque }) persiste sur le cours. N'agit pas sur l'état de maîtrise. */
 export function createQuiz(saveScore, onBack) {
   let doc, run = null, tronque = false, busy = false, readyAt = 0;
@@ -56,13 +56,7 @@ export function createQuiz(saveScore, onBack) {
       else if (k === c.picked) b.classList.add("ko");
     });
     const fb = $("quiz-feedback");
-    fb.replaceChildren(el("p", "verdict", c.ok ? "✔ Bonne réponse" : "✘ Mauvaise réponse"));
-    if (!c.ok) fb.append(el("p", null, "Bonne réponse : " + run.question.options[c.correctIndex]));
-    if (c.passage) {
-      const b = el("blockquote");
-      b.append(el("strong", null, "Dans ton cours : "), c.passage);
-      fb.append(b);
-    } else fb.append(el("p", "note", "Passage non retrouvé dans le cours."));
+    fb.replaceChildren();
     const next = el("button", "primary", run.last ? "Voir mon score" : "Suivante");
     next.type = "button";
     next.onclick = () => (run.next() ? showResult() : renderQuestion());

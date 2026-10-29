@@ -133,11 +133,11 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
 /* même fond blanc que la carte de l'assistant, coins moins arrondis */
-.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); }
-.viewer-scroll { position: absolute; inset: 0; overflow: auto; padding: 4rem 1.25rem 2rem; }
-.viewer-tools { position: absolute; top: .9rem; left: 1rem; right: 1.4rem; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: .75rem; pointer-events: none; }
-.viewer-tools > div { display: flex; align-items: center; gap: .5rem; pointer-events: auto; }
-.tools-left button { background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); backdrop-filter: blur(6px); }
+.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); transition: filter .25s; }
+/* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
+#fiche[data-tab="quiz"] .viewer-shell { filter: blur(12px); pointer-events: none; user-select: none; }
+.viewer-tools { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }
+.viewer-tools > div { display: flex; align-items: center; gap: .5rem; }
 #fiche-matiere-nom { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .viewer-tools .tabs { width: 14rem; }
 .viewer-tools button.primary { box-shadow: var(--shadow); }
@@ -223,7 +223,6 @@ blockquote.passage, #quiz blockquote {
 #quiz .opt.ok { background: #e3f4e8; color: #14532d; border-color: #2e9d57; }
 #quiz .opt.ko { background: #fdeaea; color: #7a1c1c; border-color: #d64545; }
 #quiz-feedback { margin-top: .9rem; }
-#quiz .verdict { font-weight: 500; margin: .4rem 0 .25rem; }
 #quiz-feedback .primary { margin-top: .6rem; }
 #quiz .score { font-size: 2.3rem; font-weight: 300; color: var(--orange-1); line-height: 1.1; margin: .25rem 0 .5rem; }
 .result-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .25rem 0 1rem; }

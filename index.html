@@ -37,35 +37,33 @@
   <div id="lib-list"></div>
 </section>
 <div id="fiche" hidden>
+  <div class="viewer-tools">
+    <div class="tools-left">
+      <button id="back" type="button" class="ghost">← Retour à l'accueil</button>
+      <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
+        <span id="fiche-matiere-nom"></span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="tools-right">
+      <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
+    </div>
+  </div>
   <div id="workspace">
     <section class="pane" id="pane-texte">
       <div class="pane-body viewer-shell">
-        <div class="viewer-tools">
-          <div class="tools-left">
-            <button id="back" type="button" class="ghost">← Retour à l'accueil</button>
-            <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
-              <span id="fiche-matiere-nom"></span>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-            </button>
-          </div>
-          <div class="tools-right">
-            <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
-          </div>
-        </div>
-        <div class="viewer-scroll">
-          <section id="doc">
-            <p id="doc-note" class="note" hidden></p>
-            <div id="pdf-view" hidden></div>
-            <div id="reader" aria-label="Texte du cours"></div>
-            <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
-            <form id="ask-pop" hidden>
-              <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>
-              <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
-              <span id="ask-status" role="status"></span>
-            </form>
-            <div id="cards" class="popover" hidden></div>
-            <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
-          </section>
+        <div id="doc">
+          <p id="doc-note" class="note" hidden></p>
+          <div id="pdf-view" hidden></div>
+          <div id="reader" aria-label="Texte du cours"></div>
+          <button id="ask-btn" type="button" hidden>Poser une question sur ce passage</button>
+          <form id="ask-pop" hidden>
+            <input id="ask-input" placeholder="Ta question sur ce passage…" autocomplete="off" required>
+            <button>Envoyer</button> <button type="button" id="ask-cancel">Annuler</button>
+            <span id="ask-status" role="status"></span>
+          </form>
+          <div id="cards" class="popover" hidden></div>
+          <section id="orphans" hidden><h3>Commentaires sans passage</h3><div id="orphans-list"></div></section>
         </div>
       </div>
     </section>
