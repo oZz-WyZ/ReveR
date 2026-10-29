@@ -27,7 +27,7 @@ button {
   border: 1.5px solid transparent; border-radius: 999px; padding: .6rem 1.35rem;
   transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow); }
+button:hover:not(:disabled) { transform: translateY(-1px); }
 button:active:not(:disabled) { transform: translateY(0); }
 button:disabled { opacity: .45; cursor: not-allowed; }
 button.primary, #ob-form button:not([type=button]), #chat-send, #ask-pop button:not([type=button]) { color: #fff; background: var(--black); }
@@ -53,13 +53,12 @@ label { display: block; }
 .err { color: var(--danger); }
 .hero {
   background: linear-gradient(175deg, var(--orange-1) 0%, var(--orange-2) 100%); color: #fff;
-  border-radius: var(--r-xl); padding: 2.4rem 2.6rem 2.2rem; box-shadow: var(--shadow-lg); margin: .25rem 0 1.25rem;
+  border-radius: var(--r-xl); padding: 2.4rem 2.6rem 2.2rem; box-shadow: var(--shadow); margin: .25rem 0 1.25rem;
 }
-.hero { transition: box-shadow .15s, transform .15s; }
 .hero.over { outline: 3px dashed #fff; outline-offset: -12px; transform: scale(1.01); }
 .hero h2 { font-size: 3.2rem; font-weight: 300; margin: 0 0 .4rem; }
 .hero-brand { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.1rem; font-size: 1.35rem; font-weight: 400; }
-.logo-tile { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; background: #fff; border-radius: 50%; box-shadow: 0 6px 16px rgba(0, 0, 0, .15); }
+.logo-tile { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; background: #fff; border-radius: 50%;}
 .logo-tile img { width: 2.3rem; height: auto; }
 .hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
@@ -68,7 +67,7 @@ label { display: block; }
   position: relative; display: flex; flex-direction: column; gap: .35rem; padding: .6rem .6rem .75rem; border-radius: var(--r-sm);
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
 }
-#lib-list .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+#lib-list .card:hover { transform: translateY(-2px); }
 #lib-list .card-img { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; overflow: hidden; background: #f3ece6 url("mascotte.svg") center / 3.5rem no-repeat; border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: none; }
 #lib-list .card-img:hover { transform: none; box-shadow: none; }
 #lib-list .card-img img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
@@ -143,7 +142,6 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .viewer-tools > div { display: flex; align-items: center; gap: .5rem; }
 #fiche-matiere-nom { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .viewer-tools .tabs { width: 14rem; }
-.viewer-tools button.primary { box-shadow: var(--shadow); }
 #doc { position: relative; }
 #doc-note { max-width: 794px; margin: 0 auto .75rem; }
 #pdf-view { margin: 0 auto 1rem; }
@@ -188,10 +186,10 @@ blockquote.passage, #quiz blockquote {
 .chat-empty[hidden] { display: none; }
 .chat-empty h2 { font-size: 1.6rem; font-weight: 300; margin: .4rem 0 0; }
 /* mascotte de l'assistant (mascotte.svg) : écran d'accueil du chat et avatar des réponses */
-.orb { width: 5.5rem; height: auto; flex: none; filter: drop-shadow(0 14px 22px rgba(89, 78, 192, .35)); }
+.orb { width: 5.5rem; height: auto; flex: none; }
 .avatar { width: 2.1rem; height: auto; flex: none; margin-top: .1rem; }
 .suggest { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin-top: 1rem; }
-.chip { background: #fff; box-shadow: var(--shadow); font-size: .85rem; padding: .45rem 1rem; }
+.chip { background: #fff; font-size: .85rem; padding: .45rem 1rem; }
 #chat-log { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 1.1rem; padding: .25rem .25rem 1rem; }
 #chat-empty:not([hidden]) ~ #chat-log { display: none; }
 .msg { animation: pop .18s ease; }
@@ -241,7 +239,7 @@ blockquote.passage, #quiz blockquote {
 /* --- onboarding du profil --- */
 .setup { padding: 2rem 2.4rem 1.8rem; margin: 2vh auto; }
 .setup-brand { display: flex; align-items: center; gap: .75rem; font-size: 1.2rem; margin-bottom: 1rem; }
-.setup-brand .logo-tile { width: 3rem; height: 3rem; box-shadow: var(--shadow); }
+.setup-brand .logo-tile { width: 3rem; height: 3rem; }
 .setup h2 { font-size: 1.9rem; font-weight: 300; margin-bottom: .4rem; }
 #setup-body input { width: 100%; margin-top: .6rem; }
 .choices { display: grid; gap: .55rem; margin: 1.1rem 0 .5rem; }
@@ -261,7 +259,7 @@ blockquote.passage, #quiz blockquote {
 .subjects { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.2rem; }
 .subject { display: flex; align-items: center; gap: .95rem; text-align: left; padding: 1.1rem 1.3rem; border: 0; border-radius: var(--r-lg);
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); }
-.subject:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.subject:hover:not(:disabled) { transform: translateY(-2px); }
 .subject .dot { flex: none; width: 2.7rem; height: 2.7rem; display: grid; place-items: center; border-radius: 50%; background: var(--tint); color: var(--ink); font-weight: 500; font-size: 1.1rem; }
 .subject-text { display: flex; flex-direction: column; min-width: 0; }
 .subject-name { font-weight: 500; overflow-wrap: anywhere; }
@@ -272,7 +270,7 @@ blockquote.passage, #quiz blockquote {
 #chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(40, 20, 5, .35); backdrop-filter: blur(3px); }
 .chooser-card { width: calc(100% - 2rem); max-width: 36rem; max-height: 82vh; overflow: auto; padding: 1.6rem 1.8rem; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); animation: pop .18s ease; }
 .chooser-card h2 { font-size: 1.5rem; font-weight: 300; }
-.reset-fixed { position: fixed; left: 1.75rem; bottom: 1.75rem; z-index: 40; font-size: .8rem; padding: .3rem .8rem; background: rgba(255, 255, 255, .92); box-shadow: var(--shadow); }
+.reset-fixed { position: fixed; left: 1.75rem; bottom: 1.75rem; z-index: 40; font-size: .8rem; padding: .3rem .8rem; background: rgba(255, 255, 255, .92); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
