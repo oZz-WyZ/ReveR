@@ -133,9 +133,11 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
 /* même fond blanc que la carte de l'assistant, coins moins arrondis */
-.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); transition: filter .25s; }
+.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); }
 /* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
-#fiche[data-tab="quiz"] .viewer-shell { filter: blur(12px); pointer-events: none; user-select: none; }
+#doc { transition: filter .25s; }
+#fiche[data-tab="quiz"] #doc { filter: blur(12px); pointer-events: none; user-select: none; }
+#fiche[data-tab="quiz"] .viewer-shell { overflow: hidden; } /* pas de défilement du cours pendant le quiz */
 .viewer-tools { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }
 .viewer-tools > div { display: flex; align-items: center; gap: .5rem; }
 #fiche-matiere-nom { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
