@@ -56,10 +56,14 @@ label { display: block; }
 .err { color: var(--danger); }
 /* mêmes marges sur l'onboarding, l'accueil et les matières */
 #setup, #home, #matiere-page { max-width: 72rem; margin: 0 auto; padding: 4rem 0 3rem; }
-.hero { color: #242222; margin: 0 0 40px; }
+.hero { color: #242222; margin: 0 0 32px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 32px; align-items: end; } /* le bouton passe à droite du titre : la 1re rangée de matières remonte, la suivante dépasse en bas de l'écran et invite à défiler */
+.hero > .setup-logo, .hero h2, .hero-sub { grid-column: 1; }
+.hero button.primary { grid-column: 2; grid-row: 2 / 4; margin-bottom: 32px; }
+#home { padding-top: 3rem; padding-bottom: 8rem; } /* le bas réserve la place du dégradé */
+#home:not([hidden])::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 6rem; background: linear-gradient(rgba(255, 255, 255, 0), #fff); pointer-events: none; z-index: 5; } /* léger fondu : la suite des matières est coupée, pas absente */
 .hero.over { outline: 1px dashed #242222; outline-offset: 16px; border-radius: 32px; }
 .hero h2 { font-size: 48px; line-height: 1.2; font-weight: 300; margin: 32px 0 .4rem; }
-.hero-sub { font-size: 20px; font-weight: 300; color: #858585; margin: 0 0 32px; max-width: 44rem; }
+.hero-sub { font-size: 20px; font-weight: 300; color: #858585; margin: 0; max-width: 44rem; }
 .hero button.primary { padding: 24px 40px; font-size: 24px; font-weight: 300; line-height: 1.3; border: 0; border-radius: 24px; background: #242222; color: #fff; }
 #lib-list { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 17rem)); gap: 16px; margin-top: 32px; }
 #lib-list .card {
@@ -334,7 +338,7 @@ html { scrollbar-gutter: stable; } /* la barre de défilement ne décale plus le
 
 /* --- accueil : cartes par matière ; page d'une matière --- */
 .subjects { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 16px; }
-.subject { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 32px; min-height: 200px; text-align: left; padding: 24px; color: #242222;
+.subject { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 24px; min-height: 176px; text-align: left; padding: 24px; color: #242222;
   background: #fff; border: .5px solid #242222; border-radius: 32px; box-shadow: none; }
 .subject:hover:not(:disabled) { transform: none; box-shadow: inset 0 0 0 3.5px #242222; }
 .subject .dot { display: block; color: #242222; }
