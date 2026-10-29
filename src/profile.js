@@ -71,7 +71,7 @@ export function nextStep(a) {
     }
     if (a.voie === "generale" && !a.specialites) {
       const n = LYCEE.nbSpecialites[a.lycee];
-      if (n) return S("specialites", `Quelles sont tes ${n} spécialités ?`, "multi", { options: opts(LYCEE.specialites), exact: n });
+      if (n) return S("specialites", `Quelles sont tes ${n} spécialités ?`, "multi", { options: opts(LYCEE.specialites) });
     }
     if (a.voie !== "techno" && !a.options) return S("options", "Suis-tu des options ?", "multi", { options: opts(LYCEE.options[a.lycee] ?? []), optional: true });
     if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]) });

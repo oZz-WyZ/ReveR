@@ -73,18 +73,16 @@ export function startSetup({ onDone }) {
 
     multi(step, body, next) {
       const sel = new Set(step.preset ?? []);
-      const info = el("p", "note");
       const refresh = () => {
         for (const b of box.children) b.setAttribute("aria-pressed", String(sel.has(b.dataset.v)));
-        if (step.exact) info.textContent = `${sel.size} / ${step.exact} choisies`;
-        next.disabled = step.exact ? sel.size !== step.exact : !step.optional && sel.size === 0;
+        next.disabled = !step.optional && sel.size === 0;
       };
       const box = chips(step.options, sel, (v) => {
-        if (sel.has(v)) sel.delete(v); else if (!step.exact || sel.size < step.exact) sel.add(v);
+        if (sel.has(v)) sel.delete(v); else sel.add(v);
         refresh();
       });
       [...box.children].forEach((b, i) => { b.dataset.v = step.options[i].value; });
-      body.append(box, info);
+      body.append(box);
       next.onclick = () => answer(step.id, [...sel]);
       refresh();
     },
