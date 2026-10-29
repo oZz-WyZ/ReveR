@@ -10,7 +10,7 @@ const el = (tag, cls) => { const e = document.createElement(tag); if (cls) e.cla
  * invisible reste sélectionnable et les surlignages sont dessinés d'après les offsets de doc.text.
  */
 export function createViewer(root, ink) {
-  let st = null, token = 0, lastW = 0, timer, observer;
+  let st = null, token = 0, lastW = 0, timer, observer, zoom = 1; // zoom : facteur de la largeur des pages, gardé d'un cours à l'autre
 
   function clear() {
     observer?.disconnect();
@@ -83,7 +83,7 @@ export function createViewer(root, ink) {
     root.replaceChildren();
     ink?.reset();
     lastW = avail; // largeur disponible (et non celle de la page) : sert à détecter un vrai redimensionnement
-    const width = Math.min(avail, MAX_PAGE_W);
+    const width = Math.min(avail, MAX_PAGE_W) * zoom;
     st.pages = [];
     observer = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && renderPage(e.target.__i)), { rootMargin: "800px 0px" });
     for (let n = 1; n <= st.pdf.numPages; n++) {
@@ -125,8 +125,17 @@ export function createViewer(root, ink) {
     return isEnd ? it.end : it.start;
   }
 
+  // La photo suit le zoom par sa largeur ; au zoom 1 elle garde sa taille naturelle (dans la limite du panneau).
+  function fitImage() {
+    if (st?.kind !== "image") return;
+    st.box.style.width = zoom === 1 ? "" : zoom * 100 + "%";
+    st.img.style.width = zoom === 1 ? "" : "100%";
+  }
+
   return {
     root,
+    get zoom() { return zoom; },
+    setZoom(z) { zoom = Math.round(Math.min(2.4, Math.max(0.6, z)) * 10) / 10; if (st?.kind === "pdf") build(); else fitImage(); },
     get kind() { return st?.kind ?? null; },
     /** @returns {Promise<{ok:boolean, kind?:string, canComment?:boolean}>} */
     async open({ doc, blob }) {
@@ -141,7 +150,8 @@ export function createViewer(root, ink) {
           box.append(img);
           root.append(box);
           ink?.attach(box, 0);
-          st = { kind: "image", url, pages: [], comments: [] };
+          st = { kind: "image", url, box, img, pages: [], comments: [] };
+          fitImage();
           return { ok: true, kind: "image", canComment: false };
         }
         const pdf = await openPdf(blob);

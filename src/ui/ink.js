@@ -4,7 +4,8 @@ export const PALETTES = {
   pen: ["#1f1f1f", "#d64545", "#2e6fd6", "#2e9d57"],
   hl: ["#ffe066", "#8ee6a1", "#ff9ec4", "#8cc8ff"],
 };
-export const WIDTHS = { pen: [0.0025, 0.005, 0.009], hl: [0.018, 0.026, 0.036] }; // relatives à la largeur de la page
+PALETTES.text = PALETTES.pen;
+export const WIDTHS = { pen: [0.0025, 0.005, 0.009], hl: [0.018, 0.026, 0.036], text: [0.016, 0.024, 0.036] }; // relatives à la largeur de la page (texte : taille de police)
 const ERASE_PX = 10;
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -18,12 +19,18 @@ export function createInk({ onChange } = {}) {
   let onState = null;
   const model = createModel();
   const pages = new Map(); // p -> { box, canvas }
-  const sel = { tool: "select", color: { pen: 0, hl: 0 }, size: { pen: 1, hl: 1 } };
+  const sel = { tool: "select", color: { pen: 0, hl: 0, text: 0 }, size: { pen: 1, hl: 1, text: 1 } };
   let cur = null, pending = null; // trait en cours / traits touchés par la gomme pendant le geste
 
   const size = (box) => ({ W: box.clientWidth, H: box.clientHeight });
 
   function drawStroke(ctx, s, W, H) {
+    if (s.tool === "text") {
+      const size = s.w * W;
+      ctx.globalAlpha = 1; ctx.fillStyle = s.color; ctx.font = `${size}px system-ui, sans-serif`; ctx.textBaseline = "top";
+      s.text.split("\n").forEach((l, i) => ctx.fillText(l, s.pts[0][0] * W, s.pts[0][1] * H + i * size * 1.25));
+      return;
+    }
     ctx.globalAlpha = s.tool === "hl" ? 0.4 : 1;
     ctx.strokeStyle = s.color; ctx.lineWidth = s.w * W; ctx.lineCap = ctx.lineJoin = "round";
     ctx.beginPath();
@@ -50,13 +57,38 @@ export function createInk({ onChange } = {}) {
     ctx.globalAlpha = 1;
   }
   const drawAll = () => pages.forEach((_, p) => draw(p));
-  const state = () => onState?.({ tool: sel.tool, color: sel.color, size: sel.size, canUndo: model.canUndo(), canRedo: model.canRedo() });
+  const state = () => onState?.({ tool: sel.tool, color: sel.color, size: sel.size, canUndo: model.canUndo(), canRedo: model.canRedo(), count: model.list().length });
   const changed = () => { onChange?.(model.list()); state(); };
 
   function eraseAt(p, pt) {
     const { W, H } = size(pages.get(p).box);
     for (const s of model.list()) if (s.p === p && !pending.has(s.id) && strokeHit(s, pt[0], pt[1], ERASE_PX, W, H)) pending.add(s.id);
     draw(p);
+  }
+
+  // Texte : un champ posé à l'endroit du clic ; Entrée ou perte du focus l'enregistre, Échap l'annule, Maj+Entrée saute une ligne.
+  function typeAt(p, pt) {
+    const { box } = pages.get(p), { W } = size(box);
+    const s = { id: uid(), p, tool: "text", color: PALETTES.text[sel.color.text], w: WIDTHS.text[sel.size.text], pts: [pt], text: "" };
+    const ta = document.createElement("textarea");
+    ta.className = "ink-text"; ta.rows = 1; ta.cols = 4;
+    Object.assign(ta.style, { left: pt[0] * 100 + "%", top: pt[1] * 100 + "%", font: `${s.w * W}px/1.25 system-ui, sans-serif`, color: s.color });
+    let done = false;
+    const finish = (save) => {
+      if (done) return;
+      done = true;
+      const text = ta.value.replace(/\s+$/, "");
+      ta.remove();
+      if (save && text) { s.text = text; model.add(s); draw(p); changed(); }
+    };
+    ta.oninput = () => { const lines = ta.value.split("\n"); ta.rows = lines.length; ta.cols = Math.max(4, ...lines.map((l) => l.length + 1)); };
+    ta.onblur = () => finish(true);
+    ta.onkeydown = (e) => {
+      if (e.key === "Escape") finish(false);
+      else if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); finish(true); }
+    };
+    box.append(ta);
+    requestAnimationFrame(() => ta.focus()); // après le clic, qui sinon reprendrait le focus
   }
 
   function bind(p, canvas) {
@@ -66,6 +98,7 @@ export function createInk({ onChange } = {}) {
       canvas.setPointerCapture(e.pointerId);
       const pt = rel(e);
       if (sel.tool === "eraser") { pending = new Set(); eraseAt(p, pt); return; }
+      if (sel.tool === "text") { typeAt(p, pt); return; }
       const t = sel.tool;
       cur = { id: uid(), p, tool: t, color: PALETTES[t][sel.color[t]], w: WIDTHS[t][sel.size[t]], pts: [pt] };
       draw(p);
@@ -108,11 +141,13 @@ export function createInk({ onChange } = {}) {
     setStrokes(list) { model.set(list); drawAll(); state(); },
     setTool(t) {
       sel.tool = t;
-      pages.forEach(({ canvas }) => { canvas.style.pointerEvents = t === "select" ? "none" : "auto"; canvas.style.cursor = t === "select" ? "" : "crosshair"; });
+      pages.forEach(({ canvas }) => { canvas.style.pointerEvents = t === "select" ? "none" : "auto"; canvas.style.cursor = t === "select" ? "" : t === "text" ? "text" : "crosshair"; });
       state();
     },
     setColor(i) { if (sel.tool in PALETTES) { sel.color[sel.tool] = i; state(); } },
     setSize(i) { if (sel.tool in PALETTES) { sel.size[sel.tool] = i; state(); } },
+    /** Efface toutes les annotations (une seule entrée d'historique : « Annuler » les rend). Renvoie le nombre effacé. */
+    clear() { const all = model.list(); model.remove(all); drawAll(); if (all.length) changed(); return all.length; },
     undo() { if (model.undo()) { drawAll(); changed(); } },
     redo() { if (model.redo()) { drawAll(); changed(); } },
     /** La barre d'outils s'abonne ici : render(état) est appelé à chaque changement. */

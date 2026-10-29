@@ -1,6 +1,7 @@
 // Modèle des annotations dessinées (stylo, surligneur) : traits en coordonnées relatives à la page (0..1)
 // et historique annuler / rétablir. Aucun DOM ici : le dessin est dans ui/ink.js.
 // Trait : { id, p (page, depuis 0), tool: "pen" | "hl", color, w (épaisseur, relative à la largeur de page), pts: [[x, y], ...] }
+// Texte : même forme avec tool "text", w = taille de police (relative à la largeur), pts = [[x, y]] (coin haut-gauche) et text.
 
 function distToSegment(px, py, ax, ay, bx, by) {
   const dx = bx - ax, dy = by - ay, len2 = dx * dx + dy * dy;
@@ -8,10 +9,20 @@ function distToSegment(px, py, ax, ay, bx, by) {
   return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 }
 
+/** Boîte approximative (en pixels) d'un texte posé sur une page de W x H pixels. */
+export function textBox(s, W, H) {
+  const lines = s.text.split("\n"), size = s.w * W;
+  return { x: s.pts[0][0] * W, y: s.pts[0][1] * H, w: Math.max(...lines.map((l) => l.length)) * size * 0.55, h: lines.length * size * 1.25 };
+}
+
 /** Le point (x, y) relatif touche-t-il le trait à `r` pixels près, sur une page de W x H pixels ? */
 export function strokeHit(s, x, y, r, W, H) {
-  const reach = r + (s.w * W) / 2;
   const px = x * W, py = y * H;
+  if (s.tool === "text") {
+    const b = textBox(s, W, H);
+    return px >= b.x - r && px <= b.x + b.w + r && py >= b.y - r && py <= b.y + b.h + r;
+  }
+  const reach = r + (s.w * W) / 2;
   const pts = s.pts;
   for (let i = 0; i < pts.length; i++) {
     const [ax, ay] = pts[i], [bx, by] = pts[Math.min(i + 1, pts.length - 1)];

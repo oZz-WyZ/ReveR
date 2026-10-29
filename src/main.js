@@ -24,7 +24,7 @@ const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const ink = createInk({ onChange: (annotations) => persist({ ...current, annotations }) });
 const viewer = createViewer($("pdf-view"), ink);
-createInkBar($("ink-bar"), ink);
+createInkBar($("ink-bar"), ink, viewer);
 const chat = createChat({ onPassage: (p) => showRef(p) });
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }));
 const highlights = createHighlights({
