@@ -13,6 +13,7 @@ const ICONS = {
   zoomIn: "M11 8v6M8 11h6M21 21l-4.3-4.3M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z",
   zoomOut: "M8 11h6M21 21l-4.3-4.3M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z",
   clear: "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14",
+  download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
 };
 const TOOLS = [["select", "Sélectionner du texte"], ["pen", "Stylo"], ["hl", "Surligneur"], ["eraser", "Gomme"], ["text", "Texte"]];
 
@@ -33,7 +34,8 @@ function button(label, content, onclick) {
 }
 
 /** Barre d'outils verticale à droite de la visionneuse : outils, annuler / rétablir, couleur et épaisseur de l'outil actif. */
-export function createInkBar(bar, ink, viewer) {
+/** onExport() : télécharge le PDF annoté (fourni par main.js, qui connaît l'original). */
+export function createInkBar(bar, ink, viewer, { onExport } = {}) {
   const tools = TOOLS.map(([t, label]) => { const b = button(label, icon(t), () => ink.setTool(t)); b.dataset.tool = t; return b; });
   const undo = button("Annuler (Ctrl+Z)", icon("undo"), () => ink.undo());
   const redo = button("Rétablir (Ctrl+Maj+Z)", icon("redo"), () => ink.redo());
@@ -44,16 +46,17 @@ export function createInkBar(bar, ink, viewer) {
   const clear = button("Tout effacer", icon("clear"), () => {
     if (ink.clear()) toast({ text: "Annotations effacées : Annuler les rend", duration: 4000 });
   });
+  const exportBtn = button("Exporter le PDF annoté", icon("download"), () => onExport?.());
   const zoomBy = (d) => { viewer.setZoom(viewer.zoom + d); ink.state(); };
   const options = document.createElement("div"); // couleurs et épaisseurs : seulement pour stylo / surligneur
   options.className = "ink-options";
   const hr = () => document.createElement("hr");
-  bar.append(...tools, hr(), undo, redo, hr(), zoomIn, zoomLabel, zoomOut, hr(), options, clear);
+  bar.append(...tools, hr(), undo, redo, hr(), zoomIn, zoomLabel, zoomOut, hr(), options, clear, exportBtn);
 
   const render = ({ tool, color, size, canUndo, canRedo, count }) => {
     zoomLabel.firstChild.data = Math.round(viewer.zoom * 100) + "%";
     zoomOut.disabled = viewer.zoom <= 0.6; zoomIn.disabled = viewer.zoom >= 2.4;
-    clear.disabled = !count;
+    clear.disabled = exportBtn.disabled = !count;
     tools.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tool === tool)));
     undo.disabled = !canUndo; redo.disabled = !canRedo;
     options.hidden = !(tool in PALETTES);

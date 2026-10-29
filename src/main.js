@@ -12,6 +12,7 @@ import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
 import { createInk } from "./ui/ink.js";
 import { createInkBar } from "./ui/inkbar.js";
+import { download, exportAnnotated } from "./export.js";
 import { createQuiz } from "./ui/quiz.js";
 import { renderLibrary } from "./ui/library.js";
 import { thumbnail } from "./ui/thumb.js";
@@ -24,7 +25,22 @@ const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const ink = createInk({ onChange: (annotations) => persist({ ...current, annotations }) });
 const viewer = createViewer($("pdf-view"), ink);
-createInkBar($("ink-bar"), ink, viewer);
+createInkBar($("ink-bar"), ink, viewer, { onExport: exportPdf });
+
+// Export : l'original + les annotations, en PDF.
+async function exportPdf() {
+  const d = current, file = await storage.blob.get(d.id);
+  if (!file || !d.annotations?.length) return;
+  const t = toast({ text: "Export du PDF…", duration: 60000 });
+  try {
+    download(await exportAnnotated(file, d.annotations), d.name.replace(/\.[^./\\]+$/, "") + "-annote.pdf");
+    t?.close?.();
+    toast({ text: "PDF annoté exporté", duration: 3000 });
+  } catch {
+    t?.close?.();
+    toast({ text: "L'export du PDF a échoué.", tone: "err" });
+  }
+}
 const chat = createChat({ onPassage: (p) => showRef(p) });
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }));
 const highlights = createHighlights({
