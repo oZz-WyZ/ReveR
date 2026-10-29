@@ -167,7 +167,8 @@ export function startSetup({ onDone }) {
 
   function tagChip(nom, onRemove) {
     const c = el("span", "tag-chip", nom);
-    const x = el("button", null, "×");
+    const x = el("button");
+    x.innerHTML = '<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
     x.type = "button"; x.setAttribute("aria-label", "Retirer " + nom); x.onclick = onRemove;
     c.append(x);
     return c;
