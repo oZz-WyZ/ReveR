@@ -14,6 +14,13 @@ const opts = (list) => list.map((x) => (typeof x === "string" ? { value: x, labe
 /** Genre pour les illustrations : celui répondu, sinon celui que le prénom laisse deviner (null = à demander). */
 export const genreOf = (a) => a.genre ?? guessGenre(a.prenom);
 
+/** Exemples de matières à ajouter, cohérents avec le niveau (affichés en placeholder, pour montrer qu'on peut en ajouter). */
+export function exemples(a) {
+  if (a.niveau === "college") return ["Latin", "Théâtre", "Chinois"];
+  if (a.niveau === "lycee") return ["Latin", "Arts plastiques", "Chinois"];
+  return SUPERIEUR.raccourcis[a.domaine]?.slice(0, 4) ?? ["Anglais", "Méthodologie"];
+}
+
 /** Matières déduites des réponses (l'élève peut ensuite les ajuster dans le récapitulatif). */
 export function buildMatieres(a) {
   if (a.niveau === "college") return [...COLLEGE.matieres];
@@ -58,7 +65,7 @@ export function nextStep(a) {
   if (a.niveau === "lycee") {
     if (!a.lycee) return S("lycee", "Quelle est ta classe ?", "single", { options: LYCEE.niveaux });
     if (a.lycee === "pro") {
-      if (!a.filiere && a.filiere !== "") return S("filiere", "Quelle est ta filière (bac pro ou CAP) ?", "text", { optional: true });
+      if (!a.filiere && a.filiere !== "") return S("filiere", "Quelle est ta filière (bac pro ou CAP) ?", "text", { optional: true, examples: ["Métiers de la relation client", "Maintenance des véhicules", "Coiffure"] });
       if (!a.proMatieres) return S("proMatieres", "Quels enseignements généraux as-tu ?", "multi", { options: opts(LYCEE.pro), preset: LYCEE.pro });
       if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]) });
       return recap();

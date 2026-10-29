@@ -1,4 +1,5 @@
-import { buildMatieres, genreOf, makeProfile, nextStep, toMatieres } from "../profile.js";
+import { typePlaceholder } from "./typewriter.js";
+import { buildMatieres, exemples, genreOf, makeProfile, nextStep, toMatieres } from "../profile.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -91,6 +92,7 @@ export function startSetup({ onDone }) {
       const input = el("input");
       input.className = "big"; // question à une seule réponse : grand champ
       input.placeholder = step.placeholder ?? "Ta réponse";
+      if (step.examples) typePlaceholder(input, step.examples);
       body.append(input);
       next.onclick = () => answer(step.id, input.value.trim());
       const check = () => { next.disabled = !step.optional && !input.value.trim(); };
@@ -103,7 +105,7 @@ export function startSetup({ onDone }) {
     tags(step, body, next) {
       const list = [];
       const input = el("input");
-      input.placeholder = "Une matière, puis Entrée";
+      typePlaceholder(input, exemples(a));
       const out = el("div", "tags");
       const sugg = el("div", "opts chips");
       const draw = () => {
@@ -151,7 +153,7 @@ export function startSetup({ onDone }) {
       names ??= toMatieres(buildMatieres(a)).map((m) => m.nom);
       const out = el("div", "tags");
       const input = el("input");
-      input.placeholder = "Ajouter une matière";
+      typePlaceholder(input, exemples(a).filter((e) => !names.some((n) => n.toLowerCase() === e.toLowerCase())));
       const draw = () => {
         out.replaceChildren(...names.map((n, i) => tagChip(n, () => { names.splice(i, 1); draw(); })));
         next.disabled = names.length === 0;
