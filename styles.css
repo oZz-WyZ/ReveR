@@ -58,12 +58,17 @@ label { display: block; }
 #setup, #home, #matiere-page { max-width: 72rem; margin: 0 auto; padding: 4rem 0 3rem; }
 .hero { display: flex; align-items: center; gap: 24px; color: #242222; margin: 0 0 40px; } /* mascotte et « Salut … » sur la même ligne */
 /* « Importer un cours » reste centré en bas de la fenêtre, avec une lueur blanche floutée pour qu'il se détache des cartes qui défilent dessous */
-.import-dock { position: fixed; left: 0; right: 0; bottom: 2rem; z-index: 7; width: fit-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; border-radius: 32px; box-shadow: 0 0 40px 36px rgba(255, 255, 255, .95); }
-.drop-hint { font-size: 16px; font-weight: 300; color: #858585; transition: color .15s; }
-.hero.over .drop-hint { color: #242222; }
-#home { padding-top: 3rem; padding-bottom: 8rem; } /* le bas réserve la place du dégradé */
+/* zone d'import : un onglet collé en bas de la fenêtre (bord du haut en pointillés, pas de bord en bas) ; elle se soulève au survol et quand un fichier la survole */
+.import-dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 7; width: min(40rem, calc(100% - 3.5rem)); margin: 0 auto; box-sizing: border-box; padding: 28px 32px 36px; display: flex; flex-direction: column; align-items: center; gap: 12px; color: #242222;
+  background: #fff; border: 1.5px dashed #242222; border-bottom: 0; border-radius: 32px 32px 0 0; cursor: pointer; box-shadow: 0 -10px 40px 12px rgba(255, 255, 255, .95); transition: transform .2s ease, background .2s ease, padding .2s ease; }
+.import-dock:hover { background: #fafafa; transform: translateY(-6px); }
+.hero.over .import-dock { background: #f1f1f1; border-style: solid; transform: translateY(-14px); }
+.import-dock svg { flex: none; }
+.drop-hint { font-size: 16px; font-weight: 300; color: #858585; }
+.drop-hint .drag, .hero.over .drop-hint .idle { display: none; }
+.hero.over .drop-hint .drag { display: inline; color: #242222; }
+#home { padding-top: 3rem; padding-bottom: 14rem; } /* le bas réserve la place du dégradé */
 #home:not([hidden])::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 6rem; background: linear-gradient(rgba(255, 255, 255, 0), #fff); pointer-events: none; z-index: 5; } /* léger fondu : la suite des matières est coupée, pas absente */
-.hero.over { outline: 1px dashed #242222; outline-offset: 16px; border-radius: 32px; }
 .hero h2 { font-size: 48px; line-height: 1.2; font-weight: 300; margin: 0; }
 .hero button.primary { padding: 24px 40px; font-size: 24px; font-weight: 300; line-height: 1.3; border: 0; border-radius: 24px; background: #242222; color: #fff; }
 #lib-list { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 17rem)); gap: 16px; margin-top: 32px; }

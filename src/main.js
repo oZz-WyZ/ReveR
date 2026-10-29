@@ -252,6 +252,7 @@ function persist(doc) {
 createVoice({ input: $("chat-input"), button: $("chat-mic"), onError: (msg) => toast({ text: msg, tone: "err" }) });
 
 $("new-course").onclick = () => $("file").click(); // ouvre l'explorateur de fichiers
+$("import-dock").onclick = (e) => { if (!e.target.closest("button")) $("file").click(); }; // toute la zone est cliquable
 $("back").onclick = () => go("repertoire");
 $("matiere-back").onclick = () => go("repertoire");
 
