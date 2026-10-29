@@ -135,13 +135,9 @@ function syncControls() {
   const editing = reader.isEditing();
   $("edit-text").textContent = editing ? "Enregistrer" : "Corriger le texte";
   $("edit-text").hidden = !editing && (mode !== "texte" || !canEdit(current));
-  $("view-seg").hidden = !orig;
-  $("view-seg").dataset.active = mode; // fait glisser le curseur du toggle
-  $("view-original").setAttribute("aria-pressed", String(mode === "original"));
-  $("view-texte").setAttribute("aria-pressed", String(mode === "texte"));
   // note discrète, seulement quand elle s'applique
   const note = mode === "original"
-    ? (orig && !orig.canComment ? "Pour commenter un passage, passe en « Texte »." : "")
+    ? ""
     : [current.method === "ocr" && "Transcrit par l'IA : relis et corrige.", current.truncated && "Attention : transcription peut-être incomplète."].filter(Boolean).join(" ");
   $("doc-note").textContent = note;
   $("doc-note").hidden = !note;
@@ -155,8 +151,6 @@ function setMode(m) {
   highlights.render(current, reader.isEditing());
   syncControls();
 }
-$("view-original").onclick = () => setMode("original");
-$("view-texte").onclick = () => setMode("texte");
 
 // Affiche l'original (PDF page par page, photo) s'il est disponible ; sinon on reste sur le texte.
 async function loadOriginal(doc, edit) {
