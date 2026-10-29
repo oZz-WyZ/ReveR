@@ -3,7 +3,7 @@
 :root {
   --ink: #141414; --muted: #4d3e37; --line: #efd9cc;
   --orange-1: #c9610c; --orange-2: #f0893a; --orange-soft: #ffe0c2; --orange-ink: #8a3d00;
-  --black: #0b0b0b; --cream: #fff7f2; --surface: #fff; --yellow: #f5d90a; --danger: #b3261e;
+  --black: #0b0b0b; --cream: #fff7f2; --soft: #f3ece6; --surface: #fff; --yellow: #f5d90a; --danger: #b3261e;
   --r-xl: 40px; --r-lg: 30px; --r-md: 22px; --r-sm: 14px;
   --shadow: 0 14px 36px rgba(160, 80, 30, .14); --shadow-lg: 0 24px 60px rgba(160, 80, 30, .28);
 }
@@ -136,6 +136,26 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); } /* carte comme celle de l'assistant */
 /* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
 #doc { transition: filter .25s; }
+#pane-texte { flex-direction: row; gap: .75rem; }
+#pane-texte .viewer-shell { flex: 1; min-width: 0; }
+.img-page { position: relative; width: fit-content; max-width: 100%; margin: 0 auto; }
+.ink { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; touch-action: none; }
+/* barre d'outils d'annotation : colonne à droite de la visionneuse */
+.ink-bar[hidden] { display: none; }
+.ink-bar { align-self: flex-start; display: flex; flex-direction: column; align-items: center; gap: .3rem; padding: .55rem .4rem; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; box-shadow: var(--shadow); }
+.ink-bar button { width: 2.3rem; height: 2.3rem; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--muted); box-shadow: none; }
+.ink-bar button:hover:not(:disabled) { background: var(--soft); transform: none; }
+.ink-bar button[aria-pressed="true"] { background: var(--black); color: #fff; }
+.ink-bar button:disabled { opacity: .3; }
+.ink-bar hr { width: 1.6rem; border: 0; border-top: 1px solid var(--line); margin: .15rem 0; }
+.ink-options { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+.ink-options[hidden] { display: none; }
+.ink-bar .sw { width: 1.6rem; height: 1.6rem; }
+.ink-bar .sw i { display: block; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: var(--c); border: 1px solid rgba(0, 0, 0, .15); }
+.ink-bar .sw[aria-pressed="true"] { background: transparent; box-shadow: inset 0 0 0 2px var(--black); }
+.ink-bar .sz[aria-pressed="true"] { background: var(--soft); color: var(--ink); box-shadow: inset 0 0 0 2px var(--black); }
+.ink-bar .sz i { display: block; width: var(--d); height: var(--d); border-radius: 50%; background: var(--ink); }
+#fiche[data-tab="quiz"] .ink-bar { opacity: .4; pointer-events: none; }
 #fiche[data-tab="quiz"] #doc { filter: blur(12px); pointer-events: none; user-select: none; }
 #fiche[data-tab="quiz"] .viewer-shell { overflow: hidden; } /* pas de défilement du cours pendant le quiz */
 .viewer-tools { display: flex; justify-content: space-between; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }

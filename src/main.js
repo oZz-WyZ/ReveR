@@ -10,6 +10,8 @@ import { createReader } from "./ui/reader.js";
 import { createChat } from "./ui/chat.js";
 import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
+import { createInk } from "./ui/ink.js";
+import { createInkBar } from "./ui/inkbar.js";
 import { createQuiz } from "./ui/quiz.js";
 import { renderLibrary } from "./ui/library.js";
 import { thumbnail } from "./ui/thumb.js";
@@ -20,7 +22,9 @@ import { createVoice } from "./ui/voice.js";
 
 const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
-const viewer = createViewer($("pdf-view"));
+const ink = createInk({ onChange: (annotations) => persist({ ...current, annotations }) });
+const viewer = createViewer($("pdf-view"), ink);
+createInkBar($("ink-bar"), ink);
 const chat = createChat({ onPassage: (p) => showRef(p) });
 const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }));
 const highlights = createHighlights({
@@ -140,6 +144,7 @@ function syncControls() {
   const note = mode === "original"
     ? ""
     : [current.method === "ocr" && "Transcrit par l'IA : relis et corrige.", current.truncated && "Attention : transcription peut-être incomplète."].filter(Boolean).join(" ");
+  $("ink-bar").hidden = mode !== "original" || editing; // annotations : seulement sur l'original
   $("doc-note").textContent = note;
   $("doc-note").hidden = !note;
 }
@@ -157,6 +162,7 @@ function setMode(m) {
 async function loadOriginal(doc, edit) {
   const my = ++viewToken;
   viewer.close(); orig = null;
+  ink.setStrokes(doc.annotations ?? []);
   $("pdf-view").hidden = $("reader").hidden = !edit; // pas de clignotement texte -> PDF
   const file = await storage.blob.get(doc.id);
   const r = file ? await viewer.open({ doc, blob: file }) : { ok: false };

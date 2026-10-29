@@ -9,11 +9,12 @@ const el = (tag, cls) => { const e = document.createElement(tag); if (cls) e.cla
  * Visionneuse de l'original (PDF page par page, ou photo). Pour un PDF à couche texte, un calque de texte
  * invisible reste sélectionnable et les surlignages sont dessinés d'après les offsets de doc.text.
  */
-export function createViewer(root) {
+export function createViewer(root, ink) {
   let st = null, token = 0, lastW = 0, timer, observer;
 
   function clear() {
     observer?.disconnect();
+    ink?.reset();
     if (st?.url) URL.revokeObjectURL(st.url);
     root.replaceChildren();
     st = null;
@@ -80,6 +81,7 @@ export function createViewer(root) {
     const my = (st.build = (st.build ?? 0) + 1);
     observer?.disconnect();
     root.replaceChildren();
+    ink?.reset();
     lastW = avail; // largeur disponible (et non celle de la page) : sert à détecter un vrai redimensionnement
     const width = Math.min(avail, MAX_PAGE_W);
     st.pages = [];
@@ -92,6 +94,7 @@ export function createViewer(root) {
       box.style.width = vp.width + "px"; box.style.height = vp.height + "px";
       box.__i = n - 1;
       root.append(box);
+      ink?.attach(box, n - 1);
       st.pages.push({ el: box, page, vp, rendered: false });
       observer.observe(box);
     }
@@ -134,7 +137,10 @@ export function createViewer(root) {
           const url = URL.createObjectURL(blob);
           const img = el("img", "orig-img");
           img.src = url; img.alt = "Cours d'origine";
-          root.append(img);
+          const box = el("div", "img-page"); // la photo est une page unique pour les annotations
+          box.append(img);
+          root.append(box);
+          ink?.attach(box, 0);
           st = { kind: "image", url, pages: [], comments: [] };
           return { ok: true, kind: "image", canComment: false };
         }
