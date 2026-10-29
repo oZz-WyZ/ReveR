@@ -15,7 +15,8 @@ const plural = (n) => (n === 0 ? "Aucun cours" : n === 1 ? "1 cours" : `${n} cou
 
 /** Accueil : une carte par matière (+ « Non classé » s'il y a des cours sans matière). onOpen(id). */
 export function renderSubjects(matieres, countOf, nonClasse, onOpen) {
-  const cards = matieres.map((m, i) => ({ id: m.id, nom: m.nom, n: countOf(m.id), tint: TINTS[i % TINTS.length] }));
+  const cards = matieres.map((m, i) => ({ id: m.id, nom: m.nom, n: countOf(m.id), tint: TINTS[i % TINTS.length] }))
+    .sort((x, y) => (y.n > 0) - (x.n > 0)); // les matières qui ont des cours d'abord (tri stable : l'ordre d'origine est gardé dans chaque groupe)
   if (nonClasse > 0) cards.push({ id: NON_CLASSE, nom: "Non classé", n: nonClasse, tint: "#ece4de" });
   $("subjects").replaceChildren(...cards.map((c) => {
     const b = el("button", "subject");
