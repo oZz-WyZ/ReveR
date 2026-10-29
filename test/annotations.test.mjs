@@ -34,4 +34,12 @@ assert.ok(strokeHit(s("d", [[0.4, 0.4], [0.4, 0.4]]), 0.4, 0.4, 5, 800, 1000)); 
 const t = { id: "t", p: 0, tool: "text", color: "#000", w: 0.02, text: "Bonjour\nmonde", pts: [[0.1, 0.1]] };
 assert.ok(strokeHit(t, 0.15, 0.105, 5, 800, 1000));
 assert.equal(strokeHit(t, 0.8, 0.8, 5, 800, 1000), false);
+// modification d'un texte : une entrée d'historique, annulable
+const m2 = createModel([t]);
+const t2 = { ...t, text: "Salut" };
+m2.replace(t, t2);
+assert.equal(m2.list()[0].text, "Salut");
+assert.ok(m2.undo()); assert.equal(m2.list()[0].text, "Bonjour\nmonde");
+assert.ok(m2.redo()); assert.equal(m2.list()[0].text, "Salut");
+assert.equal(m2.list().length, 1);
 console.log("ok");

@@ -34,8 +34,9 @@ export function strokeHit(s, x, y, r, W, H) {
 export function createModel(initial = []) {
   let list = [...initial], past = [], future = [];
   const ids = (ss) => new Set(ss.map((s) => s.id));
-  // Une entrée d'historique est { add: [...] } ou { del: [...] } ; l'annuler fait l'inverse.
+  // Une entrée d'historique est { add: [...] }, { del: [...] } ou { swap: [avant, après] } ; l'annuler fait l'inverse.
   const apply = (e, reverse) => {
+    if (e.swap) { const [from, to] = reverse ? [e.swap[1], e.swap[0]] : e.swap; list = list.map((s) => (s.id === from.id ? to : s)); return; }
     const adding = reverse ? !e.add : !!e.add;
     const ss = e.add ?? e.del;
     list = adding ? [...list, ...ss] : list.filter((s) => !ids(ss).has(s.id));
@@ -50,6 +51,8 @@ export function createModel(initial = []) {
       list = list.filter((s) => !ids(ss).has(s.id));
       past.push({ del: ss }); future = [];
     },
+    /** Remplace un trait par une version modifiée (même id) : une seule entrée d'historique. */
+    replace(before, after) { list = list.map((s) => (s.id === before.id ? after : s)); past.push({ swap: [before, after] }); future = []; },
     undo() { const e = past.pop(); if (!e) return false; apply(e, true); future.push(e); return true; },
     redo() { const e = future.pop(); if (!e) return false; apply(e, false); past.push(e); return true; },
     canUndo: () => past.length > 0,

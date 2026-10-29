@@ -20,7 +20,7 @@ export function createInk({ onChange } = {}) {
   const model = createModel();
   const pages = new Map(); // p -> { box, canvas }
   const sel = { tool: "select", color: { pen: 0, hl: 0, text: 0 }, size: { pen: 1, hl: 1, text: 1 } };
-  let cur = null, pending = null; // trait en cours / traits touchés par la gomme pendant le geste
+  let cur = null, pending = null, editing = null; // editing : id du texte en cours de modification (masqué sur le canvas) // trait en cours / traits touchés par la gomme pendant le geste
 
   const size = (box) => ({ W: box.clientWidth, H: box.clientHeight });
 
@@ -52,7 +52,7 @@ export function createInk({ onChange } = {}) {
     const ctx = rec.canvas.getContext("2d");
     ctx.setTransform(rec.canvas.width / W, 0, 0, rec.canvas.height / H, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    for (const s of model.list()) if (s.p === p && !pending?.has(s.id)) drawStroke(ctx, s, W, H);
+    for (const s of model.list()) if (s.p === p && !pending?.has(s.id) && s.id !== editing) drawStroke(ctx, s, W, H);
     if (cur?.p === p) drawStroke(ctx, cur, W, H);
     ctx.globalAlpha = 1;
   }
@@ -67,9 +67,10 @@ export function createInk({ onChange } = {}) {
   }
 
   // Texte : un champ posé à l'endroit du clic ; Entrée ou perte du focus l'enregistre, Échap l'annule, Maj+Entrée saute une ligne.
-  function typeAt(p, pt) {
+  function typeAt(p, pt, existing) {
     const { box } = pages.get(p), { W } = size(box);
-    const s = { id: uid(), p, tool: "text", color: PALETTES.text[sel.color.text], w: WIDTHS.text[sel.size.text], pts: [pt], text: "" };
+    const s = existing ? { ...existing } : { id: uid(), p, tool: "text", color: PALETTES.text[sel.color.text], w: WIDTHS.text[sel.size.text], pts: [pt], text: "" };
+    if (existing) { editing = s.id; draw(p); }
     const ta = document.createElement("textarea");
     ta.className = "ink-text"; ta.rows = 1; ta.cols = 4;
     Object.assign(ta.style, { left: pt[0] * 100 + "%", top: pt[1] * 100 + "%", font: `${s.w * W}px/1.25 system-ui, sans-serif`, color: s.color });
@@ -79,7 +80,12 @@ export function createInk({ onChange } = {}) {
       done = true;
       const text = ta.value.replace(/\s+$/, "");
       ta.remove();
-      if (save && text) { s.text = text; model.add(s); draw(p); changed(); }
+      editing = null;
+      if (save && existing && !text) model.remove([existing]); // texte vidé : il disparaît
+      else if (save && existing && text !== existing.text) model.replace(existing, { ...s, text });
+      else if (save && !existing && text) model.add({ ...s, text });
+      draw(p);
+      if (save && (text !== (existing?.text ?? ""))) changed();
     };
     ta.oninput = () => { const lines = ta.value.split("\n"); ta.rows = lines.length; ta.cols = Math.max(4, ...lines.map((l) => l.length + 1)); };
     ta.onblur = () => finish(true);
@@ -87,6 +93,7 @@ export function createInk({ onChange } = {}) {
       if (e.key === "Escape") finish(false);
       else if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); finish(true); }
     };
+    ta.value = s.text; ta.oninput();
     box.append(ta);
     requestAnimationFrame(() => ta.focus()); // après le clic, qui sinon reprendrait le focus
   }
@@ -98,7 +105,12 @@ export function createInk({ onChange } = {}) {
       canvas.setPointerCapture(e.pointerId);
       const pt = rel(e);
       if (sel.tool === "eraser") { pending = new Set(); eraseAt(p, pt); return; }
-      if (sel.tool === "text") { typeAt(p, pt); return; }
+      if (sel.tool === "text") { // un clic sur un texte déjà posé le rouvre pour le modifier
+        const { W, H } = size(pages.get(p).box);
+        const hit = model.list().findLast((s) => s.tool === "text" && s.p === p && strokeHit(s, pt[0], pt[1], 4, W, H));
+        typeAt(p, hit?.pts[0] ?? pt, hit);
+        return;
+      }
       const t = sel.tool;
       cur = { id: uid(), p, tool: t, color: PALETTES[t][sel.color[t]], w: WIDTHS[t][sel.size[t]], pts: [pt] };
       draw(p);
