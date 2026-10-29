@@ -53,6 +53,7 @@ export function startSetup({ onDone }) {
           frame.append(img); b.append(frame);
         }
         b.append(el("span", null, o.label));
+        b.style.setProperty("--i", box.children.length); // ordre d'apparition
         b.onclick = () => {
           picked = o.value;
           for (const c of box.children) c.setAttribute("aria-pressed", String(c === b));
@@ -174,7 +175,9 @@ export function startSetup({ onDone }) {
 
   function render() {
     const step = nextStep(a);
-    $("setup-title").textContent = step.titre;
+    const title = $("setup-title");
+    title.textContent = step.titre;
+    title.classList.remove("enter"); void title.offsetWidth; title.classList.add("enter"); // relance l'animation
     $("setup-aide").textContent = step.aide ?? "";
     $("setup-aide").hidden = !step.aide;
     $("setup-back").hidden = history.length === 0;
