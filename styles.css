@@ -307,7 +307,7 @@ body.light { background: #fff; }
 #setup-body input.big { font-size: 72px; line-height: 1.2; }
 #setup-body input:focus { box-shadow: none; }
 #setup-body input { margin-bottom: 40px; } /* de l'air entre le champ et les badges ou suggestions */
-#setup-body .opts + input { margin-top: 64px; } /* #setup-body : sinon la règle « input » plus haut (spécificité d'un id) imposait 16 px */
+#setup-body .opts + input { margin-top: 32px; } /* #setup-body : sinon la règle « input » plus haut (spécificité d'un id) imposait 16 px */
 .setup .note { margin: 32px 0 16px; }
 .opts.chips { gap: 12px; }
 #setup-body input::placeholder { color: #b5b5b5; opacity: 1; }
