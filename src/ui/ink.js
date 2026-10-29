@@ -5,7 +5,9 @@ export const PALETTES = {
   hl: ["#ffe066", "#8ee6a1", "#ff9ec4", "#8cc8ff"],
 };
 PALETTES.text = PALETTES.pen;
-export const WIDTHS = { pen: [0.0025, 0.005, 0.009], hl: [0.018, 0.026, 0.036], text: [0.016, 0.024, 0.036] }; // relatives à la largeur de la page (texte : taille de police)
+const PAGE_PT = 595; // largeur d'une page A4 en points : sert à exprimer la taille du texte en pt
+export const TEXT_SIZES_PT = [8, 10, 12, 14, 18, 24, 32, 48];
+export const WIDTHS = { pen: [0.0025, 0.005, 0.009], hl: [0.018, 0.026, 0.036], text: [10, 14, 24].map((pt) => pt / PAGE_PT) }; // relatives à la largeur de la page (texte : taille de police)
 const ERASE_PX = 10;
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -66,35 +68,66 @@ export function createInk({ onChange } = {}) {
     draw(p);
   }
 
-  // Texte : un champ posé à l'endroit du clic ; Entrée ou perte du focus l'enregistre, Échap l'annule, Maj+Entrée saute une ligne.
+  // Texte : un champ posé à l'endroit du clic, avec au-dessus un choix de taille et une poignée pour le déplacer.
+  // Entrée ou sortie du bloc l'enregistre, Échap l'annule, Maj+Entrée saute une ligne.
   function typeAt(p, pt, existing) {
-    const { box } = pages.get(p), { W } = size(box);
-    const s = existing ? { ...existing } : { id: uid(), p, tool: "text", color: PALETTES.text[sel.color.text], w: WIDTHS.text[sel.size.text], pts: [pt], text: "" };
+    const { box } = pages.get(p), { W, H } = size(box);
+    const s = existing ? { ...existing, pts: [[...existing.pts[0]]] } : { id: uid(), p, tool: "text", color: PALETTES.text[sel.color.text], w: WIDTHS.text[sel.size.text], pts: [pt], text: "" };
     if (existing) { editing = s.id; draw(p); }
+    const wrap = document.createElement("div");
+    wrap.className = "ink-text-box";
+    const place = () => Object.assign(wrap.style, { left: s.pts[0][0] * 100 + "%", top: s.pts[0][1] * 100 + "%" });
+    place();
     const ta = document.createElement("textarea");
-    ta.className = "ink-text"; ta.rows = 1; ta.cols = 4;
-    Object.assign(ta.style, { left: pt[0] * 100 + "%", top: pt[1] * 100 + "%", font: `${s.w * W}px/1.25 system-ui, sans-serif`, color: s.color });
+    ta.className = "ink-text"; ta.rows = 1; ta.cols = 4; ta.style.color = s.color;
+    const fit = () => { ta.style.font = `${s.w * W}px/1.25 system-ui, sans-serif`; };
+    fit();
+
+    const tools = document.createElement("div");
+    tools.className = "ink-text-tools";
+    if (s.pts[0][1] * H < 40) tools.classList.add("below"); // trop près du haut de la page : les outils passent dessous
+    const pick = document.createElement("select");
+    pick.title = "Taille du texte"; pick.setAttribute("aria-label", "Taille du texte");
+    const nearest = TEXT_SIZES_PT.reduce((a, b) => (Math.abs(b - s.w * PAGE_PT) < Math.abs(a - s.w * PAGE_PT) ? b : a));
+    for (const pt of TEXT_SIZES_PT) pick.append(new Option(pt + " pt", pt, false, pt === nearest));
+    pick.onchange = () => { s.w = +pick.value / PAGE_PT; fit(); ta.focus(); };
+    const grip = document.createElement("button");
+    grip.type = "button"; grip.className = "grip"; grip.title = "Déplacer le texte"; grip.setAttribute("aria-label", "Déplacer le texte");
+    grip.textContent = "✥";
+    let drag = null;
+    grip.onpointerdown = (e) => { e.preventDefault(); grip.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, from: [...s.pts[0]] }; };
+    grip.onpointermove = (e) => {
+      if (!drag) return;
+      const r = box.getBoundingClientRect();
+      s.pts[0] = [Math.min(0.98, Math.max(0, drag.from[0] + (e.clientX - drag.x) / r.width)), Math.min(0.98, Math.max(0, drag.from[1] + (e.clientY - drag.y) / r.height))];
+      place();
+    };
+    grip.onpointerup = grip.onpointercancel = () => { drag = null; ta.focus(); };
+    tools.append(pick, grip);
+
     let done = false;
     const finish = (save) => {
       if (done) return;
       done = true;
       const text = ta.value.replace(/\s+$/, "");
-      ta.remove();
+      wrap.remove();
       editing = null;
+      const moved = existing && (s.w !== existing.w || s.pts[0][0] !== existing.pts[0][0] || s.pts[0][1] !== existing.pts[0][1]);
       if (save && existing && !text) model.remove([existing]); // texte vidé : il disparaît
-      else if (save && existing && text !== existing.text) model.replace(existing, { ...s, text });
+      else if (save && existing && (text !== existing.text || moved)) model.replace(existing, { ...s, text });
       else if (save && !existing && text) model.add({ ...s, text });
       draw(p);
-      if (save && (text !== (existing?.text ?? ""))) changed();
+      if (save && (text !== (existing?.text ?? "") || moved)) changed();
     };
     ta.oninput = () => { const lines = ta.value.split("\n"); ta.rows = lines.length; ta.cols = Math.max(4, ...lines.map((l) => l.length + 1)); };
-    ta.onblur = () => finish(true);
+    wrap.onfocusout = (e) => { if (!wrap.contains(e.relatedTarget)) finish(true); }; // le focus reste dans le bloc quand on touche à la taille ou à la poignée
     ta.onkeydown = (e) => {
       if (e.key === "Escape") finish(false);
       else if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); finish(true); }
     };
     ta.value = s.text; ta.oninput();
-    box.append(ta);
+    wrap.append(tools, ta);
+    box.append(wrap);
     requestAnimationFrame(() => ta.focus()); // après le clic, qui sinon reprendrait le focus
   }
 

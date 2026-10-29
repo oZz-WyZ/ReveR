@@ -157,7 +157,12 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .ink-bar .sz[aria-pressed="true"] { background: var(--soft); color: var(--ink); box-shadow: inset 0 0 0 2px var(--black); }
 .ink-bar .sz i { display: block; width: var(--d); height: var(--d); border-radius: 50%; background: var(--ink); }
 .ink-bar .zoom-label { width: 2.3rem; height: 1.5rem; border-radius: 8px; font-size: .72rem; font-weight: 500; }
-.ink-text { position: absolute; z-index: 4; margin: 0; padding: 0 .1em; resize: none; overflow: hidden; border: 1px dashed var(--orange-2); border-radius: 3px; background: rgba(255, 255, 255, .75); outline: 0; box-shadow: none; white-space: pre; }
+.ink-text-box { position: absolute; z-index: 4; }
+.ink-text { display: block; margin: 0; padding: 0 .1em; resize: none; overflow: hidden; border: 1px dashed var(--orange-2); border-radius: 3px; background: rgba(255, 255, 255, .75); outline: 0; box-shadow: none; white-space: pre; }
+.ink-text-tools { position: absolute; bottom: 100%; left: 0; margin-bottom: .25rem; display: flex; align-items: center; gap: .2rem; padding: .2rem; background: #fff; border: 1px solid var(--edge); border-radius: 999px; font-size: .8rem; white-space: nowrap; }
+.ink-text-tools.below { bottom: auto; top: 100%; margin: .25rem 0 0; }
+.ink-text-tools select { font: inherit; padding: .1rem .3rem; border: 0; background: transparent; box-shadow: none; border-radius: 999px; }
+.ink-text-tools .grip { width: 1.7rem; height: 1.7rem; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--soft); box-shadow: none; cursor: move; touch-action: none; }
 #fiche[data-tab="quiz"] .ink-bar { opacity: .4; pointer-events: none; }
 #fiche[data-tab="quiz"] #doc { filter: blur(12px); pointer-events: none; user-select: none; }
 #fiche[data-tab="quiz"] .viewer-shell { overflow: hidden; } /* pas de défilement du cours pendant le quiz */
