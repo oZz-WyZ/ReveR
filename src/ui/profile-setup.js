@@ -119,7 +119,7 @@ export function startSetup({ onDone }) {
       const list = [];
       const input = el("input");
       typePlaceholder(input, exemples(a));
-      const out = el("div", "tags");
+      const out = el("div", "opts chips");
       const sugg = el("div", "opts chips");
       const draw = () => {
         out.replaceChildren(...list.map((n, i) => tagChip(n, () => { list.splice(i, 1); draw(); })));
@@ -164,7 +164,7 @@ export function startSetup({ onDone }) {
 
     recap(step, body, next) {
       names ??= toMatieres(buildMatieres(a)).map((m) => m.nom);
-      const out = el("div", "tags");
+      const out = el("div", "opts chips");
       const input = el("input");
       typePlaceholder(input, exemples(a).filter((e) => !names.some((n) => n.toLowerCase() === e.toLowerCase())));
       const draw = () => {
@@ -185,13 +185,11 @@ export function startSetup({ onDone }) {
     },
   };
 
+  // matière ajoutée : même badge noir à croix que les choix cochés ; un clic la retire
   function tagChip(nom, onRemove) {
-    const c = el("span", "tag-chip", nom);
-    const x = el("button");
-    x.innerHTML = '<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
-    x.type = "button"; x.setAttribute("aria-label", "Retirer " + nom); x.onclick = onRemove;
-    c.append(x);
-    return c;
+    const b = el("button", "opt-card compact", nom);
+    b.type = "button"; b.setAttribute("aria-pressed", "true"); b.setAttribute("aria-label", "Retirer " + nom); b.onclick = onRemove;
+    return b;
   }
 
   function render() {
