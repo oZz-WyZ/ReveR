@@ -74,9 +74,9 @@ label { display: block; }
 #lib-list .titre:hover { transform: none; box-shadow: none; }
 .trash {
   position: absolute; top: 1rem; right: 1rem; width: 2rem; height: 2rem; padding: 0; display: grid; place-items: center;
-  border-radius: 50%; background: #242222; color: #fff; border: .5px solid #242222; box-shadow: none; transition: background .15s ease, color .15s ease;
+  border-radius: 50%; background: #fff; color: #242222; border: .5px solid #242222; box-shadow: none; transition: background .15s ease, color .15s ease;
 }
-.trash:hover:not(:disabled) { background: #fff; color: #242222; box-shadow: none; transform: none; }
+.trash:hover:not(:disabled) { background: #242222; color: #fff; box-shadow: none; transform: none; }
 
 /* --- notifications : petite carte en bas à droite avec une barre de progression --- */
 #toasts { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50; display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; pointer-events: none; }
