@@ -103,7 +103,7 @@ function showSetup() {
 function showHome() {
   shown = "home"; current = null;
   screen("home");
-  $("hero-title").textContent = profil.prenom ? `Salut ${profil.prenom}` : "Mes cours"; // profils créés avant la question du prénom : titre d'origine
+  $("hero-title").textContent = profil.prenom ? `Salut ${profil.prenom},` : "Mes cours"; // profils créés avant la question du prénom : titre d'origine
   const entries = listEntries();
   const known = new Set(profil.matieres.map((m) => m.id));
   renderSubjects(

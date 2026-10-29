@@ -58,7 +58,9 @@ label { display: block; }
 #setup, #home, #matiere-page { max-width: 72rem; margin: 0 auto; padding: 4rem 0 3rem; }
 .hero { display: flex; align-items: center; gap: 24px; color: #242222; margin: 0 0 40px; } /* mascotte et « Salut … » sur la même ligne */
 /* « Importer un cours » reste centré en bas de la fenêtre, avec une lueur blanche floutée pour qu'il se détache des cartes qui défilent dessous */
-.hero button.primary { position: fixed; left: 0; right: 0; width: fit-content; margin: 0 auto; bottom: 2rem; z-index: 7; box-shadow: 0 0 40px 36px rgba(255, 255, 255, .95); }
+.import-dock { position: fixed; left: 0; right: 0; bottom: 2rem; z-index: 7; width: fit-content; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 12px; border-radius: 32px; box-shadow: 0 0 40px 36px rgba(255, 255, 255, .95); }
+.drop-hint { font-size: 16px; font-weight: 300; color: #858585; transition: color .15s; }
+.hero.over .drop-hint { color: #242222; }
 #home { padding-top: 3rem; padding-bottom: 8rem; } /* le bas réserve la place du dégradé */
 #home:not([hidden])::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 6rem; background: linear-gradient(rgba(255, 255, 255, 0), #fff); pointer-events: none; z-index: 5; } /* léger fondu : la suite des matières est coupée, pas absente */
 .hero.over { outline: 1px dashed #242222; outline-offset: 16px; border-radius: 32px; }
