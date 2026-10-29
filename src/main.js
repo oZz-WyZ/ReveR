@@ -12,6 +12,7 @@ import { createHighlights } from "./ui/highlights.js";
 import { createViewer } from "./ui/viewer.js";
 import { createQuiz } from "./ui/quiz.js";
 import { renderLibrary } from "./ui/library.js";
+import { thumbnail } from "./ui/thumb.js";
 import { chooseMatiere, renderSubjects } from "./ui/subjects.js";
 import { startSetup } from "./ui/profile-setup.js";
 import { toast } from "./ui/toast.js";
@@ -96,7 +97,7 @@ function showMatiere(id) {
   shown = "matiere:" + id; current = null;
   screen("matiere-page");
   $("matiere-title").textContent = id === NON_CLASSE ? "Non classé" : (profil.matieres.find((m) => m.id === id)?.nom ?? "Matière");
-  renderLibrary(entriesOf(id, profil.matieres), { onOpen: (cid) => go("cours-" + cid), onDelete: removeCourse });
+  renderLibrary(entriesOf(id, profil.matieres), { onOpen: (cid) => go("cours-" + cid), onDelete: removeCourse, thumb: async (cid) => thumbnail(cid, await storage.blob.get(cid)) });
 }
 
 const refreshList = () => (shown?.startsWith("matiere:") ? showMatiere(shown.slice(8)) : shown === "home" ? showHome() : undefined);

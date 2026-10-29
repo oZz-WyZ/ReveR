@@ -9,28 +9,22 @@ function el(tag, cls, text) {
 
 const dateFr = (ms) => new Date(ms).toLocaleDateString("fr-FR");
 
-function trashIcon() {
-  const NS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(NS, "svg");
-  for (const [k, v] of Object.entries({ viewBox: "0 0 24 24", width: "16", height: "16", fill: "none", stroke: "currentColor", "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" })) svg.setAttribute(k, v);
-  const path = document.createElementNS(NS, "path");
-  path.setAttribute("d", "M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6");
-  svg.append(path);
-  return svg;
-}
-
-/** Répertoire : onOpen(id), onDelete(id). */
-export function renderLibrary(entries, { onOpen, onDelete }) {
+/** Répertoire en cards (image, titre, date, Supprimer) : onOpen(id), onDelete(id), thumb(id) -> Promise<url|null>. */
+export function renderLibrary(entries, { onOpen, onDelete, thumb }) {
   $("lib-list").replaceChildren(...entries.map((e) => {
-    const row = el("div", "row");
+    const card = el("div", "card");
+    const img = el("button", "card-img");
+    img.type = "button"; img.setAttribute("aria-label", "Ouvrir " + e.titre); img.onclick = () => onOpen(e.id);
+    thumb?.(e.id).then((url) => {
+      if (!url) return;
+      const i = el("img"); i.src = url; i.alt = "";
+      img.replaceChildren(i);
+    });
     const open = el("button", "titre", e.titre);
     open.type = "button"; open.onclick = () => onOpen(e.id);
-    const meta = "importé le " + dateFr(e.importedAt);
-    const del = el("button", "trash");
-    del.type = "button"; del.title = "Supprimer ce cours"; del.setAttribute("aria-label", "Supprimer ce cours");
-    del.append(trashIcon());
-    del.onclick = () => onDelete(e.id);
-    row.append(open, el("span", "meta", meta), del);
-    return row;
+    const del = el("button", "card-del", "Supprimer");
+    del.type = "button"; del.onclick = () => onDelete(e.id);
+    card.append(img, open, el("span", "meta", "importé le " + dateFr(e.importedAt)), del);
+    return card;
   }));
 }

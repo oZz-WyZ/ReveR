@@ -63,20 +63,20 @@ label { display: block; }
 .logo-tile img { width: 2.3rem; height: auto; }
 .hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
-#lib-list .row {
-  position: relative; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr); align-items: center; gap: 1rem;
-  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: var(--r-lg); padding: 1.2rem 4.2rem 1.2rem 1.7rem;
-  margin: .85rem 0; box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
+#lib-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1.25rem; margin-top: .85rem; }
+#lib-list .card {
+  display: flex; flex-direction: column; gap: .35rem; padding: .85rem .85rem 1rem; border-radius: var(--r-md);
+  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
 }
-#lib-list .row:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-#lib-list .titre { text-align: left; border: 0; background: none; padding: 0; font-size: 1.2rem; font-weight: 500; color: var(--ink); }
+#lib-list .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+#lib-list .card-img { display: block; width: 100%; aspect-ratio: 3 / 4; padding: 0; overflow: hidden; background: #f3ece6 url("mascotte.svg") center / 3.5rem no-repeat; border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: none; }
+#lib-list .card-img:hover { transform: none; box-shadow: none; }
+#lib-list .card-img img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+#lib-list .titre { text-align: left; border: 0; background: none; padding: .35rem 0 0; font-size: 1.1rem; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
 #lib-list .titre:hover { color: var(--orange-ink); transform: none; box-shadow: none; }
-#lib-list .meta { color: var(--muted); font-size: .92rem; }
-.trash {
-  position: absolute; top: .75rem; right: .85rem; width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center;
-  border-radius: 50%; background: #fff; color: var(--muted); border: 1.5px solid var(--line); box-shadow: none;
-}
-.trash:hover:not(:disabled) { color: var(--danger); border-color: #f0b8b3; box-shadow: none; }
+#lib-list .meta { color: var(--muted); font-size: .88rem; }
+#lib-list .card-del { margin-top: auto; align-self: flex-start; padding: .4rem 1rem; font-size: .9rem; background: #fff; color: var(--muted); border: 1.5px solid var(--line); box-shadow: none; }
+#lib-list .card-del:hover:not(:disabled) { color: var(--danger); border-color: #f0b8b3; box-shadow: none; transform: none; }
 
 /* --- notifications : petite carte en bas à droite avec une barre de progression --- */
 #toasts { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50; display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; pointer-events: none; }
