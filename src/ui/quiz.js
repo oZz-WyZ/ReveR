@@ -14,7 +14,7 @@ function el(tag, cls, text) {
 /** Quiz de maîtrise, une question à la fois : un clic sur une option = réponse. La correction de CETTE question
  *  (option choisie en vert ou rouge, bonne réponse en vert) s'affiche tout de suite, puis « Suivante » ; l'écran final ne montre que le score.
  *  saveScore({ score, total, at, tronque }) persiste sur le cours. N'agit pas sur l'état de maîtrise. */
-export function createQuiz(saveScore, onBack) {
+export function createQuiz(saveScore) {
   let doc, run = null, tronque = false, busy = false, readyAt = 0;
 
   const status = (msg, err = false, retry) => {
@@ -56,7 +56,7 @@ export function createQuiz(saveScore, onBack) {
       else if (k === c.picked) b.classList.add("ko");
     });
     const fb = $("quiz-feedback");
-    fb.replaceChildren();
+    fb.replaceChildren(el("p", "verdict " + (c.ok ? "ok" : "ko"), c.ok ? "✔ Bonne réponse" : "✘ Mauvaise réponse"));
     const next = el("button", "primary", run.last ? "Voir mon score" : "Suivante");
     next.type = "button";
     next.onclick = () => (run.next() ? showResult() : renderQuestion());
@@ -69,11 +69,6 @@ export function createQuiz(saveScore, onBack) {
   function showResult() {
     const box = $("quiz-result");
     box.replaceChildren(el("p", "score", `Score : ${run.score}/${run.total}`));
-    const again = el("button", "primary", "Refaire un quiz"); again.type = "button"; again.onclick = start;
-    const back = el("button", null, "Retour à Reviz"); back.type = "button"; back.onclick = onBack;
-    const actions = el("div", "result-actions");
-    actions.append(again, back);
-    box.append(actions);
     $("quiz-run").hidden = true; box.hidden = false;
     saveScore({ score: run.score, total: run.total, at: Date.now(), tronque });
   }

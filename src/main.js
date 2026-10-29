@@ -21,7 +21,7 @@ const $ = (id) => document.getElementById(id);
 const reader = createReader($("reader"));
 const viewer = createViewer($("pdf-view"));
 const chat = createChat({ onPassage: (p) => showRef(p) });
-const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }), () => setTab("chat"));
+const quiz = createQuiz((dernierQuiz) => persist({ ...current, dernierQuiz }));
 const highlights = createHighlights({
   reader,
   viewer,
