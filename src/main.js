@@ -70,7 +70,6 @@ const ERRORS = {
 const SCREENS = ["setup", "home", "matiere-page", "fiche"];
 const screen = (name) => {
   SCREENS.forEach((s) => { $(s).hidden = s !== name; });
-  document.body.classList.toggle("light", name !== "fiche"); // onboarding, accueil et matières : fond blanc ; la fiche garde le fond gris
   document.body.classList.toggle("fiche-open", name === "fiche"); // la fiche tient dans la fenêtre : pas de scroll de page
 };
 
