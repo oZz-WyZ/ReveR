@@ -54,7 +54,8 @@ label { display: block; }
 
 /* --- accueil / répertoire --- */
 .err { color: var(--danger); }
-#home, #matiere-page { max-width: 72rem; margin: 0 auto; padding: 4rem 0 3rem; }
+/* mêmes marges sur l'onboarding, l'accueil et les matières */
+#setup, #home, #matiere-page { max-width: 72rem; margin: 0 auto; padding: 4rem 0 3rem; }
 .hero { color: #242222; margin: 0 0 40px; }
 .hero.over { outline: 1px dashed #242222; outline-offset: 16px; border-radius: 32px; }
 .hero h2 { font-size: 48px; line-height: 1.2; font-weight: 300; margin: 32px 0 .4rem; }
@@ -264,8 +265,6 @@ blockquote.passage, #quiz blockquote {
 
 /* --- onboarding du profil --- */
 body.light { background: #fff; }
-#setup { max-width: 58rem; }
-.setup { padding: 4rem 0 3rem; }
 .setup-logo { display: block; height: 80px; width: auto; }
 .setup h2 { font-size: 48px; line-height: 1.2; font-weight: 300; color: #242222; margin: 32px 0 .4rem; }
 /* cartes : colonnes de même largeur (les vides se replient, donc 3 ou 4 cartes remplissent la ligne) ; badges (.chips) : largeur du texte */
