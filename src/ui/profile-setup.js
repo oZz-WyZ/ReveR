@@ -31,13 +31,14 @@ export function startSetup({ onDone }) {
 
   function chips(list, selected, onToggle) {
     const box = el("div", "opts chips");
-    for (const o of list) {
+    box.add = (o) => {
       const b = el("button", "opt-card compact", o.label);
-      b.type = "button";
+      b.type = "button"; b.dataset.v = o.value;
       b.setAttribute("aria-pressed", String(selected.has(o.value)));
       b.onclick = () => onToggle(o.value);
       box.append(b);
-    }
+    };
+    list.forEach(box.add);
     return box;
   }
 
@@ -82,8 +83,19 @@ export function startSetup({ onDone }) {
         if (sel.has(v)) sel.delete(v); else sel.add(v);
         refresh();
       });
-      [...box.children].forEach((b, i) => { b.dataset.v = step.options[i].value; });
-      body.append(box);
+      // un champ pour ajouter ce qui n'est pas dans la liste (l'ajout est coché d'office)
+      const input = el("input");
+      typePlaceholder(input, (step.examples ?? exemples(a)).filter((e) => !step.options.some((o) => o.label.toLowerCase() === e.toLowerCase())));
+      input.onkeydown = (e) => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        const n = input.value.trim();
+        if (!n) return;
+        const known = [...box.children].find((b) => b.textContent.toLowerCase() === n.toLowerCase());
+        if (known) sel.add(known.dataset.v); else { box.add({ value: n, label: n }); sel.add(n); }
+        input.value = ""; refresh();
+      };
+      body.append(box, input);
       next.onclick = () => answer(step.id, [...sel]);
       refresh();
     },
