@@ -22,7 +22,7 @@ export function createInk({ onChange } = {}) {
   const model = createModel();
   const pages = new Map(); // p -> { box, canvas }
   const sel = { tool: "select", color: { pen: 0, hl: 0, text: 0 }, size: { pen: 1, hl: 1, text: 1 } };
-  let cur = null, pending = null, editing = null, open = null; // open : { finish } du champ de texte ouvert // editing : id du texte en cours de modification (masqué sur le canvas) // trait en cours / traits touchés par la gomme pendant le geste
+  let cur = null, pending = null, editing = null, open = null; // editing : id du texte modifié (masqué sur le canvas) ; open : { finish } du champ de texte ouvert // trait en cours / traits touchés par la gomme pendant le geste
 
   const size = (box) => ({ W: box.clientWidth, H: box.clientHeight });
 
