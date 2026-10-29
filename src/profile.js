@@ -67,7 +67,7 @@ export function nextStep(a) {
     if (a.lycee === "pro") {
       if (!a.filiere && a.filiere !== "") return S("filiere", "Quelle est ta filière (bac pro ou CAP) ?", "text", { optional: true, examples: ["Métiers de la relation client", "Maintenance des véhicules", "Coiffure"] });
       if (!a.proMatieres) return S("proMatieres", "Quels enseignements généraux as-tu ?", "multi", { options: opts(LYCEE.pro), preset: LYCEE.pro });
-      if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]), badges: true });
+      if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(LYCEE.langues), badges: true, none: "Aucune" });
       return recap();
     }
     if (a.lycee !== "seconde" && !a.voie) return S("voie", "Quelle voie suis-tu ?", "single", { options: LYCEE.voies });
@@ -81,7 +81,7 @@ export function nextStep(a) {
       if (n) return S("specialites", `Quelles sont tes ${n} spécialités ?`, "multi", { options: opts(LYCEE.specialites) });
     }
     if (a.voie !== "techno" && !a.options) return S("options", "Suis-tu des options ?", "multi", { options: opts(LYCEE.options[a.lycee] ?? []), optional: true });
-    if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]), badges: true });
+    if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(LYCEE.langues), badges: true, none: "Aucune" });
     return recap();
   }
 

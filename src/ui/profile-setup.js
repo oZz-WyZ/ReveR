@@ -65,13 +65,15 @@ export function startSetup({ onDone }) {
         b.onclick = () => {
           picked = picked === o.value && step.badges ? null : o.value; // en badges, recliquer décoche (la croix)
           for (const c of box.children) c.setAttribute("aria-pressed", String(c === b && picked !== null));
-          next.disabled = picked === null;
+          next.disabled = picked === null && !step.none;
+          if (step.none) next.textContent = picked === null ? step.none : "Continuer"; // « Aucune » : le bouton lui-même, tant que rien n'est choisi
         };
         box.append(b);
       }
       body.append(box);
-      next.disabled = true;
-      next.onclick = () => answer(step.id, picked);
+      next.disabled = !step.none;
+      if (step.none) next.textContent = step.none;
+      next.onclick = () => answer(step.id, picked ?? step.none);
     },
 
     multi(step, body, next) {
