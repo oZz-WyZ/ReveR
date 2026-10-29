@@ -195,8 +195,10 @@ blockquote.passage, #quiz blockquote {
 .msg { animation: pop .18s ease; }
 .msg.user { align-self: flex-end; max-width: 80%; padding: .6rem 1rem; border-radius: var(--r-md) var(--r-md) 6px var(--r-md); background: var(--black); color: #fff; white-space: pre-wrap; }
 .msg.bot { align-self: stretch; display: grid; grid-template-columns: 2.1rem minmax(0, 1fr); gap: .65rem; max-width: 100%; }
-.bot-body { min-width: 0; white-space: pre-wrap; }
-.bot-body p { margin: .35rem 0; }
+.bot-body { min-width: 0; line-height: 1.55; }
+.bot-body p { margin: .35rem 0 .6rem; }
+.bot-body ul, .bot-body ol { margin: .2rem 0 .6rem; padding-left: 1.3rem; }
+.bot-body li { margin: .2rem 0; }
 .bot-body .ref { margin: .2rem 0 .55rem; line-height: 1.75; }
 .bot-body mark { cursor: pointer; padding: .12em .3em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .tag { font-size: .72rem; color: var(--muted); font-weight: 500; }

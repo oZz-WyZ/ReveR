@@ -1,5 +1,6 @@
 import { askCourse } from "../chat/ask.js";
 import { loadChat, saveChat } from "../chat/store.js";
+import { renderMarkdown } from "./markdown.js";
 
 const $ = (id) => document.getElementById(id);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -53,7 +54,7 @@ export function createChat({ onPassage } = {}) {
       p.append(mk);
       m.append(p);
     }
-    m.append(el("p", null, t.reponse));
+    m.append(...renderMarkdown(t.reponse));
     if (t.tronque) m.append(el("p", "note", "Ton cours est long : je m'appuie sur les passages les plus proches de ta question."));
     return botRow(m);
   }

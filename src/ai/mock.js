@@ -21,7 +21,7 @@ function mockChat(system, last) {
   const cours = system.match(/<<<COURS\n([\s\S]*?)\nCOURS>>>/)?.[1] ?? "";
   const simple = last.startsWith("Je n'ai pas bien compris") ? "[mock simplifié] " : "";
   if (/hors cours/i.test(last)) return { reponse: `${simple}[mock] réponse générale`, source: "general", passage: null };
-  return { reponse: `${simple}[mock] d'après le cours`, source: "cours", passage: cours.trim().slice(0, 80) };
+  return { reponse: `${simple}[mock] d'après le cours :\n\n- **premier point** du cours\n- second point\n\nEn résumé, deux idées.`, source: "cours", passage: cours.trim().slice(0, 80) };
 }
 
 // QCM (it. 6) : questions bâties sur des phrases réparties dans le cours reçu ; vide si aucune phrase exploitable.
