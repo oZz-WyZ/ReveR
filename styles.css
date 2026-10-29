@@ -293,6 +293,11 @@ body.light { background: #fff; }
 /* matières, saisie, récapitulatif : même langage que les cartes (blanc, filet fin #242222, texte léger, sélection en anneau) */
 .opt-card.compact { flex: 0 1 auto; flex-direction: row; justify-content: flex-start; min-height: 0; gap: 0; padding: 14px 56px 14px 24px; font-size: 20px; border-radius: 24px; text-align: left; }
 .opt-card.compact::after { top: 50%; right: 16px; margin-top: -12px; }
+/* matière choisie : même état que les badges (fond noir, texte blanc, croix dans un rond) */
+.opt-card.compact[aria-pressed="true"] { background: #242222; color: #fff; box-shadow: none; }
+.opt-card.compact[aria-pressed="true"]::after { width: 26px; height: 26px; margin-top: -13px; right: 12px; border: 0;
+  background: rgba(255, 255, 255, .18) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M2 2l8 8M10 2l-8 8'/%3E%3C/svg%3E") center / 10px no-repeat; }
+.opt-card.compact[aria-pressed="true"]:hover::after { background-color: rgba(255, 255, 255, .34); }
 .opts + .note, .opts + p { margin: 12px 0 0; }
 .setup .note { color: #858585; font-size: 16px; }
 /* saisie sans cadre : texte (32 px ; 72 px, plus grand que le titre, pour une question à une seule réponse), gris tant qu'il est vide, noir une fois écrit */
