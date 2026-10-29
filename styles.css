@@ -329,6 +329,7 @@ body.light { background: #fff; }
 .setup h2.enter { animation: setup-title .4s cubic-bezier(.2, .8, .2, 1) both; }
 #setup-body > * { animation: setup-in .35s cubic-bezier(.2, .8, .2, 1) .2s both; }
 .opts > * { animation: setup-in .35s cubic-bezier(.2, .8, .2, 1) calc(.22s + var(--i, 0) * 50ms) both; }
+.opts.live > * { animation: none; }
 @media (prefers-reduced-motion: reduce) { .setup h2.enter, #setup-body > *, .opts > * { animation: none; } }
 .setup-nav .primary:disabled { background: #e9e9e9; color: #858585; opacity: 1; }
 

@@ -139,7 +139,7 @@ export function startSetup({ onDone }) {
       body.append(input, out);
       if (step.chips.length) body.append(el("p", "note", "Suggestions :"), sugg);
       next.onclick = () => { if (input.value.trim()) add(input.value); answer(step.id, [...list]); };
-      draw();
+      draw(); out.classList.add("live"); // la 1re apparition est animée ; les ajouts suivants ne rejouent pas l'animation de toute la liste
       input.focus();
     },
 
@@ -183,7 +183,7 @@ export function startSetup({ onDone }) {
       body.append(out, input);
       next.textContent = "C'est parti";
       next.onclick = () => onDone(makeProfile(a, names));
-      draw();
+      draw(); out.classList.add("live");
     },
   };
 
