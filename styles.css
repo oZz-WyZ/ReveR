@@ -283,7 +283,6 @@ body.setup-open { background: #fff; }
 .opt-card.with-pic { flex-basis: 12rem; min-height: 398px; padding: 40px 24px; }
 .opt-card.with-pic::after { top: 24px; right: 24px; }
 .opt-pic { width: 180px; height: 231px; overflow: hidden; position: relative; }
-.opt-pic.superieur img { left: -.55%; top: -.06%; height: 140.4%; }
 .opt-pic img { position: absolute; left: 0; top: -20%; width: 100%; height: 140%; max-width: none; }
 #setup-body input { width: 100%; margin-top: .6rem; }
 .choices { display: grid; gap: .55rem; margin: 1.1rem 0 .5rem; }

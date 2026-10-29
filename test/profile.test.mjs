@@ -5,7 +5,7 @@ import { storage } from "../src/storage.js";
 
 // parcours complet : répond à chaque question (premier choix, ou valeur donnée) jusqu'au récapitulatif
 function run(answers) {
-  const a = {}, ids = [];
+  const a = { prenom: "Léa", genre: "fille" }, ids = []; // prénom et genre sont posés avant le niveau (voir plus bas)
   for (let i = 0; i < 20; i++) {
     const s = nextStep(a);
     ids.push(s.id);
@@ -15,6 +15,10 @@ function run(answers) {
   }
   throw new Error("boucle infinie");
 }
+
+// prénom puis genre, avant le niveau ; ils sont gardés dans le profil
+assert.deepEqual([nextStep({}).id, nextStep({ prenom: "Léa" }).id, nextStep({ prenom: "Léa", genre: "garcon" }).id], ["prenom", "genre", "niveau"]);
+assert.deepEqual(Object.keys(makeProfile({ prenom: "Léa", genre: "fille", niveau: "college" }, [])).filter((k) => ["prenom", "genre"].includes(k)), ["prenom", "genre"]);
 
 assert.equal(slug("Histoire-Géographie-EMC"), "histoire-geographie-emc");
 assert.equal(slug("  Éducation musicale "), "education-musicale");
@@ -54,8 +58,8 @@ assert.deepEqual(pro.ids, ["niveau", "lycee", "filiere", "proMatieres", "lvb", "
 const su = run({ niveau: "superieur", formation: "Licence (université)", domaine: "Droit", annee: "1re année", supMatieres: ["Droit civil", "Droit pénal"], guides: [true, false, true] });
 assert.deepEqual(su.ids, ["niveau", "formation", "domaine", "annee", "supMatieres", "guides", "recap"]);
 assert.deepEqual(su.matieres, ["Droit civil", "Droit pénal", "Anglais", "Option"]);
-assert.equal(nextStep({ niveau: "superieur", formation: "BTS", domaine: "Droit", annee: "1re année" }).kind, "tags");
-assert.ok(nextStep({ niveau: "superieur", formation: "BTS", domaine: "Droit", annee: "1re année" }).chips.includes("Droit civil"));
+assert.equal(nextStep({ prenom: "Léa", genre: "fille", niveau: "superieur", formation: "BTS", domaine: "Droit", annee: "1re année" }).kind, "tags");
+assert.ok(nextStep({ prenom: "Léa", genre: "fille", niveau: "superieur", formation: "BTS", domaine: "Droit", annee: "1re année" }).chips.includes("Droit civil"));
 
 // toMatieres : identifiants stables, doublons fusionnés (même matière écrite différemment)
 assert.deepEqual(toMatieres(["Anglais", "anglais", "Histoire-Géo", ""]).map((m) => m.id), ["anglais", "histoire-geo"]);

@@ -42,6 +42,8 @@ const S = (id, titre, kind, extra = {}) => ({ id, titre, kind, ...extra });
 
 /** Prochaine question, ou l'étape « recap » quand tout est renseigné. `a` = réponses (undefined = pas répondu). */
 export function nextStep(a) {
+  if (!a.prenom) return S("prenom", "Comment t'appelles-tu ?", "text", { placeholder: "Ton prénom" });
+  if (!a.genre) return S("genre", "Tu es ?", "single", { options: [{ value: "fille", label: "Une fille" }, { value: "garcon", label: "Un garçon" }] }); // sert à choisir les illustrations
   if (!a.niveau) return S("niveau", "Quel est ton niveau d'études ?", "single", { options: NIVEAUX });
 
   if (a.niveau === "college") {
@@ -85,7 +87,7 @@ const recap = () => S("recap", "Voici tes matières", "recap");
 
 /** Profil à enregistrer, à partir des réponses et de la liste finale de matières. */
 export function makeProfile(a, matieres) {
-  const keep = ["niveau", "classe", "lycee", "voie", "serie", "filiere", "lvb", "formation", "domaine", "annee"];
+  const keep = ["prenom", "genre", "niveau", "classe", "lycee", "voie", "serie", "filiere", "lvb", "formation", "domaine", "annee"];
   const p = { createdAt: Date.now(), matieres: toMatieres(matieres) };
   for (const k of keep) if (a[k]) p[k] = a[k];
   return p;

@@ -9,7 +9,11 @@ function el(tag, cls, text) {
   return e;
 }
 
-const PICS = { college: "assets/onboarding/college.png", lycee: "assets/onboarding/lycee.png", superieur: "assets/onboarding/superieur.png" }; // illustrations de l'étape « niveau »
+// Illustrations de l'étape « niveau », selon le genre : [fichier, gauche, haut, largeur, hauteur] du recadrage Figma (en %)
+const PICS = {
+  fille: { college: ["fille-college", 0, -20.06, 100, 140.12], lycee: ["fille-lycee", 0, -20.06, 100, 140.12], superieur: ["fille-superieur", -0.55, -0.06, 100, 140.39] },
+  garcon: { college: ["garcon-college", 6.17, -6.12, 86.74, 121.77], lycee: ["garcon-lycee", -0.28, -7.64, 100, 140.51], superieur: ["garcon-superieur", 0.09, -0.28, 100, 141] },
+};
 
 /**
  * Onboarding du profil : une question à la fois, chaque réponse décide de la question suivante (voir profile.js),
@@ -45,11 +49,12 @@ export function startSetup({ onDone }) {
         const b = el("button", "opt-card");
         b.type = "button";
         b.setAttribute("aria-pressed", "false");
-        const pic = step.id === "niveau" && PICS[o.value];
+        const pic = step.id === "niveau" && PICS[a.genre]?.[o.value];
         if (pic) {
           b.classList.add("with-pic");
-          const frame = el("span", "opt-pic " + o.value);
-          const img = el("img"); img.src = pic; img.alt = "";
+          const frame = el("span", "opt-pic");
+          const img = el("img"); img.src = `assets/onboarding/${pic[0]}.png`; img.alt = "";
+          Object.assign(img.style, { left: pic[1] + "%", top: pic[2] + "%", width: pic[3] + "%", height: pic[4] + "%" });
           frame.append(img); b.append(frame);
         }
         b.append(el("span", null, o.label));
@@ -86,10 +91,11 @@ export function startSetup({ onDone }) {
 
     text(step, body, next) {
       const input = el("input");
-      input.placeholder = "Ta réponse";
+      input.placeholder = step.placeholder ?? "Ta réponse";
       body.append(input);
       next.onclick = () => answer(step.id, input.value.trim());
-      next.disabled = false; // facultatif
+      const check = () => { next.disabled = !step.optional && !input.value.trim(); };
+      input.oninput = check; check();
       input.onkeydown = (e) => { if (e.key === "Enter") next.click(); };
       input.focus();
     },
