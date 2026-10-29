@@ -24,10 +24,10 @@ export function startSetup({ onDone }) {
 
   $("setup-back").onclick = () => { a = history.pop() ?? {}; names = null; render(); };
 
-  function chips(list, selected, onToggle, wrap = true) {
-    const box = el("div", "choices" + (wrap ? " wrap" : ""));
+  function chips(list, selected, onToggle) {
+    const box = el("div", "opts");
     for (const o of list) {
-      const b = el("button", "choice", o.label);
+      const b = el("button", "opt-card compact", o.label);
       b.type = "button";
       b.setAttribute("aria-pressed", String(selected.has(o.value)));
       b.onclick = () => onToggle(o.value);
@@ -100,7 +100,7 @@ export function startSetup({ onDone }) {
       const input = el("input");
       input.placeholder = "Une matière, puis Entrée";
       const out = el("div", "tags");
-      const sugg = el("div", "choices wrap");
+      const sugg = el("div", "opts");
       const draw = () => {
         out.replaceChildren(...list.map((n, i) => tagChip(n, () => { list.splice(i, 1); draw(); })));
         for (const b of sugg.children) b.setAttribute("aria-pressed", String(list.some((n) => n.toLowerCase() === b.textContent.toLowerCase())));
@@ -108,7 +108,7 @@ export function startSetup({ onDone }) {
       };
       const add = (n) => { n = n.trim(); if (n && !list.some((x) => x.toLowerCase() === n.toLowerCase())) list.push(n); draw(); };
       for (const c of step.chips) {
-        const b = el("button", "choice", c);
+        const b = el("button", "opt-card compact", c);
         b.type = "button";
         b.onclick = () => (list.some((n) => n.toLowerCase() === c.toLowerCase()) ? list.splice(list.findIndex((n) => n.toLowerCase() === c.toLowerCase()), 1) && draw() : add(c));
         sugg.append(b);
