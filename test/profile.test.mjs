@@ -17,8 +17,13 @@ function run(answers) {
 }
 
 // prénom puis genre, avant le niveau ; ils sont gardés dans le profil
-assert.deepEqual([nextStep({}).id, nextStep({ prenom: "Léa" }).id, nextStep({ prenom: "Léa", genre: "garcon" }).id], ["prenom", "genre", "niveau"]);
-assert.deepEqual(Object.keys(makeProfile({ prenom: "Léa", genre: "fille", niveau: "college" }, [])).filter((k) => ["prenom", "genre"].includes(k)), ["prenom", "genre"]);
+assert.equal(nextStep({}).id, "prenom");
+assert.equal(nextStep({ prenom: "Léa" }).id, "niveau"); // prénom sans ambiguïté : pas de question
+assert.equal(nextStep({ prenom: "Hugo" }).id, "niveau");
+assert.equal(nextStep({ prenom: "Camille" }).id, "genre"); // mixte : on demande
+assert.equal(nextStep({ prenom: "Zxqw" }).id, "genre"); // inconnu : on demande
+assert.equal(nextStep({ prenom: "Camille", genre: "garcon" }).id, "niveau");
+assert.equal(makeProfile({ prenom: "Hugo", niveau: "college" }, []).genre, "garcon");
 
 assert.equal(slug("Histoire-Géographie-EMC"), "histoire-geographie-emc");
 assert.equal(slug("  Éducation musicale "), "education-musicale");

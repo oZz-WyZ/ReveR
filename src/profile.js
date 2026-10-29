@@ -1,5 +1,6 @@
 import { COLLEGE, LYCEE, NIVEAUX, SUPERIEUR, slug } from "./curriculum.js";
 import { storage } from "./storage.js";
+import { guessGenre } from "./prenoms.js";
 
 // --- stockage du profil ---
 export const loadProfile = () => storage.get("profil", null);
@@ -9,6 +10,9 @@ const uniq = (names) => [...new Map(names.filter(Boolean).map((n) => [slug(n), n
 export const toMatieres = (names) => uniq(names).map((nom) => ({ id: slug(nom), nom }));
 
 const opts = (list) => list.map((x) => (typeof x === "string" ? { value: x, label: x } : x));
+
+/** Genre pour les illustrations : celui répondu, sinon celui que le prénom laisse deviner (null = à demander). */
+export const genreOf = (a) => a.genre ?? guessGenre(a.prenom);
 
 /** Matières déduites des réponses (l'élève peut ensuite les ajuster dans le récapitulatif). */
 export function buildMatieres(a) {
@@ -43,7 +47,7 @@ const S = (id, titre, kind, extra = {}) => ({ id, titre, kind, ...extra });
 /** Prochaine question, ou l'étape « recap » quand tout est renseigné. `a` = réponses (undefined = pas répondu). */
 export function nextStep(a) {
   if (!a.prenom) return S("prenom", "Comment t'appelles-tu ?", "text", { placeholder: "Ton prénom" });
-  if (!a.genre) return S("genre", "Tu es ?", "single", { options: [{ value: "fille", label: "Une fille" }, { value: "garcon", label: "Un garçon" }] }); // sert à choisir les illustrations
+  if (!genreOf(a)) return S("genre", "Tu es ?", "single", { options: [{ value: "fille", label: "Une fille" }, { value: "garcon", label: "Un garçon" }] }); // sert à choisir les illustrations
   if (!a.niveau) return S("niveau", "Quel est ton niveau d'études ?", "single", { options: NIVEAUX });
 
   if (a.niveau === "college") {
@@ -87,8 +91,9 @@ const recap = () => S("recap", "Voici tes matières", "recap");
 
 /** Profil à enregistrer, à partir des réponses et de la liste finale de matières. */
 export function makeProfile(a, matieres) {
-  const keep = ["prenom", "genre", "niveau", "classe", "lycee", "voie", "serie", "filiere", "lvb", "formation", "domaine", "annee"];
+  const keep = ["prenom", "niveau", "classe", "lycee", "voie", "serie", "filiere", "lvb", "formation", "domaine", "annee"];
   const p = { createdAt: Date.now(), matieres: toMatieres(matieres) };
   for (const k of keep) if (a[k]) p[k] = a[k];
+  if (genreOf(a)) p.genre = genreOf(a);
   return p;
 }

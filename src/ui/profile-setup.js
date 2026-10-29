@@ -1,4 +1,4 @@
-import { buildMatieres, makeProfile, nextStep, toMatieres } from "../profile.js";
+import { buildMatieres, genreOf, makeProfile, nextStep, toMatieres } from "../profile.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -49,7 +49,7 @@ export function startSetup({ onDone }) {
         const b = el("button", "opt-card");
         b.type = "button";
         b.setAttribute("aria-pressed", "false");
-        const pic = step.id === "niveau" && PICS[a.genre]?.[o.value];
+        const pic = step.id === "niveau" && PICS[genreOf(a)]?.[o.value];
         if (pic) {
           b.classList.add("with-pic");
           const frame = el("span", "opt-pic");
