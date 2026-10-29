@@ -23,9 +23,14 @@ export function renderSubjects(matieres, countOf, nonClasse, onOpen) {
     const dot = el("span", "dot");
     dot.append(subjectIcon(c.nom));
     dot.style.setProperty("--tint", c.tint);
-    const txt = el("span", "subject-text");
-    txt.append(el("span", "subject-name", c.nom), el("span", "count", plural(c.n)));
-    b.append(dot, txt);
+    const top = el("span", "subject-top"); // icône à gauche, nombre de cours en pastille à droite (rien si la matière est vide)
+    top.append(dot);
+    if (c.n > 0) {
+      const n = el("span", "count", String(c.n));
+      n.title = plural(c.n); n.setAttribute("aria-label", plural(c.n));
+      top.append(n);
+    }
+    b.append(top, el("span", "subject-name", c.nom));
     b.onclick = () => onOpen(c.id);
     return b;
   }));
