@@ -63,13 +63,13 @@ label { display: block; }
 .logo-tile img { width: 2.3rem; height: auto; }
 .hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
-#lib-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 12rem)); gap: 1rem; margin-top: .85rem; }
+#lib-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 17rem)); gap: 1rem; margin-top: .85rem; }
 #lib-list .card {
   position: relative; display: flex; flex-direction: column; gap: .35rem; padding: .6rem .6rem .75rem; border-radius: var(--r-sm);
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
 }
 #lib-list .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-#lib-list .card-img { display: block; width: 100%; aspect-ratio: 3 / 4; padding: 0; overflow: hidden; background: #f3ece6 url("mascotte.svg") center / 3.5rem no-repeat; border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: none; }
+#lib-list .card-img { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; overflow: hidden; background: #f3ece6 url("mascotte.svg") center / 3.5rem no-repeat; border: 1px solid var(--line); border-radius: var(--r-sm); box-shadow: none; }
 #lib-list .card-img:hover { transform: none; box-shadow: none; }
 #lib-list .card-img img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 #lib-list .titre { text-align: left; border: 0; background: none; padding: .25rem 0 0; font-size: .95rem; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; }
