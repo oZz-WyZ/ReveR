@@ -5,6 +5,7 @@
   --orange-1: #c9610c; --orange-2: #f0893a; --orange-soft: #ffe0c2; --orange-ink: #8a3d00;
   --black: #0b0b0b; --cream: #fff7f2; --soft: #f3ece6; --surface: #fff; --yellow: #f5d90a; --danger: #b3261e;
   --r-xl: 40px; --r-lg: 30px; --r-md: 22px; --r-sm: 14px;
+  --edge: #e3e3e3; /* bordure grise légère de la fiche */
   --shadow: 0 14px 36px rgba(160, 80, 30, .14); --shadow-lg: 0 24px 60px rgba(160, 80, 30, .28);
 }
 
@@ -94,7 +95,7 @@ label { display: block; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* --- fiche : tient dans la fenêtre (pas de scroll de page), chaque colonne scrolle en interne --- */
-body.fiche-open { overflow: hidden; }
+body.fiche-open { overflow: hidden; background: #fff; }
 /* la fiche occupe toute la fenêtre avec la même marge (1,5 rem) en haut, en bas, à gauche, à droite et entre les deux panneaux */
 body.fiche-open .app { max-width: none; padding: 1.5rem; }
 #fiche { display: flex; flex-direction: column; height: calc(100dvh - 3rem); min-height: 30rem; }
@@ -107,7 +108,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--black); color: #fff; }
 .seg button:hover:not(:disabled) { box-shadow: none; transform: none; }
 #workspace {
-  flex: 1; min-height: 0; display: grid; gap: 1.5rem; align-items: stretch;
+  flex: 1; min-height: 0; display: grid; gap: 0; align-items: stretch; background: #fff; border: 1px solid var(--edge); border-radius: var(--r-sm); overflow: hidden; /* un seul bloc : les deux panneaux sont séparés par un filet */
   grid-template-columns: minmax(0, 1fr) clamp(26rem, 44vw, 48rem); grid-template-rows: minmax(0, 1fr);
 }
 .pane { display: flex; flex-direction: column; min-height: 0; }
@@ -115,7 +116,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* panneau de droite : une grande carte avec le toggle Reviz | Me tester en haut, puis le contenu */
 .assistant-card {
   display: flex; flex-direction: column; font-size: 15px; padding: 1rem 1.25rem 1.1rem;
-  background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; box-shadow: var(--shadow);
+  background: #fff; border-left: 1px solid var(--edge);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
 /* toggle à deux moitiés (Reviz | Me tester, Origine | Texte) : un seul bouton, le curseur noir glisse d'un côté à l'autre */
@@ -133,7 +134,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
-.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); } /* carte comme celle de l'assistant */
+.viewer-shell { position: relative; background: #fff; overflow: auto; padding: 1.25rem; } /* carte comme celle de l'assistant */
 /* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
 #doc { transition: filter .25s; }
 .img-page { position: relative; width: fit-content; max-width: 100%; margin: 0 auto; }
@@ -167,7 +168,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 #doc { position: relative; }
 #doc-note { max-width: 794px; margin: 0 auto .75rem; }
 #pdf-view { margin: 0 auto 1rem; }
-.pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: var(--r-sm); border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; }
+.pdf-page { position: relative; margin: 0 auto 1rem; background: #fff; border-radius: var(--r-sm); border: 1px solid var(--edge); overflow: hidden; }
 .pdf-page canvas { display: block; }
 .hl-layer { position: absolute; inset: 0; pointer-events: none; }
 .hl-group { position: absolute; inset: 0; mix-blend-mode: multiply; } /* groupes de commentaires différents : ils foncent en se recouvrant */
@@ -175,10 +176,10 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .textLayer { position: absolute; inset: 0; overflow: hidden; line-height: 1; text-size-adjust: none; }
 .textLayer span, .textLayer br { color: transparent; position: absolute; white-space: pre; cursor: text; transform-origin: 0% 0%; }
 .textLayer ::selection { background: rgba(240, 137, 58, .4); }
-.orig-img { display: block; max-width: 100%; margin: 0 auto; border-radius: var(--r-md); box-shadow: var(--shadow); }
+.orig-img { display: block; max-width: 100%; margin: 0 auto; border-radius: var(--r-sm); border: 1px solid var(--edge); }
 #reader {
   white-space: pre-wrap; background: #fff; color: var(--ink); border-radius: 4px; width: min(100%, 794px); aspect-ratio: 210 / 297;
-  padding: 3.5rem 4rem; margin: 0 auto 1.5rem; font-size: 1.05rem; line-height: 1.8; border: 1px solid var(--line); box-shadow: var(--shadow);
+  padding: 3.5rem 4rem; margin: 0 auto 1.5rem; font-size: 1.05rem; line-height: 1.8; border: 1px solid var(--edge);
 }
 #reader[contenteditable="true"], #reader[contenteditable="plaintext-only"] { outline: 0; box-shadow: 0 0 0 4px rgba(240, 137, 58, .3); }
 mark { background: #ffe066; color: var(--ink); border-radius: 6px; padding: .05em .12em; cursor: pointer; transition: background .15s; }
