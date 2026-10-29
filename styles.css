@@ -138,17 +138,17 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 #doc { transition: filter .25s; }
 .img-page { position: relative; width: fit-content; max-width: 100%; margin: 0 auto; }
 .ink { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; touch-action: none; }
-/* barre d'outils d'annotation : colonne flottante au bord droit de la carte de la visionneuse (reste visible au défilement) */
+/* barre d'outils d'annotation : pastille horizontale collée au bas de la carte de la visionneuse, par-dessus le document.
+   Le dock est collant et de hauteur nulle, placé après le document : la barre déborde vers le haut sans rien décaler. */
 .ink-bar[hidden] { display: none; }
-/* le dock est collant et de hauteur nulle : la barre déborde par-dessus le document sans rien décaler */
-.ink-dock { position: sticky; top: 0; left: 0; height: 0; z-index: 6; display: flex; justify-content: flex-end; pointer-events: none; }
-.ink-bar { pointer-events: auto; align-self: flex-start; display: flex; flex-direction: column; align-items: center; gap: .3rem; padding: .55rem .4rem; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; box-shadow: var(--shadow); }
-.ink-bar button { width: 2.3rem; height: 2.3rem; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--muted); box-shadow: none; }
+.ink-dock { position: sticky; bottom: 0; left: 0; height: 0; z-index: 6; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; }
+.ink-bar { pointer-events: auto; margin-bottom: .5rem; display: flex; flex-direction: row; align-items: center; gap: .25rem; padding: .35rem .6rem; background: #fff; border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow); }
+.ink-bar button { width: 2.2rem; height: 2.2rem; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--muted); box-shadow: none; }
 .ink-bar button:hover:not(:disabled) { background: var(--soft); transform: none; }
 .ink-bar button[aria-pressed="true"] { background: var(--black); color: #fff; }
 .ink-bar button:disabled { opacity: .3; }
-.ink-bar hr { width: 1.6rem; border: 0; border-top: 1px solid var(--line); margin: .15rem 0; }
-.ink-options { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
+.ink-bar hr { width: 0; height: 1.5rem; border: 0; border-left: 1px solid var(--line); margin: 0 .2rem; }
+.ink-options { display: flex; flex-direction: row; align-items: center; gap: .25rem; }
 .ink-options[hidden] { display: none; }
 .ink-bar .sw { width: 1.6rem; height: 1.6rem; }
 .ink-bar .sw i { display: block; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: var(--c); border: 1px solid rgba(0, 0, 0, .15); }
