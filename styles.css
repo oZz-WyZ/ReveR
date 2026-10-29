@@ -347,9 +347,16 @@ body.light { background: #fff; }
 #matiere-back:hover:not(:disabled) { background-size: 100% 1.5px; transform: none; box-shadow: none; }
 #fiche-matiere { display: inline-flex; align-items: center; gap: .65rem; font-size: .92rem; padding: .45rem .9rem .45rem 1.1rem; }
 #fiche-matiere svg { flex: none; color: var(--muted); }
-#chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(40, 20, 5, .35); backdrop-filter: blur(3px); }
-.chooser-card { width: calc(100% - 2rem); max-width: 36rem; max-height: 82vh; overflow: auto; padding: 1.6rem 1.8rem; background: #fff; border-radius: var(--r-xl); box-shadow: var(--shadow-lg); animation: pop .18s ease; }
-.chooser-card h2 { font-size: 1.5rem; font-weight: 300; }
+/* fenêtre « Dans quelle matière ranger ce cours ? » : même DA que l'onboarding (blanc, filet fin, badges) */
+#chooser { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(255, 255, 255, .7); backdrop-filter: blur(6px); }
+.chooser-card { width: calc(100% - 2rem); max-width: 52rem; max-height: 82vh; overflow: auto; padding: 40px; background: #fff; border: .5px solid #242222; border-radius: 32px; animation: pop .18s ease; }
+.chooser-card h2 { font-size: 32px; line-height: 1.2; font-weight: 300; color: #242222; margin: 0 0 8px; }
+.chooser-card .note { color: #858585; font-size: 16px; margin: 0; overflow-wrap: anywhere; }
+.chooser-card .opts { margin-top: 32px; }
+.chooser-card .opt-card[aria-pressed="true"]::after { display: none; } /* matière actuelle : noire, sans croix (un clic la choisit, il ne la retire pas) */
+.chooser-card .opt-card[aria-pressed="true"] { padding-right: 24px; }
+.chooser-card .ghost { margin-top: 32px; padding: 0; font-size: 20px; font-weight: 300; color: #242222; border: 0; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size .3s ease; }
+.chooser-card .ghost:hover:not(:disabled) { background-size: 100% 1.5px; transform: none; box-shadow: none; }
 .reset-fixed { position: fixed; left: 1.75rem; bottom: 1.75rem; z-index: 40; font-size: .8rem; padding: .3rem .8rem; background: rgba(255, 255, 255, .92); }
 
 @media (prefers-reduced-motion: reduce) {

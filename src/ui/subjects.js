@@ -43,17 +43,18 @@ export function chooseMatiere({ matieres, titre, sous, dismissable = false, curr
     card.setAttribute("aria-label", titre);
     card.append(el("h2", null, titre));
     if (sous) card.append(el("p", "note", sous));
-    const list = el("div", "choices wrap");
+    const list = el("div", "opts chips");
     const done = (v) => { document.removeEventListener("keydown", onKey); root.hidden = true; root.replaceChildren(); resolve(v); };
     const onKey = (e) => { if (e.key === "Escape" && dismissable) done(null); };
     for (const m of matieres) {
-      const b = el("button", "choice", m.nom);
+      const b = el("button", "opt-card compact", m.nom);
       b.type = "button";
       b.setAttribute("aria-pressed", String(m.id === current));
       b.onclick = () => done(m.id);
       list.append(b);
     }
-    const none = el("button", "choice", "Non classé");
+    const none = el("button", "opt-card compact", "Non classé");
+    none.setAttribute("aria-pressed", "false");
     none.type = "button"; none.onclick = () => done(NON_CLASSE);
     list.append(none);
     card.append(list);
