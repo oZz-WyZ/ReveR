@@ -45,7 +45,7 @@ export function nextStep(a) {
   if (!a.niveau) return S("niveau", "Quel est ton niveau d'études ?", "single", { options: NIVEAUX });
 
   if (a.niveau === "college") {
-    if (!a.classe) return S("classe", "Dans quelle classe es-tu ?", "single", { options: opts(COLLEGE.classes), aide: "Les matières sont les mêmes pour tous les élèves de collège." });
+    if (!a.classe) return S("classe", "Dans quelle classe es-tu ?", "single", { options: opts(COLLEGE.classes) });
     return recap();
   }
 
