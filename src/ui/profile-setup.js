@@ -9,6 +9,8 @@ function el(tag, cls, text) {
   return e;
 }
 
+const PICS = { college: "assets/onboarding/college.png", lycee: "assets/onboarding/lycee.png", superieur: "assets/onboarding/superieur.png" }; // illustrations de l'étape « niveau »
+
 /**
  * Onboarding du profil : une question à la fois, chaque réponse décide de la question suivante (voir profile.js),
  * jusqu'au récapitulatif des matières. onDone(profil) est appelé quand l'élève valide.
@@ -35,16 +37,32 @@ export function startSetup({ onDone }) {
   }
 
   const KINDS = {
+    // cartes à cocher (une seule) ; « Continuer » valide, grisé tant que rien n'est choisi
     single(step, body, next) {
-      next.hidden = true; // un clic sur une option suffit
-      const box = el("div", "choices");
+      let picked = null;
+      const box = el("div", "opts");
       for (const o of step.options) {
-        const b = el("button", "choice", o.label);
+        const b = el("button", "opt-card");
         b.type = "button";
-        b.onclick = () => answer(step.id, o.value);
+        b.setAttribute("aria-pressed", "false");
+        const pic = step.id === "niveau" && PICS[o.value];
+        if (pic) {
+          b.classList.add("with-pic");
+          const frame = el("span", "opt-pic " + o.value);
+          const img = el("img"); img.src = pic; img.alt = "";
+          frame.append(img); b.append(frame);
+        }
+        b.append(el("span", null, o.label));
+        b.onclick = () => {
+          picked = o.value;
+          for (const c of box.children) c.setAttribute("aria-pressed", String(c === b));
+          next.disabled = false;
+        };
         box.append(b);
       }
       body.append(box);
+      next.disabled = true;
+      next.onclick = () => answer(step.id, picked);
     },
 
     multi(step, body, next) {

@@ -70,6 +70,7 @@ const ERRORS = {
 const SCREENS = ["setup", "home", "matiere-page", "fiche"];
 const screen = (name) => {
   SCREENS.forEach((s) => { $(s).hidden = s !== name; });
+  document.body.classList.toggle("setup-open", name === "setup"); // l'onboarding est sur fond blanc
   document.body.classList.toggle("fiche-open", name === "fiche"); // la fiche tient dans la fenêtre : pas de scroll de page
 };
 

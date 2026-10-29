@@ -6,11 +6,11 @@ export const slug = (s) => s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase
 export const NIVEAUX = [
   { value: "college", label: "Collège" },
   { value: "lycee", label: "Lycée" },
-  { value: "superieur", label: "Études supérieures" },
+  { value: "superieur", label: "Études Sup" },
 ];
 
 export const COLLEGE = {
-  classes: ["6e", "5e", "4e", "3e"],
+  classes: [{ value: "6e", label: "6ème" }, { value: "5e", label: "5ème" }, { value: "4e", label: "4ème" }, { value: "3e", label: "3ème" }],
   matieres: ["Français", "Mathématiques", "Histoire-Géographie-EMC", "Anglais", "Deuxième langue vivante", "SVT", "Physique-Chimie", "Technologie", "Arts plastiques", "Éducation musicale", "EPS"],
 };
 
