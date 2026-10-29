@@ -107,7 +107,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .seg button:hover:not(:disabled) { box-shadow: none; transform: none; }
 #workspace {
   flex: 1; min-height: 0; display: grid; gap: 1.5rem; align-items: stretch;
-  grid-template-columns: minmax(0, 1fr) clamp(22rem, 34vw, 32rem); grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) clamp(26rem, 44vw, 48rem); grid-template-rows: minmax(0, 1fr);
 }
 .pane { display: flex; flex-direction: column; min-height: 0; }
 .pane-body { flex: 1; min-height: 0; }
@@ -132,7 +132,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
-.viewer-shell { position: relative; overflow: auto; padding: .25rem .5rem; } /* pas de carte : seules les pages du PDF (ou le papier du texte) sont visibles */
+.viewer-shell { position: relative; background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); border-radius: 22px; overflow: auto; padding: 1.25rem; box-shadow: var(--shadow); } /* carte comme celle de l'assistant */
 /* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
 #doc { transition: filter .25s; }
 #fiche[data-tab="quiz"] #doc { filter: blur(12px); pointer-events: none; user-select: none; }
