@@ -46,9 +46,10 @@ export function startSetup({ onDone }) {
     // cartes à cocher (une seule) ; « Continuer » valide, grisé tant que rien n'est choisi
     single(step, body, next) {
       let picked = null;
-      const box = el("div", "opts" + (step.options.length > 4 ? " dense" : "")); // beaucoup de choix : cartes plus basses, pour que Retour et Continuer restent à l'écran
+      // step.badges : une seule réponse mais présentée en badges ; sinon beaucoup de choix = cartes plus basses, pour que Retour et Continuer restent à l'écran
+      const box = el("div", step.badges ? "opts chips" : "opts" + (step.options.length > 4 ? " dense" : ""));
       for (const o of step.options) {
-        const b = el("button", "opt-card");
+        const b = el("button", "opt-card" + (step.badges ? " compact" : ""));
         b.type = "button";
         b.setAttribute("aria-pressed", "false");
         const pic = step.id === "niveau" && PICS[genreOf(a)]?.[o.value];
@@ -62,9 +63,9 @@ export function startSetup({ onDone }) {
         b.append(el("span", null, o.label));
         b.style.setProperty("--i", box.children.length); // ordre d'apparition
         b.onclick = () => {
-          picked = o.value;
-          for (const c of box.children) c.setAttribute("aria-pressed", String(c === b));
-          next.disabled = false;
+          picked = picked === o.value && step.badges ? null : o.value; // en badges, recliquer décoche (la croix)
+          for (const c of box.children) c.setAttribute("aria-pressed", String(c === b && picked !== null));
+          next.disabled = picked === null;
         };
         box.append(b);
       }
