@@ -300,8 +300,9 @@ body.setup-open { background: #fff; }
 .opt-card.compact::after { top: 50%; right: 16px; margin-top: -12px; }
 .opts + .note, .opts + p { margin: 12px 0 0; }
 .setup .note { color: #858585; font-size: 16px; }
-/* saisie sans cadre : un grand texte (plus grand que le titre), gris tant qu'il est vide, noir une fois écrit */
-#setup-body input { padding: 0; margin-top: 16px; font-size: 72px; line-height: 1.2; font-weight: 300; color: #242222; background: transparent; border: 0; border-radius: 0; box-shadow: none; outline: 0; }
+/* saisie sans cadre : texte (32 px ; 72 px, plus grand que le titre, pour une question à une seule réponse), gris tant qu'il est vide, noir une fois écrit */
+#setup-body input { padding: 0; margin-top: 16px; font-size: 32px; line-height: 1.3; font-weight: 300; color: #242222; background: transparent; border: 0; border-radius: 0; box-shadow: none; outline: 0; }
+#setup-body input.big { font-size: 72px; line-height: 1.2; }
 #setup-body input:focus { box-shadow: none; }
 #setup-body input::placeholder { color: #b5b5b5; opacity: 1; }
 .setup .tags { gap: 12px; margin: 24px 0 0; }

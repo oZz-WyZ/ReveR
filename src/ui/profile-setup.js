@@ -91,6 +91,7 @@ export function startSetup({ onDone }) {
 
     text(step, body, next) {
       const input = el("input");
+      input.className = "big"; // question à une seule réponse : grand champ
       input.placeholder = step.placeholder ?? "Ta réponse";
       body.append(input);
       next.onclick = () => answer(step.id, input.value.trim());
