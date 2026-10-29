@@ -23,5 +23,5 @@ export function typePlaceholder(input, exemples) {
     setTimeout(tick, PAUSE_MS);
   };
   input.placeholder = " ";
-  tick();
+  setTimeout(tick, PAUSE_MS); // le champ n'est pas encore dans la page à cet appel : on attend qu'il y soit (sinon isConnected l'arrête)
 }
