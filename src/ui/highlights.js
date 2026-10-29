@@ -5,7 +5,7 @@ const MIN_CHARS = 3, MAX_CHARS = 1000;
 const $ = (id) => document.getElementById(id);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const ERRORS = {
-  not_granted: "Autorise Claude pour obtenir une réponse.",
+  not_granted: "Accès refusé : vérifie le code d'accès (ou l'autorisation Claude).",
   rate_limited: "Trop de requêtes : réessaie dans un moment.",
 };
 

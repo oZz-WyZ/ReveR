@@ -1,5 +1,5 @@
 // code: codes de la capability sample (cancelled, not_granted, rate_limited, invalid_json,
-// upstream_error...) + "unavailable" (pas de capability) et "not_implemented" (proxy).
+// upstream_error...) + "unavailable" (pas de capability) et "not_implemented".
 export class AIError extends Error {
   constructor(code, message, text) {
     super(message);

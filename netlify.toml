@@ -1,0 +1,20 @@
+# ReveR : site statique (aucun build) + fonction serverless du proxy IA.
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# l'app n'a pas besoin des sources du proxy ni des tests côté public
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/test/*"
+  to = "/404.html"
+  status = 404
+  force = true

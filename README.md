@@ -8,7 +8,7 @@ La persistance passe par `storage` (`src/storage.js`, localStorage).
 ## Deux modes IA (`src/config.js`)
 
 - **artifact** (démo) : capability `sample` de Claude, via `claude.use("sample")`. Ne tourne que dans un artifact publié (déclarer `capabilities: {sample: {}}`). Sans `window.claude` (dev local), `askAI` retombe sur un **mock**.
-- **proxy** (PWA, plus tard) : API Anthropic derrière un proxy. Stub dans `src/ai/proxy.js`.
+- **proxy** (site déployé sur Netlify) : API Anthropic via la fonction `netlify/functions/ai.mjs` (route `/api/ai`). La clé reste côté serveur ; un code d'accès protège l'appel. Choisi automatiquement hors artifact sur une page https qui n'est pas `localhost` (`src/ai/index.js`).
 
 Le reste de l'app ignore quel mode tourne.
 
@@ -51,3 +51,12 @@ Onglet « Me tester » dans le panneau de droite de la fiche, à la place de l'a
 **Réponse de l'assistant :** le passage du cours qui répond à la question est réécrit tel quel, surligné du même jaune que dans la visionneuse (sans libellé ni badge). Il est aussi surligné dans le PDF et dans la vue Texte (`highlights.setRef` : un surlignage « __ref » qui n'ouvre pas de carte), et la visionneuse défile jusqu'à lui ; un clic sur le passage dans le chat l'y ramène.
 
 **Saisie vocale (assistant) :** un micro dans le champ de saisie (`src/ui/voice.js`, API Web Speech `SpeechRecognition`, français). Un clic dicte la question (le texte s'affiche pendant qu'on parle) ; elle reste dans le champ pour être relue, corrigée puis envoyée par l'élève. Le bouton n'apparaît que si le navigateur gère la reconnaissance vocale ; si le micro est refusé (par exemple dans le cadre sandboxé d'un artifact), un message l'indique et le bouton disparaît. Sous Chrome, le son est traité par le service de reconnaissance de Google.
+
+
+## Déployer sur Netlify
+
+1. Netlify > *Add new site* > *Import an existing project* > ce repo GitHub. Pas de commande de build ; le dossier publié est la racine (`netlify.toml`).
+2. *Site configuration > Environment variables* : `ANTHROPIC_API_KEY` (ta clé) et `ACCESS_CODE` (le code à donner aux utilisateurs). Facultatif : `MODEL_QUICK`, `MODEL_DEFAULT`, `MODEL_COMPLEX`.
+3. Redéployer. À la première question, l'app demande le code d'accès et le garde dans le navigateur.
+
+La fonction refuse tout appel sans le bon code, limite la taille des requêtes (400 000 caractères, 6 images) et le débit par IP (60 appels / 10 min, par instance de fonction). Sans les deux variables, elle répond `not_configured`. Test : `node test/proxy.test.mjs`.

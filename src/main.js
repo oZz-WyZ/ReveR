@@ -62,7 +62,7 @@ const ERRORS = {
   too_many_pages: null, // message déjà explicite
   pdf_unreadable: "Ce PDF est illisible.",
   images_unavailable: "La transcription d'images n'est pas disponible ici.",
-  not_granted: "Autorise Claude pour transcrire ce document.",
+  not_granted: "Accès refusé : vérifie le code d'accès (ou l'autorisation Claude).",
   rate_limited: "Trop de requêtes : réessaie dans un moment.",
 };
 

@@ -5,9 +5,13 @@ import * as proxy from "./proxy.js";
 
 export { AIError } from "./errors.js";
 
+// Site déployé = https hors localhost. Évalué à chaque appel : window.claude peut arriver après le chargement des modules.
+const deployed = () => globalThis.location?.protocol === "https:" && !/^(localhost|127\.)/.test(location.hostname);
+
 function impl() {
   if (config.mode === "proxy") return proxy;
-  return globalThis.claude?.use ? artifact : mock;
+  if (globalThis.claude?.use) return artifact;
+  return deployed() ? proxy : mock;
 }
 
 /**
