@@ -1,4 +1,4 @@
-const P = "reviz:";
+const P = "reviz:"; // clé interne gardée telle quelle : la renommer ferait perdre les cours déjà enregistrés
 const mem = new Map(); // repli si localStorage absent ou bloqué (iframe sandbox)
 
 function ls() {
@@ -65,7 +65,7 @@ export const storage = {
     try { ls()?.removeItem(P + key); } catch {}
     mem.delete(P + key);
   },
-  // Efface toute la donnée Reviz (docs:index, doc:*, chat:*...), pas les clés des autres applis.
+  // Efface toute la donnée ReveR (docs:index, doc:*, chat:*...), pas les clés des autres applis.
   clear() {
     this.keys().forEach((k) => this.remove(k));
     mem.clear();

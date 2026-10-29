@@ -1,4 +1,4 @@
-/* Reviz — thème d'après la référence ui-inspi : fond pêche en dégradé, héros orange, barre et boutons noirs,
+/* ReveR — thème d'après la référence ui-inspi : fond pêche en dégradé, héros orange, barre et boutons noirs,
    boutons blancs en pastille, très gros arrondis, titres en typo fine. Le texte de cours reste sur fond blanc. */
 :root {
   --ink: #141414; --muted: #4d3e37; --line: #efd9cc;
@@ -113,13 +113,13 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 }
 .pane { display: flex; flex-direction: column; min-height: 0; }
 .pane-body { flex: 1; min-height: 0; }
-/* panneau de droite : une grande carte avec le toggle Reviz | Me tester en haut, puis le contenu */
+/* panneau de droite : une grande carte avec le toggle ReveR | Me tester en haut, puis le contenu */
 .assistant-card {
   display: flex; flex-direction: column; font-size: 15px; padding: 1rem 1.25rem 1.1rem;
   background: #fff; border-left: 1px solid var(--edge);
 }
 .assistant-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .75rem; flex: none; }
-/* toggle à deux moitiés (Reviz | Me tester, Origine | Texte) : un seul bouton, le curseur noir glisse d'un côté à l'autre */
+/* toggle à deux moitiés (ReveR | Me tester, Origine | Texte) : un seul bouton, le curseur noir glisse d'un côté à l'autre */
 .assistant-head { display: block; }
 .tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding: .25rem; background: #eadfd7; border-radius: 999px; box-shadow: inset 0 1px 4px rgba(90, 45, 10, .2); }
 .tabs::before { content: ""; position: absolute; top: .25rem; bottom: .25rem; left: .25rem; width: calc(50% - .25rem); background: var(--black); border-radius: 999px; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .25s ease; }

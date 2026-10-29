@@ -225,7 +225,7 @@ $("fiche-matiere").onclick = async () => {
   quiz.update(withConsigne(d));
 };
 
-// Panneau de droite : « Reviz » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
+// Panneau de droite : « ReveR » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
 // Changer d'onglet ne remet pas le quiz à zéro.
 function setTab(t) {
   $("tab-chat").parentElement.dataset.active = t; // fait glisser le curseur du toggle de l'assistant
