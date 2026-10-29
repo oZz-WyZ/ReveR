@@ -305,9 +305,9 @@ body.setup-open { background: #fff; }
 @keyframes setup-title { from { opacity: 0; transform: translateY(14px); clip-path: inset(0 0 100% 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 -20% 0); } }
 @keyframes setup-in { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: none; } }
 .setup h2.enter { animation: setup-title .22s cubic-bezier(.2, .8, .2, 1) both; }
-#setup-body > *, #setup-aide:not([hidden]) { animation: setup-in .22s cubic-bezier(.2, .8, .2, 1) .08s both; }
+#setup-body > * { animation: setup-in .22s cubic-bezier(.2, .8, .2, 1) .08s both; }
 .opts > * { animation: setup-in .2s cubic-bezier(.2, .8, .2, 1) calc(.1s + var(--i, 0) * 30ms) both; }
-@media (prefers-reduced-motion: reduce) { .setup h2.enter, #setup-body > *, #setup-aide:not([hidden]), .opts > * { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .setup h2.enter, #setup-body > *, .opts > * { animation: none; } }
 .setup-nav .primary:disabled { background: #e9e9e9; color: #858585; opacity: 1; }
 
 /* --- accueil : cartes par matière ; page d'une matière --- */

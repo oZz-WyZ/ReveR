@@ -52,8 +52,8 @@ export function nextStep(a) {
   if (a.niveau === "lycee") {
     if (!a.lycee) return S("lycee", "Quelle est ta classe ?", "single", { options: LYCEE.niveaux });
     if (a.lycee === "pro") {
-      if (!a.filiere && a.filiere !== "") return S("filiere", "Quelle est ta filière (bac pro ou CAP) ?", "text", { optional: true, aide: "Par exemple : Métiers de la relation client, Maintenance des véhicules…" });
-      if (!a.proMatieres) return S("proMatieres", "Quels enseignements généraux as-tu ?", "multi", { options: opts(LYCEE.pro), preset: LYCEE.pro, aide: "Tu pourras ajouter tes matières professionnelles à l'étape suivante." });
+      if (!a.filiere && a.filiere !== "") return S("filiere", "Quelle est ta filière (bac pro ou CAP) ?", "text", { optional: true });
+      if (!a.proMatieres) return S("proMatieres", "Quels enseignements généraux as-tu ?", "multi", { options: opts(LYCEE.pro), preset: LYCEE.pro });
       if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]) });
       return recap();
     }
@@ -61,14 +61,14 @@ export function nextStep(a) {
     if (a.voie === "techno" && !a.serie) return S("serie", "Quelle est ta série ?", "single", { options: opts(Object.keys(LYCEE.series)) });
     if (a.voie === "techno" && !a.serieSpes) {
       const list = LYCEE.series[a.serie] ?? [];
-      if (list.length) return S("serieSpes", "Quels enseignements de ta série suis-tu ?", "multi", { options: opts(list), preset: list, aide: "Décoche ceux que tu n'as pas." });
+      if (list.length) return S("serieSpes", "Quels enseignements de ta série suis-tu ?", "multi", { options: opts(list), preset: list });
     }
     if (a.voie === "generale" && !a.specialites) {
       const n = LYCEE.nbSpecialites[a.lycee];
       if (n) return S("specialites", `Quelles sont tes ${n} spécialités ?`, "multi", { options: opts(LYCEE.specialites), exact: n });
     }
-    if (a.voie !== "techno" && !a.options) return S("options", "Suis-tu des options ?", "multi", { options: opts(LYCEE.options[a.lycee] ?? []), optional: true, aide: "Passe à la suite si tu n'en as pas." });
-    if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]), aide: "L'anglais est ajouté automatiquement comme langue A." });
+    if (a.voie !== "techno" && !a.options) return S("options", "Suis-tu des options ?", "multi", { options: opts(LYCEE.options[a.lycee] ?? []), optional: true });
+    if (!a.lvb) return S("lvb", "Quelle langue vivante B étudies-tu ?", "single", { options: opts(["Aucune", ...LYCEE.langues]) });
     return recap();
   }
 
@@ -76,12 +76,12 @@ export function nextStep(a) {
   if (!a.formation) return S("formation", "Quelle formation suis-tu ?", "single", { options: opts(SUPERIEUR.formations) });
   if (!a.domaine) return S("domaine", "Dans quel domaine ?", "single", { options: opts(SUPERIEUR.domaines) });
   if (!a.annee) return S("annee", "En quelle année es-tu ?", "single", { options: opts(SUPERIEUR.annees) });
-  if (!a.supMatieres) return S("supMatieres", "Quelles matières (ou unités d'enseignement) as-tu ?", "tags", { chips: SUPERIEUR.raccourcis[a.domaine] ?? [], aide: "Ajoute-les une par une, ou clique sur une suggestion. L'assistant s'en servira pour ranger tes cours." });
+  if (!a.supMatieres) return S("supMatieres", "Quelles matières (ou unités d'enseignement) as-tu ?", "tags", { chips: SUPERIEUR.raccourcis[a.domaine] ?? [] });
   if (!a.guides) return S("guides", "Pour n'en oublier aucune :", "guides", { guides: SUPERIEUR.guides });
   return recap();
 }
 
-const recap = () => S("recap", "Voici tes matières", "recap", { aide: "Retire celles que tu n'as pas, ou ajoutes-en. Tes cours seront rangés dedans." });
+const recap = () => S("recap", "Voici tes matières", "recap");
 
 /** Profil à enregistrer, à partir des réponses et de la liste finale de matières. */
 export function makeProfile(a, matieres) {

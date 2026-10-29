@@ -178,8 +178,6 @@ export function startSetup({ onDone }) {
     const title = $("setup-title");
     title.textContent = step.titre;
     title.classList.remove("enter"); void title.offsetWidth; title.classList.add("enter"); // relance l'animation
-    $("setup-aide").textContent = step.aide ?? "";
-    $("setup-aide").hidden = !step.aide;
     $("setup-back").hidden = history.length === 0;
     const body = $("setup-body"), next = $("setup-next");
     body.replaceChildren();
