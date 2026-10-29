@@ -1,4 +1,5 @@
 import { NON_CLASSE } from "../library.js";
+import { subjectIcon } from "./subject-icons.js";
 
 const $ = (id) => document.getElementById(id);
 const TINTS = ["#ffe0c2", "#e6dcf7", "#d8ecf7", "#dff5e6", "#fde6ee", "#fff3c4"];
@@ -19,7 +20,8 @@ export function renderSubjects(matieres, countOf, nonClasse, onOpen) {
   $("subjects").replaceChildren(...cards.map((c) => {
     const b = el("button", "subject");
     b.type = "button";
-    const dot = el("span", "dot", c.nom.trim()[0]?.toUpperCase() ?? "?");
+    const dot = el("span", "dot");
+    dot.append(subjectIcon(c.nom));
     dot.style.setProperty("--tint", c.tint);
     const txt = el("span", "subject-text");
     txt.append(el("span", "subject-name", c.nom), el("span", "count", plural(c.n)));
