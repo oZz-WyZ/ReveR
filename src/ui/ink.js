@@ -22,7 +22,7 @@ export function createInk({ onChange } = {}) {
   const model = createModel();
   const pages = new Map(); // p -> { box, canvas }
   const sel = { tool: "select", color: { pen: 0, hl: 0, text: 0 }, size: { pen: 1, hl: 1, text: 1 } };
-  let cur = null, pending = null, editing = null; // editing : id du texte en cours de modification (masqué sur le canvas) // trait en cours / traits touchés par la gomme pendant le geste
+  let cur = null, pending = null, editing = null, open = null; // open : { finish } du champ de texte ouvert // editing : id du texte en cours de modification (masqué sur le canvas) // trait en cours / traits touchés par la gomme pendant le geste
 
   const size = (box) => ({ W: box.clientWidth, H: box.clientHeight });
 
@@ -109,6 +109,7 @@ export function createInk({ onChange } = {}) {
     const finish = (save) => {
       if (done) return;
       done = true;
+      if (open?.finish === finish) open = null;
       const text = ta.value.replace(/\s+$/, "");
       wrap.remove();
       editing = null;
@@ -119,6 +120,7 @@ export function createInk({ onChange } = {}) {
       draw(p);
       if (save && (text !== (existing?.text ?? "") || moved)) changed();
     };
+    open = { finish };
     ta.oninput = () => { const lines = ta.value.split("\n"); ta.rows = lines.length; ta.cols = Math.max(4, ...lines.map((l) => l.length + 1)); };
     wrap.onfocusout = (e) => { if (!wrap.contains(e.relatedTarget)) finish(true); }; // le focus reste dans le bloc quand on touche à la taille ou à la poignée
     ta.onkeydown = (e) => {
@@ -138,6 +140,7 @@ export function createInk({ onChange } = {}) {
       canvas.setPointerCapture(e.pointerId);
       const pt = rel(e);
       if (sel.tool === "eraser") { pending = new Set(); eraseAt(p, pt); return; }
+      if (sel.tool === "text" && open) { open.finish(true); return; } // un clic à côté d'un texte en cours valide ce texte, sans en créer un autre
       if (sel.tool === "text") { // un clic sur un texte déjà posé le rouvre pour le modifier
         const { W, H } = size(pages.get(p).box);
         const hit = model.list().findLast((s) => s.tool === "text" && s.p === p && strokeHit(s, pt[0], pt[1], 4, W, H));
