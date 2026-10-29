@@ -63,7 +63,7 @@ label { display: block; }
 .logo-tile img { width: 2.3rem; height: auto; }
 .hero-sub { font-size: 1.1rem; font-weight: 300; opacity: .95; margin: 0 0 1.4rem; max-width: 44rem; }
 .hero button.primary { background: var(--black); }
-#lib-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 17rem)); gap: 1rem; margin-top: .85rem; }
+#lib-list { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 17rem)); gap: 1rem; margin-top: .85rem; }
 #lib-list .card {
   position: relative; display: flex; flex-direction: column; gap: .35rem; padding: .6rem .6rem .75rem; border-radius: var(--r-sm);
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease;
@@ -258,7 +258,7 @@ blockquote.passage, #quiz blockquote {
 .setup-nav .primary { margin-left: auto; }
 
 /* --- accueil : cartes par matière ; page d'une matière --- */
-.subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.subjects { display: grid; grid-auto-rows: 1fr; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.2rem; }
 .subject { display: flex; align-items: center; gap: .95rem; text-align: left; padding: 1.1rem 1.3rem; border: 0; border-radius: var(--r-lg);
   background: linear-gradient(180deg, #fff 0%, var(--cream) 100%); box-shadow: var(--shadow); }
 .subject:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
