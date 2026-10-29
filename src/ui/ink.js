@@ -103,7 +103,11 @@ export function createInk({ onChange } = {}) {
       place();
     };
     grip.onpointerup = grip.onpointercancel = () => { drag = null; ta.focus(); };
-    tools.append(pick, grip);
+    const del = document.createElement("button");
+    del.type = "button"; del.className = "grip del"; del.title = "Supprimer le texte"; del.setAttribute("aria-label", "Supprimer le texte");
+    del.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+    del.onclick = () => { ta.value = ""; finish(true); }; // texte vidé : un texte existant disparaît, un nouveau n'est pas créé
+    tools.append(pick, grip, del);
 
     let done = false;
     const finish = (save) => {
