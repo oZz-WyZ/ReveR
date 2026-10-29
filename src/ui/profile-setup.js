@@ -46,7 +46,7 @@ export function startSetup({ onDone }) {
     // cartes à cocher (une seule) ; « Continuer » valide, grisé tant que rien n'est choisi
     single(step, body, next) {
       let picked = null;
-      const box = el("div", "opts");
+      const box = el("div", "opts" + (step.options.length > 4 ? " dense" : "")); // beaucoup de choix : cartes plus basses, pour que Retour et Continuer restent à l'écran
       for (const o of step.options) {
         const b = el("button", "opt-card");
         b.type = "button";
