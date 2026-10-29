@@ -36,12 +36,12 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 button.primary, #ob-form button:not([type=button]), #chat-send, #ask-pop button:not([type=button]) { color: var(--ink); background: #fff; border-color: var(--btn-edge); }
 button.ghost { background: #fff; color: var(--muted); padding: .45rem .9rem; border-color: var(--btn-edge); }
 button.ghost:hover:not(:disabled) { color: var(--ink); box-shadow: none; }
-:focus-visible { outline: 3px solid var(--orange-2); outline-offset: 2px; }
+:focus-visible { outline: 2px solid #242222; outline-offset: 3px; }
 
 input, select, textarea {
   font: inherit; color: var(--ink); background: #fff; border: 1.5px solid var(--line); border-radius: var(--r-md); padding: .65rem 1rem;
 }
-input:focus, select:focus { border-color: var(--orange-2); outline: 0; box-shadow: 0 0 0 4px rgba(240, 137, 58, .22); }
+input:focus, select:focus { border-color: #242222; outline: 0; box-shadow: 0 0 0 3px rgba(36, 34, 34, .15); }
 label { display: block; }
 
 /* --- cartes : crème qui s'éclaircit, énormes arrondis --- */
