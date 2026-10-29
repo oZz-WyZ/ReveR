@@ -268,14 +268,16 @@ body.light { background: #fff; }
 .setup { padding: 4rem 0 3rem; }
 .setup-logo { display: block; height: 80px; width: auto; }
 .setup h2 { font-size: 48px; line-height: 1.2; font-weight: 300; color: #242222; margin: 32px 0 .4rem; }
-.opts { display: flex; flex-wrap: wrap; gap: 16px; margin: 32px 0 0; }
-.opt-card { position: relative; flex: 1 1 9rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 48px; min-height: 236px; padding: 24px;
+/* cartes : colonnes de même largeur (les vides se replient, donc 3 ou 4 cartes remplissent la ligne) ; badges (.chips) : largeur du texte */
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 16px; margin: 32px 0 0; }
+.opts.chips { display: flex; flex-wrap: wrap; }
+.opt-card { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 48px; min-height: 236px; padding: 24px;
   background: #fff; color: #242222; border: .5px solid #242222; border-radius: 32px; font-size: 24px; font-weight: 300; line-height: 1.3; text-align: center; box-shadow: none; }
 .opt-card:hover:not(:disabled) { transform: none; }
 .opt-card[aria-pressed="true"] { box-shadow: inset 0 0 0 3.5px #242222; }
 .opt-card::after { content: ""; position: absolute; top: 16px; right: 16px; width: 24px; height: 24px; box-sizing: border-box; border: .5px solid #242222; border-radius: 50%; background: #fff; }
 .opt-card[aria-pressed="true"]::after { background: #242222; }
-.opt-card.with-pic { flex-basis: 12rem; min-height: 398px; padding: 40px 24px; }
+.opt-card.with-pic { min-height: 398px; padding: 40px 24px; }
 .opt-card.with-pic::after { top: 24px; right: 24px; }
 .opt-pic { width: 180px; height: 231px; overflow: hidden; position: relative; }
 .opt-pic img { position: absolute; left: 0; top: -20%; width: 100%; height: 140%; max-width: none; }

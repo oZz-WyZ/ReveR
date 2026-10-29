@@ -29,7 +29,7 @@ export function startSetup({ onDone }) {
   $("setup-back").onclick = () => { a = history.pop() ?? {}; names = null; render(); };
 
   function chips(list, selected, onToggle) {
-    const box = el("div", "opts");
+    const box = el("div", "opts chips");
     for (const o of list) {
       const b = el("button", "opt-card compact", o.label);
       b.type = "button";
@@ -105,7 +105,7 @@ export function startSetup({ onDone }) {
       const input = el("input");
       input.placeholder = "Une matière, puis Entrée";
       const out = el("div", "tags");
-      const sugg = el("div", "opts");
+      const sugg = el("div", "opts chips");
       const draw = () => {
         out.replaceChildren(...list.map((n, i) => tagChip(n, () => { list.splice(i, 1); draw(); })));
         for (const b of sugg.children) b.setAttribute("aria-pressed", String(list.some((n) => n.toLowerCase() === b.textContent.toLowerCase())));
