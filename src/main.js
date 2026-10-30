@@ -210,6 +210,7 @@ function showFiche(doc, edit = false) {
   chat.show(withConsigne(doc));
   quiz.show(withConsigne(doc)); // nouveau cours : quiz remis à zéro
   setTab("chat");
+  showPane("cours");
 }
 
 // Matière du cours : puce dans la barre d'outils (change la matière) et retour vers la liste de cette matière.
@@ -228,6 +229,17 @@ $("fiche-matiere").onclick = async () => {
 
 // Panneau de droite : « ReveR » (assistant) ou « Me tester » (quiz), l'un à la place de l'autre.
 // Changer d'onglet ne remet pas le quiz à zéro.
+// Écran étroit (tablette, téléphone) : un seul panneau à la fois, « Cours » ou « Assistant » (sur grand écran, les deux sont côte à côte).
+function showPane(p) {
+  $("fiche").dataset.pane = p;
+  $("pane-switch").dataset.active = p;
+  $("sw-cours").setAttribute("aria-selected", String(p === "cours"));
+  $("sw-assist").setAttribute("aria-selected", String(p === "assist"));
+}
+$("sw-cours").onclick = () => showPane("cours");
+$("sw-assist").onclick = () => showPane("assist");
+$("ask-pop").addEventListener("submit", () => showPane("assist")); // la question sur un passage s'affiche dans l'assistant
+
 function setTab(t) {
   $("tab-chat").parentElement.dataset.active = t; // fait glisser le curseur du toggle de l'assistant
   $("tab-chat").setAttribute("aria-selected", String(t === "chat"));

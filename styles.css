@@ -137,7 +137,7 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 .assistant-head { display: block; }
 .tabs { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: 100%; padding: .25rem; background: #fff; border: 1px solid var(--btn-edge); border-radius: 999px; }
 .tabs::before { content: ""; position: absolute; top: .25rem; bottom: .25rem; left: .25rem; width: calc(50% - .25rem); background: var(--violet); border-radius: 999px; box-shadow: 0 3px 8px rgba(0, 0, 0, .3); transition: transform .25s ease; }
-.tabs[data-active="quiz"]::before, .tabs[data-active="texte"]::before { transform: translateX(100%); }
+.tabs[data-active="quiz"]::before, .tabs[data-active="texte"]::before, .tabs[data-active="assist"]::before { transform: translateX(100%); }
 .tabs button { position: relative; background: transparent; border: 0; box-shadow: none; color: var(--muted); font-size: .92rem; padding: .5rem 1rem; transition: color .2s; }
 .tabs button[aria-selected="true"], .tabs button[aria-pressed="true"] { color: #fff; background: transparent; }
 .tabs button:hover:not(:disabled) { transform: none; box-shadow: none; }
@@ -399,6 +399,59 @@ body.fiche-open .app { padding: 1.5rem 2rem; }
 select { appearance: none; padding: .3rem 1.9rem .3rem .9rem; font-weight: 300; color: #242222; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23242222' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right .6rem center / 14px no-repeat; border: .5px solid #242222; border-radius: 999px; cursor: pointer; }
 select:focus { border-color: #242222; box-shadow: inset 0 0 0 2px #242222; }
 .ink-text-tools select { padding: .15rem 1.7rem .15rem .7rem; box-shadow: none; }
+
+/* --- responsive : tablette (≤ 900 px) et téléphone (≤ 640 px) --- */
+#pane-switch { display: none; }
+.setup h2 { font-size: clamp(28px, 5vw + 8px, 48px); }
+#setup-body input.big { font-size: clamp(36px, 9vw, 72px); }
+.page-title, .hero h2 { font-size: clamp(28px, 5vw + 8px, 48px); }
+@media (max-width: 900px) {
+  /* fiche : un panneau à la fois, choisi par le sélecteur Cours | Assistant en bas */
+  body.fiche-open .app { padding: .75rem; }
+  #fiche { height: calc(100dvh - 1.5rem); }
+  #workspace { grid-template-columns: minmax(0, 1fr); border-radius: 24px; }
+  #fiche[data-pane="cours"] #pane-assistant, #fiche[data-pane="assist"] #pane-texte { display: none; }
+  .assistant-card { border-left: 0; }
+  #pane-switch { display: grid; flex: none; margin-top: .6rem; }
+  .ink-bar { max-width: calc(100vw - 2.5rem); overflow-x: auto; scrollbar-width: none; }
+  .ink-bar > * { flex: none; }
+  #reader { aspect-ratio: auto; min-height: 60vh; padding: 1.5rem; }
+}
+@media (max-width: 640px) {
+  .app { padding: 1rem 1rem 3rem; }
+  #setup, #home, #matiere-page { padding-top: 1.5rem; }
+  #setup { padding-bottom: 7rem; }
+  .setup-logo, .hero .setup-logo { height: 56px; }
+  .hero { gap: 14px; }
+  /* onboarding : cartes plus basses, en deux colonnes ; les illustrations passent à gauche du libellé */
+  .opts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .opt-card, .dense .opt-card { min-height: 96px; padding: 16px 40px 16px 16px; font-size: 20px; border-radius: 24px; }
+  .opts:has(.with-pic) { grid-template-columns: minmax(0, 1fr); }
+  .opt-card.with-pic { flex-direction: row; justify-content: flex-start; gap: 20px; min-height: 0; padding: 14px 56px 14px 20px; text-align: left; }
+  .opt-card.with-pic::after { top: 50%; right: 20px; margin-top: -12px; }
+  .opt-pic { width: 72px; height: 92px; flex: none; }
+  #setup-body .opts + input { margin-top: 24px; }
+  .setup-nav { padding: .75rem 1rem 1.25rem; }
+  .setup-nav .primary, .setup-nav .ghost { padding: 16px 28px; font-size: 20px; }
+  /* accueil et matières */
+  .subjects, #lib-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .subject { min-height: 140px; padding: 16px; border-radius: 24px; }
+  .subject-name { font-size: 20px; }
+  #lib-list .card { border-radius: 24px; padding: 10px 10px 16px; }
+  #lib-list .titre { font-size: 16px; padding: 6px 6px 0; }
+  .import-dock { width: calc(100% - 2rem); }
+  .chooser-card { padding: 24px; }
+  .chooser-card h2 { font-size: 24px; }
+  .viewer-tools { gap: .5rem; }
+  .assistant-card { padding: 1rem; }
+}
+/* écrans tactiles : pas de survol, donc le bouton d'import est toujours visible (sans cadre, avec sa lueur) */
+@media (hover: none) {
+  .import-dock { transform: none; background: transparent; border-color: transparent; box-shadow: none; padding-bottom: 20px; }
+  .import-dock #new-course { box-shadow: 0 0 40px 36px rgba(255, 255, 255, .95); }
+  .dock-peek { display: none; }
+  .import-dock { padding-top: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
