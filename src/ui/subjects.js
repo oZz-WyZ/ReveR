@@ -65,8 +65,9 @@ export function chooseMatiere({ matieres, titre, sous, dismissable = false, curr
     list.append(none);
     card.append(list);
     if (dismissable) {
-      const x = el("button", "ghost", "Annuler");
-      x.type = "button"; x.onclick = () => done(null);
+      const x = el("button", "ghost home-btn close-x"); // croix en haut à droite
+      x.type = "button"; x.title = "Fermer"; x.setAttribute("aria-label", "Fermer"); x.onclick = () => done(null);
+      x.innerHTML = '<svg viewBox="0 0 12 12" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
       card.append(x);
       root.onclick = (e) => { if (e.target === root) done(null); };
     } else root.onclick = null;
