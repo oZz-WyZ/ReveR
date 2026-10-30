@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v betterleaks >/dev/null || exit 0; jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; [ -f \"$f\" ] || exit 0; betterleaks dir --exit-code 2 --no-banner --no-color --redact -v \"$f\" >&2; }",
+            "timeout": 30,
+            "statusMessage": "Scan des secrets (betterleaks)…"
+          }
+        ]
+      }
+    ]
+  }
+}

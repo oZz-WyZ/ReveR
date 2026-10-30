@@ -12,6 +12,12 @@ La persistance passe par `storage` (`src/storage.js`, localStorage).
 
 Le reste de l'app ignore quel mode tourne.
 
+## Documentation
+
+- `CLAUDE.md` : consignes de travail pour l'agent (workflow, git, sécurité, conventions).
+- `docs/ARCHITECTURE.md` : modules, données, IA, déploiement.
+- `docs/DESIGN.md` : direction artistique et composants.
+
 ## Lancer
 
 - Local (mock) : `python3 -m http.server` puis http://localhost:8000
@@ -24,7 +30,7 @@ PDF (texte natif via pdf.js, gratuit) ou image/PDF scanné (transcription via `a
 
 ## Profil et matières (remplace l'ancien onboarding par cours)
 
-Au premier lancement, un onboarding pose des questions pour connaître le niveau de l'élève et toutes ses matières (`src/profile.js` : `nextStep` décide de la question suivante d'après les réponses ; `src/ui/profile-setup.js`). Collège : la classe, puis la liste unique des matières. Lycée : classe, voie, série ou spécialités (nombre exact imposé), options, langue vivante B. Études supérieures : formation, domaine, année, puis l'élève déclare ses matières (suggestions cliquables par domaine, jamais ajoutées sans son accord) et répond à des questions guidées pour n'en oublier aucune. Les programmes sont écrits en dur dans `src/curriculum.js`. Le profil est stocké dans `profil = { niveau, classe, ..., matieres: [{ id, nom }] }`.
+Au premier lancement, un onboarding demande le prénom (le genre n'est demandé que si le prénom est mixte ou inconnu : il sert à choisir les illustrations, `src/prenoms.js`) puis pose des questions pour connaître le niveau de l'élève et toutes ses matières (`src/profile.js` : `nextStep` décide de la question suivante d'après les réponses ; `src/ui/profile-setup.js`). Collège : la classe, puis la liste unique des matières. Lycée : classe, voie, série ou spécialités, options, langue vivante B. Études supérieures : formation, domaine, année, puis l'élève déclare ses matières (suggestions cliquables par domaine, jamais ajoutées sans son accord) et répond à des questions guidées pour n'en oublier aucune. Les programmes sont écrits en dur dans `src/curriculum.js`. Le profil est stocké dans `profil = { niveau, classe, ..., matieres: [{ id, nom }] }`.
 
 À l'import d'un cours, `src/classify.js` (`askAI` en `json`, niveau `quick`) choisit la matière parmi celles du profil. Si le modèle n'est pas sûr (matière inconnue ou confiance faible), l'app demande tout de suite à l'élève dans quelle matière ranger le cours (`chooseMatiere`) ; « Non classé » existe. La matière se change ensuite depuis la puce de la fiche. Le cours porte `matiereId` ; l'accueil affiche une carte par matière, un clic ouvre la page de la matière (`#matiere-<id>`). La consigne de l'assistant est construite sans IA (`src/chat/consigne.js`) à partir du profil et de la matière. Plus de sujet, de niveau ni de date de contrôle par cours. Bouton « Reset » (bas gauche, provisoire, deux clics) : efface tout pour retester l'onboarding.
 
@@ -46,7 +52,7 @@ Onglet « Me tester » dans le panneau de droite de la fiche, à la place de l'a
 
 ## Interface (spec UX)
 
-Écrans : onboarding, accueil (`#repertoire`, cartes par matière), matière (`#matiere-<id>`), fiche (`#cours-<id>`). La fiche a deux panneaux : le cours à gauche (PDF d'origine page par page avec calque de texte sélectionnable, ou photo ; bascule « Original / Texte ») et à droite un toggle « ReveR » (assistant, chat seul) / « Me tester » (quiz, à la place de l'assistant), toujours côte à côte (ordinateur), sans panneaux repliables. Les originaux sont gardés dans IndexedDB (`storage.blob`) ; sans eux (anciens cours, IndexedDB indisponible) on affiche le texte. Sur un PDF natif, la sélection et les surlignages sont reliés à `doc.text` par offsets (`src/extract/layout.js`, `src/ui/viewer.js`). Commentaires en pop-over au clic sur le surlignage. Thème dans `styles.css` d'après la référence `ui-inspi.webp` (fond pêche, héros orange, boutons noirs, très arrondi ; texte de cours sur fond blanc). La mascotte `mascotte.svg` sert de logo (héros, icône d'onglet) et d'avatar à l'assistant.
+Écrans : onboarding, accueil (`#repertoire`, cartes par matière), matière (`#matiere-<id>`), fiche (`#cours-<id>`). La fiche a deux panneaux : le cours à gauche (PDF d'origine page par page avec calque de texte sélectionnable, ou photo ; la vue Texte n'existe que sans original) et à droite un toggle « ReveR » (assistant, chat seul) / « Me tester » (quiz, à la place de l'assistant), toujours côte à côte (ordinateur), sans panneaux repliables. Les originaux sont gardés dans IndexedDB (`storage.blob`) ; sans eux (anciens cours, IndexedDB indisponible) on affiche le texte. Sur un PDF natif, la sélection et les surlignages sont reliés à `doc.text` par offsets (`src/extract/layout.js`, `src/ui/viewer.js`). Commentaires en pop-over au clic sur le surlignage. Direction artistique : voir `docs/DESIGN.md` (fond blanc, filets fins, noir `#242222`, responsive tablette et téléphone). La mascotte `mascotte.svg` sert de logo (héros, icône d'onglet) et d'avatar à l'assistant.
 
 **Réponse de l'assistant :** le passage du cours qui répond à la question est réécrit tel quel, surligné du même jaune que dans la visionneuse (sans libellé ni badge). Il est aussi surligné dans le PDF et dans la vue Texte (`highlights.setRef` : un surlignage « __ref » qui n'ouvre pas de carte), et la visionneuse défile jusqu'à lui ; un clic sur le passage dans le chat l'y ramène.
 
