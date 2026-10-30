@@ -279,7 +279,7 @@ setupImporter($("hero"), $("file"), async (file) => {
     t.set(0.9);
     let choix = await classify({ name: file.name, text: r.text, matieres: profil.matieres }).then((c) => (isSure(c) ? c.matiereId : undefined), () => undefined);
     if (choix === undefined) {
-      choix = await chooseMatiere({ matieres: profil.matieres, titre: "Dans quelle matière ranger ce cours ?", sous: file.name });
+      choix = await chooseMatiere({ matieres: profil.matieres, titre: "Dans quelle matière ranger ce cours ?" });
     }
     saveDoc({ ...doc, matiereId: choix === NON_CLASSE ? null : choix, updatedAt: Date.now() });
     t.set(1);
