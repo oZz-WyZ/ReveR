@@ -41,10 +41,6 @@
   <div class="viewer-tools">
     <div class="tools-left">
       <button id="back" type="button" class="ghost home-btn" aria-label="Retour à l'accueil" title="Retour à l'accueil"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg></button>
-      <button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
-        <span id="fiche-matiere-nom"></span>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
     </div>
     <div class="tools-right">
       <button id="edit-text" type="button" class="primary" hidden>Corriger le texte</button>
@@ -53,6 +49,10 @@
   <div id="workspace">
     <section class="pane" id="pane-texte">
       <div class="pane-body viewer-shell">
+        <div class="viewer-top"><button id="fiche-matiere" type="button" class="chip" title="Changer de matière">
+        <span id="fiche-matiere-nom"></span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button></div>
               <div id="doc">
           <p id="doc-note" class="note" hidden></p>
           <div id="pdf-view" hidden></div>

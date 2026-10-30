@@ -148,6 +148,8 @@ body.fiche-open .app { max-width: none; padding: 1.5rem; }
 /* --- cours : texte (fond blanc) et original --- */
 /* visionneuse : zone neutre autour d'une « page » centrée, comme un aperçu avant impression.
    .viewer-scroll est le seul scroll du cours ; le basculeur flotte au-dessus (frère du scroller, donc fixe pendant le scroll). */
+.viewer-top { position: sticky; top: -1.25rem; z-index: 6; margin: -1.25rem -1.25rem .75rem; padding: 1.25rem 1.25rem .5rem; background: linear-gradient(#fff 75%, rgba(255, 255, 255, 0)); pointer-events: none; } /* rangée collante en haut de la visionneuse : la pastille de matière reste en haut à gauche pendant le défilement */
+.viewer-top > * { pointer-events: auto; }
 .viewer-shell { position: relative; background: #fff; overflow: auto; padding: 1.25rem; } /* carte comme celle de l'assistant */
 /* « Me tester » : le cours est flouté pour que l'élève se teste vraiment */
 #doc { transition: filter .25s; }
