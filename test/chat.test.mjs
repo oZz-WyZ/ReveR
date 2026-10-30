@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { findPassage, parseAnswer, askCourse, reexplain } from "../src/chat/ask.js";
+import { findPassage, parseAnswer, withoutRepeat, askCourse, reexplain } from "../src/chat/ask.js";
 import { buildHistory, selectCourse, MAX_TURNS } from "../src/chat/context.js";
 import { setFeedback, insertAfter } from "../src/chat/store.js";
 
@@ -11,6 +11,14 @@ assert.equal(findPassage(TEXT, "a lieu le 14 juillet 1789"), "a lieu\nle 14 juil
 assert.equal(findPassage(TEXT, "« La nuit du 4 août abolit les privilèges. »"), "La nuit du 4 août abolit les privilèges.");
 assert.equal(findPassage(TEXT, "Napoléon est sacré empereur"), null);
 assert.equal(findPassage(TEXT, "la"), null);
+
+// withoutRepeat : la phrase qui recopie ou reformule le passage affiché est retirée, le reste est gardé
+const def = "Opinion publique : ensemble des idées et des jugements partagés par la population sur des sujets de sociétés.";
+const rep = "L'opinion publique est l'ensemble des idées et des jugements partagés par la population sur des sujets de société.\n\nPendant la Première Guerre mondiale, les États cherchent à la contrôler :\n\n- la propagande répand certaines idées.";
+assert.equal(withoutRepeat(rep, def), "Pendant la Première Guerre mondiale, les États cherchent à la contrôler :\n\n- la propagande répand certaines idées.");
+assert.equal(withoutRepeat("Tout autre chose, sans lien avec le texte cité ici.", def), "Tout autre chose, sans lien avec le texte cité ici.");
+assert.equal(withoutRepeat(def, def), def); // rien d'autre à dire : on garde la réponse
+assert.equal(withoutRepeat("Réponse.", null), "Réponse.");
 
 // parseAnswer
 const good = parseAnswer({ reponse: " Ok ", source: "cours", passage: "La nuit du 4 août abolit les privilèges." }, TEXT);

@@ -28,13 +28,28 @@ export function findPassage(text, passage) {
   return at < 0 ? null : text.slice(map[at], map[at + needle.length - 1] + 1);
 }
 
+const words = (s) => (s.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().match(/\p{L}{3,}/gu) ?? []).map((w) => w.slice(0, 5));
+
+/**
+ * Le passage est déjà affiché juste avant la réponse : on retire de la réponse les phrases qui le recopient ou le reformulent
+ * (au moins 80 % de leurs mots, au radical près, sont dans le passage). Si tout serait retiré, la réponse est gardée telle quelle.
+ */
+export function withoutRepeat(reponse, passage) {
+  if (!passage) return reponse;
+  const known = new Set(words(passage));
+  const repeats = (s) => { const w = words(s); return w.length >= 5 && w.filter((x) => known.has(x)).length / w.length >= 0.8; };
+  const lines = reponse.split("\n").map((line) => line.split(/(?<=[.!?])\s+/).filter((s) => !repeats(s)).join(" "));
+  const out = lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  return out || reponse;
+}
+
 /** data (sortie json du modèle) -> { reponse, source, passage }. Lève bad_answer si inutilisable. */
 export function parseAnswer(data, text) {
   const reponse = typeof data?.reponse === "string" ? data.reponse.trim() : "";
   if (!reponse) throw fail("bad_answer", "réponse vide ou illisible");
   const source = data.source === "cours" ? "cours" : "general";
   const passage = source === "cours" && typeof data.passage === "string" ? findPassage(text, data.passage) : null;
-  return { reponse, source, passage };
+  return { reponse: withoutRepeat(reponse, passage), source, passage };
 }
 
 async function run({ doc, messages, queries, signal }) {
