@@ -112,7 +112,8 @@ label { display: block; }
 body.fiche-open { overflow: hidden; }
 /* la fiche occupe toute la fenêtre avec la même marge (1,5 rem) en haut, en bas, à gauche, à droite et entre les deux panneaux */
 body.fiche-open .app { max-width: none; padding: 1.5rem; }
-#fiche { display: flex; flex-direction: column; height: calc(100dvh - 3rem); min-height: 30rem; }
+/* contenu centré : la visionneuse n'a que la place d'une page (≈ 54 rem) et l'assistant garde sa largeur, le tout s'arrête à 88 rem ; la barre du haut suit la même colonne, donc l'icône maison reste alignée sur le bord gauche de la visionneuse */
+#fiche { display: flex; flex-direction: column; width: 100%; max-width: 88rem; margin: 0 auto; height: calc(100dvh - 3rem); min-height: 30rem; }
 #fiche[hidden] { display: none; }
 .toolbar { display: flex; align-items: center; gap: .75rem; margin: 0 0 .75rem; flex: none; }
 .toolbar .spacer { flex: 1; }
