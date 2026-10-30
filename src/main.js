@@ -219,7 +219,7 @@ function renderMatiereChip() {
   $("fiche-matiere-nom").textContent = nom;
 }
 $("fiche-matiere").onclick = async () => {
-  const choice = await chooseMatiere({ matieres: profil.matieres, titre: "Changer de matière", sous: current.name, dismissable: true, current: current.matiereId });
+  const choice = await chooseMatiere({ matieres: profil.matieres, titre: "Changer de matière", dismissable: true, current: current.matiereId });
   if (choice === null) return;
   const d = persist({ ...current, matiereId: choice === NON_CLASSE ? null : choice });
   renderMatiereChip();
