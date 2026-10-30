@@ -25,6 +25,10 @@ Assistant de révision pour élèves (collège, lycée, études supérieures). W
 - Un hook `PostToolUse` (`.claude/settings.json`) lance `betterleaks` sur chaque fichier écrit ou modifié ; s'il signale un secret, le retirer avant de continuer. Scan complet : `betterleaks dir .` et `betterleaks git .`.
 - Les clés internes de stockage gardent l'ancien nom (`reviz:` en localStorage, base IndexedDB `reviz`) pour ne pas perdre les données des utilisateurs : ne pas les renommer sans migration.
 
+## Veille des consignes (automatique)
+
+L'utilisateur demande qu'à la reprise du travail, l'agent `.claude/agents/doc-freshness.md` vérifie si les consignes techniques des `.md` et de `.claude/` sont encore d'actualité (évolutions de Claude Code, version de betterleaks) et les corrige. Un hook `SessionStart` (`.claude/hooks/doc-freshness-check.sh`) le demande **au plus une fois tous les 7 jours** (date dans `.claude/.doc-check`, ignoré par git). Quand le hook le demande, lancer l'agent en arrière-plan sans attendre d'autre accord ; ensuite résumer en 3 lignes et commiter en local ce qu'il a modifié. Il ne change jamais les décisions du projet ni le code de l'app. Pour forcer un contrôle : demander « lance doc-freshness ».
+
 ## Conventions de code
 
 - Écrire comme le code autour : mêmes noms, même densité de commentaires (français, une ligne, le *pourquoi*). Ne pas supprimer ni raccourcir un commentaire existant qu'on ne modifie pas.
