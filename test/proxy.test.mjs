@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { HttpError, buildRequest, callAnthropic, createLimiter, parseJsonText, readReply, sameSecret } from "../netlify/lib/ai-core.mjs";
+import { HttpError, buildRequest, callAnthropic, checkAccess, createLimiter, parseJsonText, readReply, sameSecret } from "../netlify/lib/ai-core.mjs";
 
 const msgs = [{ role: "user", content: "salut" }];
 
@@ -8,6 +8,17 @@ assert.ok(sameSecret("abc", "abc"));
 assert.equal(sameSecret("abc", "abd"), false);
 assert.equal(sameSecret("abc", "abcd"), false);
 assert.equal(sameSecret(null, "abc"), false);
+
+// accès : code obligatoire, sauf OPEN_ACCESS=1 ; configuration incomplète = 500
+const env = { ANTHROPIC_API_KEY: "K", ACCESS_CODE: "c0de" };
+const denied = (e, code, status) => assert.throws(() => checkAccess(e, code), (x) => x instanceof HttpError && x.status === status);
+checkAccess(env, "c0de");
+denied(env, "faux", 401); denied(env, undefined, 401); denied(env, "", 401);
+denied({ ...env, OPEN_ACCESS: "true" }, "faux", 401); // seul "1" ouvre l'accès
+checkAccess({ ...env, OPEN_ACCESS: "1" }, undefined); // ouvert : aucun code requis
+checkAccess({ ANTHROPIC_API_KEY: "K", OPEN_ACCESS: "1" }, ""); // ouvert : ACCESS_CODE inutile
+denied({ ACCESS_CODE: "c0de", OPEN_ACCESS: "1" }, "", 500); // la clé API reste obligatoire
+denied({ ANTHROPIC_API_KEY: "K" }, "", 500);
 
 // requête valide, modèle selon le niveau, system + règle JSON
 let { request, json } = buildRequest({ system: "S", messages: msgs, json: true, modelTier: "quick" });

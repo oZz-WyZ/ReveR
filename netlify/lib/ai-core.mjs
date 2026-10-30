@@ -16,6 +16,16 @@ export function sameSecret(a, b) {
   return diff === 0;
 }
 
+/**
+ * Accès à l'IA : le code d'accès est obligatoire, sauf si OPEN_ACCESS=1 (démonstration : à retirer ensuite).
+ * Lève HttpError(500) si la configuration est incomplète, HttpError(401) si le code est faux.
+ */
+export function checkAccess(env, codeSent) {
+  const open = env.OPEN_ACCESS === "1";
+  if (!env.ANTHROPIC_API_KEY || (!open && !env.ACCESS_CODE)) throw new HttpError(500, "not_configured", "ANTHROPIC_API_KEY et ACCESS_CODE doivent être définis");
+  if (!open && !sameSecret(codeSent, env.ACCESS_CODE)) throw new HttpError(401, "bad_code", "code d'accès incorrect");
+}
+
 /** Corps reçu du navigateur -> { request (pour l'API Messages), json }. Lève HttpError(400, "bad_request") sinon. */
 export function buildRequest(body, env = {}) {
   const bad = (m) => { throw new HttpError(400, "bad_request", m); };

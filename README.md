@@ -65,4 +65,6 @@ Onglet « Me tester » dans le panneau de droite de la fiche, à la place de l'a
 2. *Site configuration > Environment variables* : `ANTHROPIC_API_KEY` (ta clé) et `ACCESS_CODE` (le code à donner aux utilisateurs). Facultatif : `MODEL_QUICK`, `MODEL_DEFAULT`, `MODEL_COMPLEX`.
 3. Redéployer. À la première question, l'app demande le code d'accès et le garde dans le navigateur.
 
+**Démonstration sans code d'accès :** ajouter la variable `OPEN_ACCESS` = `1` sur Netlify (puis redéployer) : la fonction n'exige plus le code et l'app ne le demande plus. À retirer ensuite (supprimer la variable, redéployer) : tant qu'elle est définie, n'importe qui connaissant l'adresse du site peut utiliser la clé. Seule la valeur `1` ouvre l'accès. Garder un plafond de dépense sur la clé dans la Console Anthropic.
+
 La fonction refuse tout appel sans le bon code, limite la taille des requêtes (400 000 caractères, 6 images) et le débit par IP (60 appels / 10 min, par instance de fonction). Sans les deux variables, elle répond `not_configured`. Test : `node test/proxy.test.mjs`.

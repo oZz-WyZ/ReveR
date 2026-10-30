@@ -23,19 +23,20 @@ export async function complete({ system, messages, json, images, modelTier, sign
     system, messages, json: !!json, modelTier,
     images: await Promise.all((images ?? []).map(async (b) => ({ media_type: b.type, data: await toBase64(b) }))),
   };
-  let code = storage.get(CODE_KEY, null) ?? (await askAccessCode());
+  // Le code n'est demandé que si le serveur le refuse (il ne l'exige pas quand OPEN_ACCESS=1 est défini sur Netlify).
+  let code = storage.get(CODE_KEY, null) ?? "";
   let res;
   for (let attempt = 0; ; attempt++) {
-    if (!code) throw new AIError("not_granted", "code d'accès requis");
     try { res = await post(body, code, signal); }
     catch (e) { throw new AIError(e.name === "AbortError" ? "cancelled" : "upstream_error", e.message); }
     if (res.status !== 401 || attempt >= 2) break;
     storage.remove(CODE_KEY);
-    code = await askAccessCode({ wrong: true });
+    code = await askAccessCode({ wrong: !!code });
+    if (!code) throw new AIError("not_granted", "code d'accès requis");
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new AIError(res.status === 401 ? "not_granted" : data.code ?? "upstream_error", data.message ?? `HTTP ${res.status}`);
-  storage.set(CODE_KEY, code);
+  if (code) storage.set(CODE_KEY, code);
   return { text: data.text, truncated: !!data.truncated, data: data.data ?? null, source: "proxy" };
 }
 
